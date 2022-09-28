@@ -21,7 +21,7 @@ function setup() {
 	createCanvas(windowWidth, windowHeight);
 	logo = loadImage(logoPath)
 
-	sun = new Body(masses[0], diameters[0], createVector(0, 0), createVector(0, 0), 0)
+	sun = createBody(null, distances[0], masses[0], diameters[0], 0)
 
 	for (let i = 1; i <= numPlanets; i++) {
 		planets.push(createBody(sun, distances[i], masses[i], diameters[i], i))
@@ -30,17 +30,19 @@ function setup() {
 	// TODO: Add The Moon
 }
 
-function createBody(parent, distance, mass, radius, orbit) {
+function createBody(parent, distance, mass, diameter, orbit) {
 	// this calculates a random initial position in the orbit, at `distance` from `parent`
 	const theta = random(TWO_PI)
 	const bodyPos = createVector(distance * cos(theta), distance * sin(theta))
 
 	// this calculates an initial velocity, tangent to the orbit
 	const bodyVel = bodyPos.copy()
-	bodyVel.rotate(HALF_PI)
-	bodyVel.setMag(sqrt(G * (parent.mass / bodyPos.mag())))
+	if (parent != null) {
+		bodyVel.rotate(HALF_PI)
+		bodyVel.setMag(sqrt(G * (parent.mass / bodyPos.mag())))
+	}
 
-	return new Body(mass, radius, bodyPos, bodyVel, orbit)
+	return new Body(parent, mass, diameter, bodyPos, bodyVel, orbit)
 }
 
 function draw() {
@@ -53,7 +55,6 @@ function draw() {
 	for (const planet of planets) {
 		planet.show()
 		planet.update()
-		planet.orbit(sun)
 	}
 }
 
@@ -88,6 +89,10 @@ class Body {
 		this.path.push(this.pos.copy())
 		if (this.path.length > this.mass * 10) {
 			this.path.splice(0, 1)
+		}
+
+		if (this.parent != null) {
+			this.orbit(this.parent)
 		}
 	}
 
