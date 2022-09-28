@@ -21,28 +21,26 @@ function setup() {
 	createCanvas(windowWidth, windowHeight);
 	logo = loadImage(logoPath)
 
-	sun = createBody(null, distances[0], masses[0], diameters[0], 0)
+	sun = new Body(masses[0], diameters[0], createVector(0, 0), createVector(0, 0), 0)
 
 	for (let i = 1; i <= numPlanets; i++) {
 		planets.push(createBody(sun, distances[i], masses[i], diameters[i], i))
 	}
 
-	moon = createBody(planets[2], 10, 10, 10, 3.1)
+	// TODO: Add The Moon
 }
 
-function createBody(parent, distance, mass, diameter, orbit) {
+function createBody(parent, distance, mass, radius, orbit) {
 	// this calculates a random initial position in the orbit, at `distance` from `parent`
 	const theta = random(TWO_PI)
 	const bodyPos = createVector(distance * cos(theta), distance * sin(theta))
 
 	// this calculates an initial velocity, tangent to the orbit
 	const bodyVel = bodyPos.copy()
-	if (parent != null) {
-		bodyVel.rotate(HALF_PI)
-		bodyVel.setMag(sqrt(G * (parent.mass / bodyPos.mag())))
-	}
+	bodyVel.rotate(HALF_PI)
+	bodyVel.setMag(sqrt(G * (parent.mass / bodyPos.mag())))
 
-	return new Body(parent, mass, diameter, bodyPos, bodyVel, orbit)
+	return new Body(mass, radius, bodyPos, bodyVel, orbit)
 }
 
 function draw() {
@@ -55,19 +53,16 @@ function draw() {
 	for (const planet of planets) {
 		planet.show()
 		planet.update()
+		planet.orbit(sun)
 	}
-
-	moon.show()
-	moon.update()
 }
 
 class Body {
-	constructor(_parent, _mass, _diameter, _pos, _vel, _orbit) {
-		this.parent = _parent
+	constructor(_mass, _radius, _pos, _vel, _orbit) {
 		this.mass = _mass
 		this.pos = _pos
 		this.vel = _vel
-		this.r = _diameter / 2
+		this.r = _radius
 		this.path = []
 		this.imagePath = "./img/icons/" + _orbit + ".svg"
 		this.image = loadImage(this.imagePath)
@@ -81,7 +76,7 @@ class Body {
 		}
 
 		// draw the body's icon
-		image(this.image, this.pos.x - this.r, this.pos.y - this.r, this.r * 2, this.r * 2)
+		image(this.image, this.pos.x - (this.r / 2), this.pos.y - (this.r / 2), this.r, this.r)
 	}
 
 	update() {
@@ -93,10 +88,6 @@ class Body {
 		this.path.push(this.pos.copy())
 		if (this.path.length > this.mass * 10) {
 			this.path.splice(0, 1)
-		}
-
-		if (this.parent != null) {
-			this.orbit(this.parent)
 		}
 	}
 
