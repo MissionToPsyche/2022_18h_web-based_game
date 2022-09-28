@@ -59,11 +59,12 @@ function draw() {
 }
 
 class Body {
-	constructor(_mass, _radius, _pos, _vel, _orbit) {
+	constructor(_parent, _mass, _diameter, _pos, _vel, _orbit) {
+		this.parent = _parent
 		this.mass = _mass
 		this.pos = _pos
 		this.vel = _vel
-		this.r = _radius
+		this.r = _diameter / 2
 		this.path = []
 		this.imagePath = "./img/icons/" + _orbit + ".svg"
 		this.image = loadImage(this.imagePath)
@@ -77,7 +78,7 @@ class Body {
 		}
 
 		// draw the body's icon
-		image(this.image, this.pos.x - (this.r / 2), this.pos.y - (this.r / 2), this.r, this.r)
+		image(this.image, this.pos.x - this.r, this.pos.y - this.r, this.r * 2, this.r * 2)
 	}
 
 	update() {
