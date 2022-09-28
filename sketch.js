@@ -27,7 +27,7 @@ function setup() {
 		planets.push(createBody(sun, distances[i], masses[i], diameters[i], i))
 	}
 
-	// TODO: Add The Moon
+	moon = createBody(planets[2], 10, 10, 10, 3.1)
 }
 
 function createBody(parent, distance, mass, diameter, orbit) {
@@ -56,6 +56,9 @@ function draw() {
 		planet.show()
 		planet.update()
 	}
+
+	moon.show()
+	moon.update()
 }
 
 class Body {
