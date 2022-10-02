@@ -1,5 +1,5 @@
 const G = 6.67
-const logoPath = "./img/Psyche_Icon_Color-SVG.svg"
+const logoPath = "img/Psyche_Icon_Color-SVG.svg"
 let logo
 
 let sun
@@ -69,7 +69,7 @@ class Body {
 		this.vel = _vel
 		this.r = _diameter / 2
 		this.path = []
-		this.imagePath = "./img/icons/" + _orbit + ".svg"
+		this.imagePath = "img/icons/" + _orbit + ".svg"
 		this.image = loadImage(this.imagePath)
 	}
 
