@@ -7,7 +7,7 @@ assignees: ''
 
 ---
 
-<!-- Replace the XX here with the number for the Task from Taiga -->
+<!-- Replace the XX here with the number for the Task from Taiga. -->
 **Task: [XX](https://tree.taiga.io/project/dmyoung9-2022_18h_web-based_game/task/XX)**
 
 **Task Description**
