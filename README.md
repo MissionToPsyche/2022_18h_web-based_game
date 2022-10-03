@@ -8,6 +8,8 @@ To use the commit template defined in `.gitmessage`, simply open this repository
 git config commit.template ./.gitmessage
 ```
 
+Commits descriptions should be prefixed with one or more [Gitmoji](https://gitmoji.dev/), and be less than 72 characters long. In addition, commit messages should be well-written and use [closing keywords](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/using-keywords-in-issues-and-pull-requests) where appropriate, or be left blank.
+
 Issues
 ---
 To use issue templates, simply open an issue, and choose the appropriate template.

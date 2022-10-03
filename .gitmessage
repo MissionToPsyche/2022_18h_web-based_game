@@ -12,5 +12,4 @@
 # the final commit message.
 
 # Common commit messages tend to give a very brief explanation of the
-# changes, and it may be useful to use closing keywords, as described
-# here: https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/using-keywords-in-issues-and-pull-requests
+# changes, and it may be useful to use closing keywords.
