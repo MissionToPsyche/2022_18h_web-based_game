@@ -61,19 +61,47 @@ function draw() {
 	moon.update()
 }
 
-class Body {
-	constructor(_parent, _mass, _diameter, _pos, _vel, _orbit) {
-		this.parent = _parent
-		this.mass = _mass
-		this.pos = _pos
-		this.vel = _vel
-		this.r = _diameter / 2
-		this.path = []
-		this.imagePath = "img/icons/" + _orbit + ".svg"
-		this.image = loadImage(this.imagePath)
-	}
+/*****************************
+PolarGrid
+- A manager for the polar grid system
+*****************************/
+function PolarGrid () {
+	//This is a static object, and the constructor should not be called
+	throw new Error('This is a static class');
+}
 
-	show() {
+PolarGrid.prototype = {
+	//converts radius and theta(angle) to x y coordinates
+	convertToXY: function(r, t, x, y) {
+		x = r * Math.cos(t);
+		y = r * Math.sin(t);
+	},
+
+	//converts x y coordinates to radius and theta
+	convertFromXY: function(x, y, r, t) {
+		r = Math.sqrt(x * x + y * y);
+		t = Math.atan(y / x);
+	}
+}
+
+
+/*****************************
+Body
+- Defines the functionality for celestial bodies in the simulation
+*****************************/
+function Body (_parent, _mass, _diameter, _pos, _vel, _orbit) {
+  this.parent = _parent;
+    this.mass = _mass;
+	this.pos = _pos;
+	this.vel = _vel;
+	this.r = _diameter / 2;
+	this.path = [];
+	this.imagePath = "img/icons/" + _orbit + ".svg";
+	this.image = loadImage(this.imagePath);
+}
+
+Body.prototype = {
+	show: function () {
 		// draw the points in `this.path`
 		stroke("#ffffff44")
 		for (let i = 0; i < this.path.length - 1; i++) {
@@ -82,9 +110,9 @@ class Body {
 
 		// draw the body's icon
 		image(this.image, this.pos.x - this.r, this.pos.y - this.r, this.r * 2, this.r * 2)
-	}
+	},
 
-	update() {
+	update: function () {
 		// affect position by calculated velocity
 		this.pos.x += this.vel.x
 		this.pos.y += this.vel.y
@@ -98,15 +126,15 @@ class Body {
 		if (this.parent != null) {
 			this.orbit(this.parent)
 		}
-	}
+	},
 
-	force(f) {
+	force: function (f) {
 		// calculate velocity based off of force applied
 		this.vel.x += f.x / this.mass
 		this.vel.y += f.y / this.mass
-	}
+	},
 
-	orbit(parent) {
+	orbit: function (parent) {
 		let r = dist(this.pos.x, this.pos.y, parent.pos.x, parent.pos.y)
 		let f = parent.pos.copy().sub(this.pos)
 
