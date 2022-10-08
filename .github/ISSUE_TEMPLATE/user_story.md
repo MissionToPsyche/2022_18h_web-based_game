@@ -7,7 +7,7 @@ assignees: ''
 
 ---
 
-<!-- Replace the XX here with the number for the User Story from Taiga -->
+<!-- Replace the XX here with the number for the User Story from Taiga. -->
 **User Story: [XX](https://tree.taiga.io/project/dmyoung9-2022_18h_web-based_game/us/XX)**
 
 **User Story Description**
