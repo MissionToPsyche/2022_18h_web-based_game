@@ -5,19 +5,19 @@
             "name": "Sun",
             "orbits": null,
             "mass": {
-                "value": 200,
-                "unit": "px",
-                "magnitude": 1
+                "value": 1988500,
+                "unit": "kg",
+                "magnitude": 24
             },
             "diameter": {
-                "value": 100,
-                "unit": "px",
+                "value": 1392684,
+                "unit": "km",
                 "magnitude": 1
             },
             "orbit_distance": {
                 "value": 0,
-                "unit": "px",
-                "magnitude": 1
+                "unit": "km",
+                "magnitude": 6
             }
         }
     ],
@@ -27,19 +27,19 @@
             "name": "Mercury",
             "orbits": "sol",
             "mass": {
-                "value": 30,
-                "unit": "px",
-                "magnitude": 1
+                "value": 0.33,
+                "unit": "kg",
+                "magnitude": 24
             },
             "diameter": {
-                "value": 15,
-                "unit": "px",
+                "value": 4879,
+                "unit": "km",
                 "magnitude": 1
             },
             "orbit_distance": {
-                "value": 100,
-                "unit": "px",
-                "magnitude": 1
+                "value": 57.9,
+                "unit": "km",
+                "magnitude": 6
             }
         },
         {
@@ -47,19 +47,19 @@
             "name": "Venus",
             "orbits": "sol",
             "mass": {
-                "value": 50,
-                "unit": "px",
-                "magnitude": 1
+                "value": 4.87,
+                "unit": "kg",
+                "magnitude": 24
             },
             "diameter": {
-                "value": 25,
-                "unit": "px",
+                "value": 12104,
+                "unit": "km",
                 "magnitude": 1
             },
             "orbit_distance": {
-                "value": 150,
-                "unit": "px",
-                "magnitude": 1
+                "value": 108.2,
+                "unit": "km",
+                "magnitude": 6
             }
         },
         {
@@ -67,19 +67,19 @@
             "name": "Earth",
             "orbits": "sol",
             "mass": {
-                "value": 60,
-                "unit": "px",
-                "magnitude": 1
+                "value": 5.97,
+                "unit": "kg",
+                "magnitude": 24
             },
             "diameter": {
-                "value": 20,
-                "unit": "px",
+                "value": 12756,
+                "unit": "km",
                 "magnitude": 1
             },
             "orbit_distance": {
-                "value": 200,
-                "unit": "px",
-                "magnitude": 1
+                "value": 149.6,
+                "unit": "km",
+                "magnitude": 6
             }
         },
         {
@@ -87,19 +87,19 @@
             "name": "Mars",
             "orbits": "sol",
             "mass": {
-                "value": 60,
-                "unit": "px",
-                "magnitude": 1
+                "value": 0.642,
+                "unit": "kg",
+                "magnitude": 24
             },
             "diameter": {
-                "value": 15,
-                "unit": "px",
+                "value": 6792,
+                "unit": "km",
                 "magnitude": 1
             },
             "orbit_distance": {
-                "value": 250,
-                "unit": "px",
-                "magnitude": 1
+                "value": 228,
+                "unit": "km",
+                "magnitude": 6
             }
         },
         {
@@ -107,19 +107,19 @@
             "name": "Jupiter",
             "orbits": "sol",
             "mass": {
-                "value": 2000,
-                "unit": "px",
-                "magnitude": 1
+                "value": 1898,
+                "unit": "kg",
+                "magnitude": 24
             },
             "diameter": {
-                "value": 100,
-                "unit": "px",
+                "value": 142984,
+                "unit": "km",
                 "magnitude": 1
             },
             "orbit_distance": {
-                "value": 350,
-                "unit": "px",
-                "magnitude": 1
+                "value": 778.5,
+                "unit": "km",
+                "magnitude": 6
             }
         },
         {
@@ -127,39 +127,19 @@
             "name": "Saturn",
             "orbits": "sol",
             "mass": {
-                "value": 600,
-                "unit": "px",
-                "magnitude": 1
+                "value": 568,
+                "unit": "kg",
+                "magnitude": 24
             },
             "diameter": {
-                "value": 90,
-                "unit": "px",
+                "value": 120536,
+                "unit": "km",
                 "magnitude": 1
             },
             "orbit_distance": {
-                "value": 475,
-                "unit": "px",
-                "magnitude": 1
-            }
-        },
-        {
-            "id": "neptune",
-            "name": "Neptune",
-            "orbits": "sol",
-            "mass": {
-                "value": 90,
-                "unit": "px",
-                "magnitude": 1
-            },
-            "diameter": {
-                "value": 50,
-                "unit": "px",
-                "magnitude": 1
-            },
-            "orbit_distance": {
-                "value": 550,
-                "unit": "px",
-                "magnitude": 1
+                "value": 1432,
+                "unit": "km",
+                "magnitude": 6
             }
         },
         {
@@ -167,19 +147,39 @@
             "name": "Uranus",
             "orbits": "sol",
             "mass": {
-                "value": 100,
-                "unit": "px",
-                "magnitude": 1
+                "value": 86.8,
+                "unit": "kg",
+                "magnitude": 24
             },
             "diameter": {
-                "value": 60,
-                "unit": "px",
+                "value": 51118,
+                "unit": "km",
                 "magnitude": 1
             },
             "orbit_distance": {
-                "value": 600,
-                "unit": "px",
+                "value": 2867,
+                "unit": "km",
+                "magnitude": 6
+            }
+        },
+        {
+            "id": "neptune",
+            "name": "Neptune",
+            "orbits": "sol",
+            "mass": {
+                "value": 102,
+                "unit": "kg",
+                "magnitude": 24
+            },
+            "diameter": {
+                "value": 49528,
+                "unit": "km",
                 "magnitude": 1
+            },
+            "orbit_distance": {
+                "value": 4515,
+                "unit": "km",
+                "magnitude": 6
             }
         },
         {
@@ -187,19 +187,19 @@
             "name": "Pluto",
             "orbits": "sol",
             "mass": {
-                "value": 5,
-                "unit": "px",
-                "magnitude": 1
+                "value": 0.0130,
+                "unit": "kg",
+                "magnitude": 24
             },
             "diameter": {
-                "value": 10,
-                "unit": "px",
+                "value": 2376,
+                "unit": "km",
                 "magnitude": 1
             },
             "orbit_distance": {
-                "value": 650,
-                "unit": "px",
-                "magnitude": 1
+                "value": 5906.4,
+                "unit": "km",
+                "magnitude": 6
             }
         }
     ],
@@ -209,19 +209,19 @@
             "name": "Moon",
             "orbits": "earth",
             "mass": {
-                "value": 10,
-                "unit": "px",
-                "magnitude": 1
+                "value": 0.073,
+                "unit": "kg",
+                "magnitude": 24
             },
             "diameter": {
-                "value": 10,
-                "unit": "px",
+                "value": 3475,
+                "unit": "km",
                 "magnitude": 1
             },
             "orbit_distance": {
-                "value": 10,
-                "unit": "px",
-                "magnitude": 1
+                "value": 0.384,
+                "unit": "km",
+                "magnitude": 6
             }
         }
     ]
