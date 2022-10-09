@@ -65,10 +65,10 @@ function draw() {
 	image(logo, 24, 24, 96, 96)
 
 	// initial position of the view is on the center of the canvas, the sun
-	// TODO: initial position is supposed to be the earth
 	if (initial) {
-		position.x = width / 2
-		position.y = height / 2
+		// start from the earth
+		position.x = width / 2 - zoom * planets[2].pos.x
+		position.y = height / 2 - zoom * planets[2].pos.y
 		initial = false
 	}
 
