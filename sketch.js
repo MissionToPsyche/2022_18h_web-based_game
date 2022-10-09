@@ -122,6 +122,8 @@ class Body {
 	show() {
 		// draw the points in `this.path`
 		stroke("#ffffff44")
+		strokeCap(SQUARE)
+
 		for (let i = 0; i < this.path.length - 1; i++) {
 			line(this.path[i].x, this.path[i].y, this.path[i + 1].x, this.path[i + 1].y)
 		}
