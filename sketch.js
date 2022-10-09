@@ -84,6 +84,33 @@ function draw() {
 	}
 }
 
+/*****************************
+PolarGrid
+- A manager for the polar grid system
+*****************************/
+function PolarGrid () {
+	//This is a static object, and the constructor should not be called
+	throw new Error('This is a static class');
+}
+
+PolarGrid.prototype = {
+	//converts radius and theta(angle) to x y coordinates
+	convertToXY: function(r, t, x, y) {
+		x = r * Math.cos(t);
+		y = r * Math.sin(t);
+	},
+
+	//converts x y coordinates to radius and theta
+	convertFromXY: function(x, y, r, t) {
+		r = Math.sqrt(x * x + y * y);
+		t = Math.atan(y / x);
+	}
+}
+
+/*****************************
+Body
+- Defines the functionality for celestial bodies in the simulation
+*****************************/
 function Body(_id, _parent, _mass, _diameter, _distance, _pos, _vel) {
 	this.id = _id
 	this.parent = _parent
