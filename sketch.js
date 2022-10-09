@@ -67,6 +67,15 @@ function draw() {
 	// initial position of the view is on the center of the canvas, the sun
 	if (initial) {
 		// start from the earth
+		//How to get the position of a planet: 
+		// planets[2] is the earth, please refer to data/bodies.json for the index of a specific planet
+		// planets[2].pos.x and planets[2].pos.y is the relative position from the sun
+		// For example, if the earth is initially on the upper right direction from the sun, 
+		// planets[2].pos.x will be a positive value and planets[2].pos.y will be a negative value
+		// sun is the center of the screen, so I used width/2 and height/2 to get the position of the sun here
+		// zoom is the factor by which the screen is zoomed
+		// Since the screen is zoomed in, the distance from the center (sun) to the planet increases
+		// so that's why the relative position planets[2].pos.x and planets[2].pos.y need to * zoom
 		position.x = width / 2 - zoom * planets[2].pos.x
 		position.y = height / 2 - zoom * planets[2].pos.y
 		initial = false
