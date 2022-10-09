@@ -17,6 +17,21 @@ const masses = [200, 30, 50, 60, 60, 2000, 600, 90, 100, 5]
 const diameters = [100, 15, 25, 20, 15, 100, 90, 50, 60, 10]
 const distances = [0, 100, 150, 200, 250, 350, 475, 550, 600, 650]
 
+// key codes
+const leftArrow = 37
+const upArrow = 38
+const rightArrow = 39
+const downArrow = 40
+// zoom in in the factor of this number
+const zoom = 10
+// unit of moving when pressing a key
+const moveUnit = 20
+
+// the initial position of the view
+let position = {x : 0, y : 0}
+// this boolean is true when the canvas is in the initial state
+let initial = true
+
 function setup() {
 	createCanvas(windowWidth, windowHeight);
 	logo = loadImage(logoPath)
@@ -49,7 +64,29 @@ function draw() {
 	background("#12031d")
 	image(logo, 24, 24, 96, 96)
 
-	translate(width / 2, height / 2)
+	// initial position of the view is on the center of the canvas, the sun
+	// TODO: initial position is supposed to be the earth
+	if (initial) {
+		position.x = width / 2
+		position.y = height / 2
+		initial = false
+	}
+
+    if (keyIsPressed) {
+    	if (keyCode == rightArrow) {
+    		position.x -= moveUnit
+    	} else if (keyCode == leftArrow) {
+    		position.x += moveUnit
+    	} else if (keyCode == upArrow) {
+    		position.y += moveUnit
+    	} else if (keyCode == downArrow) {
+    		position.y -= moveUnit
+    	}
+    }
+
+    translate(position.x, position.y)
+    scale(zoom, zoom)
+
 	sun.show()
 
 	for (const planet of planets) {
