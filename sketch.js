@@ -54,10 +54,19 @@ function draw() {
 	translate(width / 2, height / 2)
   
 	// initial position of the view is on the center of the canvas, the sun
-	// TODO: initial position is supposed to be the earth
 	if (initial) {
-		position.x = width / 2
-		position.y = height / 2
+		// start from the earth
+		//How to get the position of a planet: 
+		// planets[2] is the earth, please refer to data/bodies.json for the index of a specific planet
+		// planets[2].pos.x and planets[2].pos.y is the relative position from the sun
+		// For example, if the earth is initially on the upper right direction from the sun, 
+		// planets[2].pos.x will be a positive value and planets[2].pos.y will be a negative value
+		// sun is the center of the screen, so I used width/2 and height/2 to get the position of the sun here
+		// zoom is the factor by which the screen is zoomed
+		// Since the screen is zoomed in, the distance from the center (sun) to the planet increases
+		// so that's why the relative position planets[2].pos.x and planets[2].pos.y need to * zoom
+		position.x = width / 2 - zoom * planets[2].pos.x
+		position.y = height / 2 - zoom * planets[2].pos.y
 		initial = false
 	}
 
@@ -126,6 +135,8 @@ Body.prototype = {
 	show: function () {
 		// draw the points in `this.path`
 		stroke("#ffffff44")
+		strokeCap(SQUARE)
+
 		for (let i = 0; i < this.path.length - 1; i++) {
 			line(this.path[i].x, this.path[i].y, this.path[i + 1].x, this.path[i + 1].y)
 		}
