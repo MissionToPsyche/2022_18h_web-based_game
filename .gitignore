@@ -22,4 +22,7 @@ jsconfig.json
 # Ignore code-workspaces
 *.code-workspace
 
+# macOS store
+.DS_Store
+
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode
