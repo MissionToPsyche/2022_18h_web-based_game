@@ -1,26 +1,16 @@
 const G = 6.67
-const logoPath = "img/Psyche_Icon_Color-SVG.svg"
+
 let logo
+const logoPath = "img/Psyche_Icon_Color-SVG.svg"
 
 const spacecraftPath = "img/spacecraft.png"
 let spacecraft
 const scWidth = 400
 const scHeight = 354
 
-let sun
-let moon
-let planets = []
-const numPlanets = 9
-const destabilize = 0.1
+let bodies = {}
+const dataPath = "data/bodies.json"
 
-// These are **not** using the "proper" values from `data/bodies.json`...
-// I'd like if there was a nice way to use realistic values, but the planets
-// vary so much in size and distance from the Sun, that it's hard to fit
-// them all on the screen :(
-
-const masses = [200, 30, 50, 60, 60, 2000, 600, 90, 100, 5]
-const diameters = [100, 15, 25, 20, 15, 100, 90, 50, 60, 10]
-const distances = [0, 100, 150, 200, 250, 350, 475, 550, 600, 650]
 
 // key codes
 const leftArrow = 37
@@ -42,28 +32,25 @@ function setup() {
 	logo = loadImage(logoPath)
 	spacecraft = loadImage(spacecraftPath)
 
-	sun = createBody(null, distances[0], masses[0], diameters[0], 0)
-
-	for (let i = 1; i <= numPlanets; i++) {
-		planets.push(createBody(sun, distances[i], masses[i], diameters[i], i))
-	}
-
-	moon = createBody(planets[2], 10, 10, 10, 3.1)
+	loadJSON(dataPath, setupBodies)
 }
 
-function createBody(parent, distance, mass, diameter, orbit) {
-	// this calculates a random initial position in the orbit, at `distance` from `parent`
-	const theta = random(TWO_PI)
-	const bodyPos = createVector(distance * cos(theta), distance * sin(theta))
+function setupBodies(json) {
+	for (type in json) {
+		for (body of json[type]) {
+			let id = body['id']
+			let parent = body['orbits']
+			let orbit_distance = body['orbit_distance']['value']
+			let mass = body['mass']['value']
+			let diameter = body['diameter']['value']
 
-	// this calculates an initial velocity, tangent to the orbit
-	const bodyVel = bodyPos.copy()
-	if (parent != null) {
-		bodyVel.rotate(HALF_PI)
-		bodyVel.setMag(sqrt(G * (parent.mass / bodyPos.mag())))
+			bodies[id] = new Body(id, parent, mass, diameter, orbit_distance)
+		}
 	}
 
-	return new Body(parent, mass, diameter, bodyPos, bodyVel, orbit)
+	for (const body in bodies) {
+		bodies[body].initialize()
+	}
 }
 
 function draw() {
@@ -85,8 +72,8 @@ function draw() {
 		// zoom is the factor by which the screen is zoomed
 		// Since the screen is zoomed in, the distance from the center (sun) to the planet increases
 		// so that's why the relative position planets[2].pos.x and planets[2].pos.y need to * zoom
-		position.x = width / 2 - zoom * planets[2].pos.x
-		position.y = height / 2 - zoom * planets[2].pos.y
+		position.x = width / 2 - zoom * bodies["earth"].pos.x
+		position.y = height / 2 - zoom * bodies["earth"].pos.y
 		initial = false
 	}
 
@@ -105,30 +92,52 @@ function draw() {
     translate(position.x, position.y)
     scale(zoom, zoom)
 
-	sun.show()
-
-	for (const planet of planets) {
-		planet.show()
-		planet.update()
+	for (const body in bodies) {
+		bodies[body].show()
+		bodies[body].update()
 	}
-
-	moon.show()
-	moon.update()
 }
 
-class Body {
-	constructor(_parent, _mass, _diameter, _pos, _vel, _orbit) {
-		this.parent = _parent
-		this.mass = _mass
-		this.pos = _pos
-		this.vel = _vel
-		this.r = _diameter / 2
-		this.path = []
-		this.imagePath = "img/icons/" + _orbit + ".svg"
-		this.image = loadImage(this.imagePath)
-	}
+function Body(_id, _parent, _mass, _diameter, _distance, _pos, _vel) {
+	this.id = _id
+	this.parent = _parent
+	this.mass = _mass
+	this.distance = _distance
+	this.pos = createVector(0, 0)
+	this.vel = createVector(0, 0)
+	this.r = _diameter / 2
+	this.path = []
+	this.imagePath = "img/icons/" + _id + ".svg"
+	this.image = loadImage(this.imagePath)
+}
 
-	show() {
+Body.prototype = {
+	initialize: function () {
+		let origin
+		if (this.parent != null) {
+			this.parent = bodies[this.parent]
+			origin = this.parent.pos.copy()
+		} else {
+			origin = createVector(0, 0)
+		}
+
+		this.pos = origin
+
+		// this calculates a random initial position in the orbit, at `distance` from `parent`
+		const theta = random(TWO_PI)
+		const bodyPos = origin.add(createVector(this.distance * cos(theta), this.distance * sin(theta)))
+		const bodyVel = bodyPos.copy()
+
+		if (this.parent != null) {
+			bodyVel.rotate(HALF_PI)
+			bodyVel.setMag(sqrt(G * (this.parent.mass / bodyPos.mag())))
+		}
+
+		this.pos = bodyPos
+		this.vel = bodyVel
+	},
+
+	show: function () {
 		// draw the points in `this.path`
 		stroke("#ffffff44")
 		strokeCap(SQUARE)
@@ -139,9 +148,13 @@ class Body {
 
 		// draw the body's icon
 		image(this.image, this.pos.x - this.r, this.pos.y - this.r, this.r * 2, this.r * 2)
-	}
+	},
 
-	update() {
+	update: function () {
+		if (this.parent != null) {
+			this.orbit(this.parent)
+		}
+
 		// affect position by calculated velocity
 		this.pos.x += this.vel.x
 		this.pos.y += this.vel.y
@@ -151,21 +164,17 @@ class Body {
 		if (this.path.length > this.mass * 10) {
 			this.path.splice(0, 1)
 		}
+	},
 
-		if (this.parent != null) {
-			this.orbit(this.parent)
-		}
-	}
-
-	force(f) {
+	force: function (f) {
 		// calculate velocity based off of force applied
-		this.vel.x += f.x / this.mass
-		this.vel.y += f.y / this.mass
-	}
+		this.vel.x += (f.x / this.mass) + this.parent.vel.x
+		this.vel.y += (f.y / this.mass) + this.parent.vel.x
+	},
 
-	orbit(parent) {
-		let r = dist(this.pos.x, this.pos.y, parent.pos.x, parent.pos.y)
-		let f = parent.pos.copy().sub(this.pos)
+	orbit: function (parent) {
+		const r = dist(this.pos.x, this.pos.y, parent.pos.x, parent.pos.y)
+		const f = parent.pos.copy().sub(this.pos)
 
 		// this is Newton's Law of Universal Gravitation (https://en.wikipedia.org/wiki/Newton%27s_law_of_universal_gravitation)
 		// we use it here to calculate the force `parent` applies
