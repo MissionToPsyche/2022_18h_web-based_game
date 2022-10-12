@@ -65,9 +65,12 @@ function draw() {
 		// zoom is the factor by which the screen is zoomed
 		// Since the screen is zoomed in, the distance from the center (sun) to the planet increases
 		// so that's why the relative position planets[2].pos.x and planets[2].pos.y need to * zoom
-		position.x = width / 2 - zoom * planets[2].pos.x
-		position.y = height / 2 - zoom * planets[2].pos.y
-		initial = false
+
+		//Draw function can be called before planets exist, so checking if planet exists first.
+		//NOTE: This is a bad way of doing this! Find a new way to do this later
+		position.x = width / 2 - zoom * bodies["earth"].pos.x;
+		position.y = height / 2 - zoom * bodies["earth"].pos.y;
+		initial = false;
 	}
 
     if (keyIsPressed) {
@@ -85,8 +88,6 @@ function draw() {
     translate(position.x, position.y)
     scale(zoom, zoom)
 
-	sun.show()
-
 	for (const body in bodies) {
 		bodies[body].show()
 		bodies[body].update()
@@ -94,25 +95,26 @@ function draw() {
 }
 
 /*****************************
-PolarGrid
-- A manager for the polar grid system
+GravUtils
+- An object prototype containing various util funcitons for gravity 
 *****************************/
-function PolarGrid () {
+function GravUtils () {
 	//This is a static object, and the constructor should not be called
 	throw new Error('This is a static class');
 }
 
-PolarGrid.prototype = {
-	//converts radius and theta(angle) to x y coordinates
-	convertToXY: function(r, t, x, y) {
-		x = r * Math.cos(t);
-		y = r * Math.sin(t);
+GravUtils = {
+
+	//basic calculation for gravity. b1 and b2 are the two bodies involved.
+	//R is the radius between the two
+	calcGravity: function (m1, m2, r) {
+		// this is Newton's Law of Universal Gravitation (https://en.wikipedia.org/wiki/Newton%27s_law_of_universal_gravitation)
+		return G * (m1 * m2) / (r * r);
 	},
 
-	//converts x y coordinates to radius and theta
-	convertFromXY: function(x, y, r, t) {
-		r = Math.sqrt(x * x + y * y);
-		t = Math.atan(y / x);
+	//calculates the gravitational acceleration on a mass based on force
+	gaussLaw: function (f, m1) {
+		return createVector(f.x/m1, f.y/m1);
 	}
 }
 
@@ -190,8 +192,8 @@ Body.prototype = {
 
 	force: function (f) {
 		// calculate velocity based off of force applied
-		this.vel.x += (f.x / this.mass) + this.parent.vel.x
-		this.vel.y += (f.y / this.mass) + this.parent.vel.x
+		this.vel.add(GravUtils.gaussLaw(f, this.mass));
+		this.vel.add(this.parent.vel.x, this.parent.vel.x);
 	},
 
 	orbit: function (parent) {
@@ -200,7 +202,7 @@ Body.prototype = {
 
 		// this is Newton's Law of Universal Gravitation (https://en.wikipedia.org/wiki/Newton%27s_law_of_universal_gravitation)
 		// we use it here to calculate the force `parent` applies
-		f.setMag(G * (this.mass * parent.mass) / (r * r))
+		f.setMag(GravUtils.calcGravity(this.mass, parent.mass, r));
 
 		// and apply it
 		this.force(f)
