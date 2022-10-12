@@ -50,8 +50,6 @@ function setupBodies(json) {
 function draw() {
 	background("#12031d")
 	image(logo, 24, 24, 96, 96)
-
-	translate(width / 2, height / 2)
   
 	// initial position of the view is on the center of the canvas, the sun
 	if (initial) {
@@ -65,8 +63,8 @@ function draw() {
 		// zoom is the factor by which the screen is zoomed
 		// Since the screen is zoomed in, the distance from the center (sun) to the planet increases
 		// so that's why the relative position planets[2].pos.x and planets[2].pos.y need to * zoom
-		position.x = width / 2 - zoom * planets[2].pos.x
-		position.y = height / 2 - zoom * planets[2].pos.y
+		position.x = width / 2 - zoom * bodies["earth"].pos.x
+		position.y = height / 2 - zoom * bodies["earth"].pos.y
 		initial = false
 	}
 
@@ -84,8 +82,6 @@ function draw() {
 
     translate(position.x, position.y)
     scale(zoom, zoom)
-
-	sun.show()
 
 	for (const body in bodies) {
 		bodies[body].show()
