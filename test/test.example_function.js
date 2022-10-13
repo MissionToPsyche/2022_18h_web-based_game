@@ -1,3 +1,5 @@
+var assert = require('assert');
+var add = require('../example_function.js').add;
 describe("add", function() {
 
   it("returns the sum of two inputs", function() {

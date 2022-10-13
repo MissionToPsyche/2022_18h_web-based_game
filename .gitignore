@@ -22,4 +22,16 @@ jsconfig.json
 # Ignore code-workspaces
 *.code-workspace
 
+# Node
+node_modules
+build
+npm-debug.log
+.env
+.DS_Store
+
+# Coverage and Testing
+.nyc
+.nyc_output/
+coverage/
+
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode
