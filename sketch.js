@@ -3,6 +3,11 @@ const G = 6.67
 let logo
 const logoPath = "img/Psyche_Icon_Color-SVG.svg"
 
+const spacecraftPath = "img/spacecraft.png"
+let spacecraft
+const scWidth = 400
+const scHeight = 354
+
 let bodies = {}
 const dataPath = "data/bodies.json"
 
@@ -25,6 +30,7 @@ let initial = true
 function setup() {
 	createCanvas(windowWidth, windowHeight);
 	logo = loadImage(logoPath)
+	spacecraft = loadImage(spacecraftPath)
 
 	loadJSON(dataPath, setupBodies)
 }
@@ -51,8 +57,9 @@ function draw() {
 	background("#12031d")
 	image(logo, 24, 24, 96, 96)
 
-	translate(width / 2, height / 2)
-  
+	// spacecraft should be on the center of the canvas
+	image(spacecraft, (width - scWidth) / 2, (height - scHeight) / 2, scWidth, scHeight)
+
 	// initial position of the view is on the center of the canvas, the sun
 	if (initial) {
 		// start from the earth
