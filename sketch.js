@@ -11,6 +11,7 @@ const scHeight = 354
 let bodies = {}
 const dataPath = "data/bodies.json"
 
+let lunaTheta = 0;
 
 // key codes
 const leftArrow = 37
@@ -61,7 +62,7 @@ function draw() {
 	image(spacecraft, (width - scWidth) / 2, (height - scHeight) / 2, scWidth, scHeight)
 
 	// initial position of the view is on the center of the canvas, the sun
-	if (initial) {
+	if (initial && (typeof(bodies["earth"]) != "undefined")) {
 		// start from the earth
 		//How to get the position of a planet: 
 		// planets[2] is the earth, please refer to data/bodies.json for the index of a specific planet
@@ -92,8 +93,9 @@ function draw() {
     	}
     }
 
-    translate(position.x, position.y)
-    scale(zoom, zoom)
+    //translate(position.x, position.y)
+    //scale(zoom, zoom)
+    translate(width / 2, height / 2)
 
 	for (const body in bodies) {
 		bodies[body].show()
@@ -182,18 +184,24 @@ Body.prototype = {
 	},
 
 	update: function () {
-		if (this.parent != null) {
-			this.orbit(this.parent)
-		}
+		if (typeof(bodies["luna"].pos) != "undefined") {
+			if (this.parent != null) {
+				this.orbit(this.parent)
+			}
 
-		// affect position by calculated velocity
-		this.pos.x += this.vel.x
-		this.pos.y += this.vel.y
+			if (this.id = "luna") {
+				bodies["luna"].pos = bodies["earth"].pos.copy()
+			}
 
-		// add the current position into `this.path`
-		this.path.push(this.pos.copy())
-		if (this.path.length > this.mass * 10) {
-			this.path.splice(0, 1)
+			// affect position by calculated velocity
+			this.pos.x += this.vel.x
+			this.pos.y += this.vel.y
+
+			// add the current position into `this.path`
+			this.path.push(this.pos.copy())
+			if (this.path.length > this.mass * 10) {
+				this.path.splice(0, 1)
+			}
 		}
 	},
 
