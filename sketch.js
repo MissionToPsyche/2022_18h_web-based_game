@@ -11,7 +11,7 @@ const scHeight = 354
 let bodies = {}
 const dataPath = "data/bodies.json"
 
-let lunaTheta = 0;
+let luna;
 
 // key codes
 const leftArrow = 37
@@ -38,20 +38,29 @@ function setup() {
 
 function setupBodies(json) {
 	for (type in json) {
-		for (body of json[type]) {
-			let id = body['id']
-			let parent = body['orbits']
-			let orbit_distance = body['orbit_distance']['value']
-			let mass = body['mass']['value']
-			let diameter = body['diameter']['value']
-
-			bodies[id] = new Body(id, parent, mass, diameter, orbit_distance)
+		if (type != "satellites") {
+			for (body of json[type]) {
+				let id = body['id']
+				let parent = body['orbits']
+				let orbit_distance = body['orbit_distance']['value']
+				let mass = body['mass']['value']
+				let diameter = body['diameter']['value']
+				bodies[id] = new Body(id, parent, mass, diameter, orbit_distance)
+			}
+		} else {
+			let id = json[type][0]['id']
+			let parent = json[type][0]['orbits']
+			let orbit_distance = json[type][0]['orbit_distance']['value']
+			let mass = json[type][0]['mass']['value']
+			let diameter = json[type][0]['diameter']['value']
+			luna = new Body(id, parent, mass, diameter, orbit_distance)
 		}
 	}
 
 	for (const body in bodies) {
 		bodies[body].initialize()
 	}
+	luna.initialize()
 }
 
 function draw() {
@@ -100,6 +109,11 @@ function draw() {
 	for (const body in bodies) {
 		bodies[body].show()
 		bodies[body].update()
+	}
+
+	if (typeof(luna) != "undefined") {
+		luna.show()
+		luna.update()
 	}
 }
 
@@ -184,24 +198,22 @@ Body.prototype = {
 	},
 
 	update: function () {
-		if (typeof(bodies["luna"].pos) != "undefined") {
-			if (this.parent != null) {
-				this.orbit(this.parent)
-			}
+		if (this.parent != null) {
+			this.orbit(this.parent)
+		}
 
-			if (this.id = "luna") {
-				bodies["luna"].pos = bodies["earth"].pos.copy()
-			}
+		//if (this.id = "luna") {
+		//	bodies["luna"].pos = bodies["earth"].pos.copy()
+		//}
 
-			// affect position by calculated velocity
-			this.pos.x += this.vel.x
-			this.pos.y += this.vel.y
+		// affect position by calculated velocity
+		this.pos.x += this.vel.x
+		this.pos.y += this.vel.y
 
-			// add the current position into `this.path`
-			this.path.push(this.pos.copy())
-			if (this.path.length > this.mass * 10) {
-				this.path.splice(0, 1)
-			}
+		// add the current position into `this.path`
+		this.path.push(this.pos.copy())
+		if (this.path.length > this.mass * 10) {
+			this.path.splice(0, 1)
 		}
 	},
 
