@@ -12,6 +12,8 @@ let bodies = {}
 const dataPath = "data/bodies.json"
 
 let luna;
+let lunaTheta = 0;
+let lunaDeltaTheta = 0.17
 
 // key codes
 const leftArrow = 37
@@ -60,7 +62,7 @@ function setupBodies(json) {
 	for (const body in bodies) {
 		bodies[body].initialize()
 	}
-	luna.initialize()
+	luna.initializeLuna()
 }
 
 function draw() {
@@ -102,9 +104,8 @@ function draw() {
     	}
     }
 
-    //translate(position.x, position.y)
-    //scale(zoom, zoom)
-    translate(width / 2, height / 2)
+    translate(position.x, position.y)
+    scale(zoom, zoom)
 
 	for (const body in bodies) {
 		bodies[body].show()
@@ -113,7 +114,7 @@ function draw() {
 
 	if (typeof(luna) != "undefined") {
 		luna.show()
-		luna.update()
+		luna.updateLuna()
 	}
 }
 
@@ -184,6 +185,14 @@ Body.prototype = {
 		this.vel = bodyVel
 	},
 
+	initializeLuna: function() {
+		// copy earth's position
+		if (typeof(bodies["earth"].pos) != "undefined" && (bodies["earth"].pos.x != 0)) {
+			this.pos.x = bodies["earth"].pos.x + this.distance * cos(lunaTheta);
+			this.pos.y = bodies["earth"].pos.y + this.distance * sin(lunaTheta);
+		}
+	},
+
 	show: function () {
 		// draw the points in `this.path`
 		stroke("#ffffff44")
@@ -209,6 +218,20 @@ Body.prototype = {
 		// affect position by calculated velocity
 		this.pos.x += this.vel.x
 		this.pos.y += this.vel.y
+
+		// add the current position into `this.path`
+		this.path.push(this.pos.copy())
+		if (this.path.length > this.mass * 10) {
+			this.path.splice(0, 1)
+		}
+	},
+
+	updateLuna: function () {
+		if (typeof(bodies["earth"].pos) != "undefined" && (bodies["earth"].pos.x != 0)) {
+			lunaTheta += lunaDeltaTheta;
+			this.pos.x = bodies["earth"].pos.x + this.distance * cos(lunaTheta);
+			this.pos.y = bodies["earth"].pos.y + this.distance * sin(lunaTheta);
+		}
 
 		// add the current position into `this.path`
 		this.path.push(this.pos.copy())
