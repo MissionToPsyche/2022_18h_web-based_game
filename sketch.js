@@ -5,6 +5,7 @@ const logoPath = "img/Psyche_Icon_Color-SVG.svg"
 
 const spacecraftPath = "img/spacecraft.png"
 let spacecraft
+let game
 const scWidth = 400
 const scHeight = 354
 
@@ -216,5 +217,30 @@ Body.prototype = {
 	}
 }
 
-// expose functions so that mocha tests can see them
-module.exports = { setup, setupBodies, draw, Body }
+// used in mocha tests
+class Game {
+	constructor(G, logo, logoPath, spacecraftPath, spacecraft, scWidth, scHeight, bodies, dataPath,
+		leftArrow, upArrow, rightArrow, downArrow, zoom, moveUnit, position, initial) {
+		this.G = G;
+		this.logo = logo;
+		this.logoPath = logoPath;
+		this.spacecraftPath = spacecraftPath;
+		this.spacecraft = spacecraft;
+		this.scWidth = scWidth;
+		this.scHeight = scHeight;
+		this.bodies = bodies;
+		this.dataPath = dataPath;
+		this.leftArrow = leftArrow;
+		this.upArrow = upArrow;
+		this.rightArrow = rightArrow;
+		this.downArrow = downArrow;
+		this.zoom = zoom;
+		this.moveUnit = moveUnit;
+		this.position = position;
+		this.initial = initial;
+	}
+}
+module.exports = Game;
+
+// export functions so that mocha tests can see them
+//module.exports = { setup, setupBodies, draw, Body }
