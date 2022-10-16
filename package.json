@@ -2,7 +2,7 @@
   "name": "2022_18h_web-based_game",
   "version": "1.0.0",
   "description": "Web-Based Game",
-  "main": "example_function.js",
+  "main": "sketch.js",
   "directories": {
     "test": "test"
   },
