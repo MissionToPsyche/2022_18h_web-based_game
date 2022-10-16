@@ -70,10 +70,15 @@ describe('Game tests', function() {
         expect(game.initial).to.be.equal(true);
         done();
     });
-});
 
-describe("draw", function() {
-    it("should be accessible from this test file", function() {
-    //todo
+    // TEST #3
+    it('should successfully throw an error when needed', function() {
+        var err = function () { game.throwError(); };
+        expect(err).to.throw();
+    });
+
+    // TEST #4
+    it('should handle player inputs', function() {
+        //todo
     });
 });

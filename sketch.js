@@ -81,17 +81,7 @@ function draw() {
 		initial = false;
 	}
 
-    if (keyIsPressed) {
-    	if (keyCode == rightArrow) {
-    		position.x -= moveUnit
-    	} else if (keyCode == leftArrow) {
-    		position.x += moveUnit
-    	} else if (keyCode == upArrow) {
-    		position.y += moveUnit
-    	} else if (keyCode == downArrow) {
-    		position.y -= moveUnit
-    	}
-    }
+    this.playerInputHandler();
 
     translate(position.x, position.y)
     scale(zoom, zoom)
@@ -108,7 +98,7 @@ GravUtils
 *****************************/
 function GravUtils () {
 	//This is a static object, and the constructor should not be called
-	throw new Error('This is a static class');
+	this.throwError('this is a static class');
 }
 
 GravUtils = {
@@ -238,6 +228,30 @@ class Game {
 		this.moveUnit = moveUnit;
 		this.position = position;
 		this.initial = initial;
+	}
+
+	// this should be exposed to our test files because it is a member of the Game class
+	exampleHelperFunction() {
+	}
+
+	// helper used in draw() to handle player inputs
+	playerInputHandler() {
+		if (keyIsPressed) {
+	    	if (keyCode == rightArrow) {
+	    		position.x -= moveUnit
+	    	} else if (keyCode == leftArrow) {
+	    		position.x += moveUnit
+	    	} else if (keyCode == upArrow) {
+	    		position.y += moveUnit
+	    	} else if (keyCode == downArrow) {
+	    		position.y -= moveUnit
+	    	}
+	    }
+	}
+
+	// helper used in GravUtils() to throw an error
+	throwError(error) {
+		throw new Error(error);
 	}
 }
 module.exports = Game;
