@@ -1,0 +1,228 @@
+{
+    "stars": [
+        {
+            "id": "sol",
+            "name": "Sun",
+            "orbits": null,
+            "mass": {
+                "value": 200,
+                "unit": "px",
+                "magnitude": 1
+            },
+            "diameter": {
+                "value": 100,
+                "unit": "px",
+                "magnitude": 1
+            },
+            "orbit_distance": {
+                "value": 0,
+                "unit": "px",
+                "magnitude": 1
+            }
+        }
+    ],
+    "planets": [
+        {
+            "id": "mercury",
+            "name": "Mercury",
+            "orbits": "sol",
+            "mass": {
+                "value": 30,
+                "unit": "px",
+                "magnitude": 1
+            },
+            "diameter": {
+                "value": 15,
+                "unit": "px",
+                "magnitude": 1
+            },
+            "orbit_distance": {
+                "value": 100,
+                "unit": "px",
+                "magnitude": 1
+            }
+        },
+        {
+            "id": "venus",
+            "name": "Venus",
+            "orbits": "sol",
+            "mass": {
+                "value": 50,
+                "unit": "px",
+                "magnitude": 1
+            },
+            "diameter": {
+                "value": 25,
+                "unit": "px",
+                "magnitude": 1
+            },
+            "orbit_distance": {
+                "value": 150,
+                "unit": "px",
+                "magnitude": 1
+            }
+        },
+        {
+            "id": "earth",
+            "name": "Earth",
+            "orbits": "sol",
+            "mass": {
+                "value": 60,
+                "unit": "px",
+                "magnitude": 1
+            },
+            "diameter": {
+                "value": 20,
+                "unit": "px",
+                "magnitude": 1
+            },
+            "orbit_distance": {
+                "value": 200,
+                "unit": "px",
+                "magnitude": 1
+            }
+        },
+        {
+            "id": "mars",
+            "name": "Mars",
+            "orbits": "sol",
+            "mass": {
+                "value": 60,
+                "unit": "px",
+                "magnitude": 1
+            },
+            "diameter": {
+                "value": 15,
+                "unit": "px",
+                "magnitude": 1
+            },
+            "orbit_distance": {
+                "value": 250,
+                "unit": "px",
+                "magnitude": 1
+            }
+        },
+        {
+            "id": "jupiter",
+            "name": "Jupiter",
+            "orbits": "sol",
+            "mass": {
+                "value": 2000,
+                "unit": "px",
+                "magnitude": 1
+            },
+            "diameter": {
+                "value": 100,
+                "unit": "px",
+                "magnitude": 1
+            },
+            "orbit_distance": {
+                "value": 350,
+                "unit": "px",
+                "magnitude": 1
+            }
+        },
+        {
+            "id": "saturn",
+            "name": "Saturn",
+            "orbits": "sol",
+            "mass": {
+                "value": 600,
+                "unit": "px",
+                "magnitude": 1
+            },
+            "diameter": {
+                "value": 90,
+                "unit": "px",
+                "magnitude": 1
+            },
+            "orbit_distance": {
+                "value": 475,
+                "unit": "px",
+                "magnitude": 1
+            }
+        },
+        {
+            "id": "neptune",
+            "name": "Neptune",
+            "orbits": "sol",
+            "mass": {
+                "value": 90,
+                "unit": "px",
+                "magnitude": 1
+            },
+            "diameter": {
+                "value": 50,
+                "unit": "px",
+                "magnitude": 1
+            },
+            "orbit_distance": {
+                "value": 550,
+                "unit": "px",
+                "magnitude": 1
+            }
+        },
+        {
+            "id": "uranus",
+            "name": "Uranus",
+            "orbits": "sol",
+            "mass": {
+                "value": 100,
+                "unit": "px",
+                "magnitude": 1
+            },
+            "diameter": {
+                "value": 60,
+                "unit": "px",
+                "magnitude": 1
+            },
+            "orbit_distance": {
+                "value": 600,
+                "unit": "px",
+                "magnitude": 1
+            }
+        },
+        {
+            "id": "pluto",
+            "name": "Pluto",
+            "orbits": "sol",
+            "mass": {
+                "value": 5,
+                "unit": "px",
+                "magnitude": 1
+            },
+            "diameter": {
+                "value": 10,
+                "unit": "px",
+                "magnitude": 1
+            },
+            "orbit_distance": {
+                "value": 650,
+                "unit": "px",
+                "magnitude": 1
+            }
+        }
+    ],
+    "satellites": [
+        {
+            "id": "luna",
+            "name": "Moon",
+            "orbits": "earth",
+            "mass": {
+                "value": 10,
+                "unit": "px",
+                "magnitude": 1
+            },
+            "diameter": {
+                "value": 10,
+                "unit": "px",
+                "magnitude": 1
+            },
+            "orbit_distance": {
+                "value": 10,
+                "unit": "px",
+                "magnitude": 1
+            }
+        }
+    ]
+}
