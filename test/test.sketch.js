@@ -1,7 +1,9 @@
-var assert = require('assert');
 var sketch = require('../sketch.js');
-var draw = sketch.draw;
+var assert = require('assert');
+var expect = require('chai').expect;
 
-describe("setUpBodies", function() {
+describe("draw", function() {
+  it("should be accessible from this test file", function() {
     //todo
+  });
 });

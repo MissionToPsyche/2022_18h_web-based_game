@@ -215,3 +215,6 @@ Body.prototype = {
 		this.force(f)
 	}
 }
+
+// expose functions so that mocha tests can see them
+module.exports = { setup, setupBodies, draw, Body }
