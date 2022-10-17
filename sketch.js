@@ -12,10 +12,15 @@ const leftArrow = 37
 const upArrow = 38
 const rightArrow = 39
 const downArrow = 40
+const spacebar = 32
 // zoom in in the factor of this number
 const zoom = 10
 // unit of moving when pressing a key
 const moveUnit = 0.01
+
+//boolean for gravity on/off default: off
+let gravityToggle = false
+let keyHeld = false;
 
 // the initial position of the view
 let position = {x : 0, y : 0}
@@ -50,6 +55,14 @@ function setupBodies(json) {
 	for (const body in bodies) {
 		if(bodies[body].initialize){
 			bodies[body].initialize();
+		}
+	}
+
+	//subscribe probe to all other bodies.
+	//NOTE** hard coded to psyche probe for now
+	for (const body in bodies) {
+		if(bodies[body].id != "psyche"){
+			bodies[body].subscribe(bodies["psyche"])
 		}
 	}
 }
@@ -89,8 +102,45 @@ function draw() {
     		bodies["psyche"].vel.y -= moveUnit;
     	} else if (keyCode == downArrow) {
     		bodies["psyche"].vel.y += moveUnit;
-    	}
-    }
+    	} else if (keyCode == spacebar) {
+			if (gravityToggle && !keyHeld) {
+				gravityToggle = false
+			} else if (!gravityToggle && !keyHeld) {
+				gravityToggle = true
+			}
+			keyHeld = true
+		} else {
+			keyHeld = false
+		}
+    } else {
+		keyHeld = false
+	}
+
+	//text for gravity on/off toggle
+	textSize(32)
+	if (gravityToggle) {
+		text('Gravity : On',0 ,120)
+	} else {
+		text('Gravity : Off',0 ,120)
+	}
+	fill(255, 255, 255);
+
+	//prevent psyche from going too far out for now
+	//note: FOR TESTING ONLY, THIS IS A BAD WAY OF DOING THIS
+	const boundry = 6500
+	if (bodies["psyche"].pos.x >= 650) {
+		bodies["psyche"].vel.x = 0
+		bodies["psyche"].pos.x = 649
+	} if (bodies["psyche"].pos.y >= 650) {
+		bodies["psyche"].vel.y = 0
+		bodies["psyche"].pos.y = 649
+	} if (bodies["psyche"].pos.x <= -650) {
+		bodies["psyche"].vel.x = 0
+		bodies["psyche"].pos.x = -649
+	} if (bodies["psyche"].pos.y <= -650) {
+		bodies["psyche"].vel.y = 0
+		bodies["psyche"].pos.y = -649
+	}
 
 	//camera tracking probe
 	//note: FOR TESTING ONLY, THIS IS A BAD WAY OF DOING THIS
@@ -100,8 +150,13 @@ function draw() {
     scale(zoom, zoom)
 
 	for (const body in bodies) {
+		//apply dynamic gravity
+		//NOTE: THIS IS A BAD PLACE TO DO THIS. MOVE THIS TO AN APPROPRIATE PLACE LATER!!
+		bodies[body].notify() 
+
+		//update body positions
 		bodies[body].show()
-		bodies[body].update()
+		bodies[body].updatePosition()
 	}
 }
 
@@ -141,6 +196,8 @@ function Body(_id, _mass, _diameter, _pos, _vel) {
 	this.r = _diameter / 2
 	this.imagePath = "img/icons/" + _id + ".svg"
 	this.image = loadImage(this.imagePath)
+	this.listeners = []
+	this.listenRadius = 10 + this.r
 }
 
 Body.prototype = {
@@ -149,7 +206,7 @@ Body.prototype = {
 		image(this.image, this.pos.x - this.r, this.pos.y - this.r, this.r * 2, this.r * 2)
 	},
 
-	update: function () {
+	updatePosition: function () {
 		if (this.parent != null) {
 			this.orbit(this.parent)
 		}
@@ -163,6 +220,56 @@ Body.prototype = {
 		// calculate velocity based off of force applied
 		this.vel.add(GravUtils.gaussLaw(f, this.mass));
 		this.vel.add(this.parent.vel.x, this.parent.vel.x);
+	},
+
+	//begining of implementation of observer pattern to notify probes when close enough to annother body
+
+	//add body to array of bodies that may be affected by dynamic gravity
+	subscribe: function (listener) {
+		this.listeners.push(listener)
+	},
+
+	//remove body from array of bodies that may be affected by dynamic gravity
+	unsubscribe: function (listener) {
+		//yes, this is how you remove a specific array item in js. Yes, it's overly complicated.
+		this.listeners = this.listeners.filter(body => body.id != listener.id)
+	},
+
+	//function to notify other body of force from this body
+	notify: function () {
+		//notify all subscribed listeners
+		if (!this.listeners) {
+			return
+		}
+
+		this.listeners.forEach(function (listener) {
+			//calculate radius from origin (this body) to lister
+			const r = dist(listener.pos.x, listener.pos.y, this.pos.x, this.pos.y)
+
+			//check if lister is within listen radius
+			//also check if it's not within the planet so the probe isn't flung out of existance.
+			if (r <= this.listenRadius && r > this.r) {
+				//create vector f in direction of the listening body
+				const f = this.pos.copy().sub(listener.pos)
+				//set direction vector to the length of the force applied by gravity between
+				//the two bodies, resulting in the force vector between the two bodies
+				f.setMag(GravUtils.calcGravity(listener.mass, this.mass, r))
+				//inform the listener of the force.
+				listener.update(f)
+			}
+		}.bind(this))
+	},
+
+	update: function (f) {
+		//toggle for gravity
+		//NOTE: FOR TESTING ONLY.
+		if (!gravityToggle) {
+			return
+		}
+
+		//apply force from body subscribed to
+		//NOTE** Might want to merge this function with this.force(f) at some point
+		this.vel.add(GravUtils.gaussLaw(f, this.mass).div(10)); //TEMP divide by 2 'cause gravity too stronk
 	}
 }
 
@@ -221,8 +328,8 @@ Satellite.prototype = {
 		}
 	},
 
-	update: function () {
-		Body.prototype.update.call(this);
+	updatePosition: function () {
+		Body.prototype.updatePosition.call(this);
 
 		// add the current position into `this.path`
 		this.path.push(this.pos.copy());
@@ -245,6 +352,28 @@ Satellite.prototype = {
 
 		// and apply it
 		this.force(f)
+	},
+
+	//begining of implementation of observer pattern to notify probes when close enough to annother body
+
+	//add body to array of bodies that may be affected by dynamic gravity
+	subscribe: function (listener) {
+		Body.prototype.subscribe.call(this, listener)
+	},
+
+	//remove body from array of bodies that may be affected by dynamic gravity
+	unsubscribe: function (listener) {
+		Body.prototype.unsubscribe.call(this, listener)
+	},
+
+	//function to notify other body of force from this body
+	notify: function () {
+		Body.prototype.notify.call(this)
+	},
+
+	update: function (f) {
+		Body.prototype.update.call(this, f);
+		console.log("gravity applied")
 	}
 }
 
@@ -276,11 +405,32 @@ Probe.prototype = {
 		Body.prototype.show.call(this);
 	},
 
-	update: function () {
-		Body.prototype.update.call(this);
+	updatePosition: function () {
+		Body.prototype.updatePosition.call(this);
 	},
 
 	force: function (f) {
 		Body.prototype.force.call(this, f);
+	},
+
+	//begining of implementation of observer pattern to notify probes when close enough to annother body
+
+	//add body to array of bodies that may be affected by dynamic gravity
+	subscribe: function (listener) {
+		Body.prototype.subscribe.call(this, listener)
+	},
+
+	//remove body from array of bodies that may be affected by dynamic gravity
+	unsubscribe: function (listener) {
+		Body.prototype.unsubscribe.call(this, listener)
+	},
+
+	//function to notify other body of force from this body
+	notify: function () {
+		Body.prototype.notify.call(this)
+	},
+
+	update: function (f) {
+		Body.prototype.update.call(this, f);
 	}
 }

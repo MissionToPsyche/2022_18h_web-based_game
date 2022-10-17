@@ -230,7 +230,7 @@
             "id": "psyche",
             "name": "Psyche",
             "mass": {
-                "value": 2,
+                "value": 0.0000001,
                 "unit": "px",
                 "magnitude": 1
             },
