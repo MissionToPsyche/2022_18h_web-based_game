@@ -41,6 +41,8 @@ function setup() {
 	spacecraft = loadImage(spacecraftPath)
 
 	loadJSON(dataPath, setupBodies)
+	ctx.canvas.width = 1800
+	ctx.canvas.height = 1400
 }
 
 function setupBodies(json) {
@@ -63,6 +65,8 @@ function setupBodies(json) {
 
 function draw() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	ctx.fillStyle = "#12031d";
+	ctx.fillRect(0, 0, canvas.width, canvas.height);
 	// background("#12031d")
 	ctx.drawImage(log, 24, 24, 96, 96)
 
@@ -104,13 +108,13 @@ function draw() {
 	ctx.save();
     ctx.translate(position.x, position.y);
 	ctx.restore;
-    // scale(zoom, zoom)
+
 
 	for (const body in bodies) {
 		bodies[body].show()
 		bodies[body].update()
 	}
-	requestAnimationFrame(draw);
+
 }
 
 
@@ -195,7 +199,6 @@ Body.prototype = {
 		}
 		// draw the body's icon in based on the center of the canvas
 		ctx.drawImage(this.img, ((canvas.width/2) - this.pos.x - (this.r)), ((canvas.height/2) - this.pos.y - (this.r)), this.r * 2, this.r * 2)
-		
 	},
 
 	update: function () {
