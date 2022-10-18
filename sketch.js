@@ -61,8 +61,8 @@ function setupBodies(json) {
 	//subscribe probe to all other bodies.
 	//NOTE** hard coded to psyche probe for now
 	for (const body in bodies) {
-		if(bodies[body].id != "psyche"){
-			bodies[body].subscribe(bodies["psyche"])
+		if(bodies[body].id != "psyche_probe"){
+			bodies[body].subscribe(bodies["psyche_probe"])
 		}
 	}
 }
@@ -95,13 +95,13 @@ function draw() {
 	//note: FOR TESTING ONLY, THIS IS A BAD WAY OF DOING THIS
     if (keyIsPressed) {
     	if (keyCode == rightArrow) {
-    		bodies["psyche"].vel.x += moveUnit;
+    		bodies["psyche_probe"].vel.x += moveUnit;
     	} else if (keyCode == leftArrow) {
-    		bodies["psyche"].vel.x -= moveUnit;
+    		bodies["psyche_probe"].vel.x -= moveUnit;
     	} else if (keyCode == upArrow) {
-    		bodies["psyche"].vel.y -= moveUnit;
+    		bodies["psyche_probe"].vel.y -= moveUnit;
     	} else if (keyCode == downArrow) {
-    		bodies["psyche"].vel.y += moveUnit;
+    		bodies["psyche_probe"].vel.y += moveUnit;
     	} else if (keyCode == spacebar) {
 			if (gravityToggle && !keyHeld) {
 				gravityToggle = false
@@ -128,24 +128,24 @@ function draw() {
 	//prevent psyche from going too far out for now
 	//note: FOR TESTING ONLY, THIS IS A BAD WAY OF DOING THIS
 	const boundry = 6500
-	if (bodies["psyche"].pos.x >= 650) {
-		bodies["psyche"].vel.x = 0
-		bodies["psyche"].pos.x = 649
-	} if (bodies["psyche"].pos.y >= 650) {
-		bodies["psyche"].vel.y = 0
-		bodies["psyche"].pos.y = 649
-	} if (bodies["psyche"].pos.x <= -650) {
-		bodies["psyche"].vel.x = 0
-		bodies["psyche"].pos.x = -649
-	} if (bodies["psyche"].pos.y <= -650) {
-		bodies["psyche"].vel.y = 0
-		bodies["psyche"].pos.y = -649
+	if (bodies["psyche_probe"].pos.x >= 650) {
+		bodies["psyche_probe"].vel.x = 0
+		bodies["psyche_probe"].pos.x = 649
+	} if (bodies["psyche_probe"].pos.y >= 650) {
+		bodies["psyche_probe"].vel.y = 0
+		bodies["psyche_probe"].pos.y = 649
+	} if (bodies["psyche_probe"].pos.x <= -650) {
+		bodies["psyche_probe"].vel.x = 0
+		bodies["psyche_probe"].pos.x = -649
+	} if (bodies["psyche_probe"].pos.y <= -650) {
+		bodies["psyche_probe"].vel.y = 0
+		bodies["psyche_probe"].pos.y = -649
 	}
 
 	//camera tracking probe
 	//note: FOR TESTING ONLY, THIS IS A BAD WAY OF DOING THIS
-	position.x = bodies["psyche"].pos.x * (-10) + 900;
-	position.y = bodies["psyche"].pos.y * (-10) + 500;
+	position.x = bodies["psyche_probe"].pos.x * (-10) + 900;
+	position.y = bodies["psyche_probe"].pos.y * (-10) + 500;
     translate(position.x, position.y)
     scale(zoom, zoom)
 
@@ -164,23 +164,24 @@ function draw() {
 GravUtils
 - An object prototype containing various util funcitons for gravity 
 *****************************/
-function GravUtils () {
-	//This is a static object, and the constructor should not be called
-	throw new Error('This is a static class');
-}
-
-GravUtils = {
+class GravUtils {
+	constructor() {
+		if (this instanceof GravUtils) {
+			//This is a static object, and the constructor should not be called
+			throw Error('This is a static class')
+		}
+	}
 
 	//basic calculation for gravity. b1 and b2 are the two bodies involved.
 	//R is the radius between the two
-	calcGravity: function (m1, m2, r) {
+	static calcGravity (m1, m2, r) {
 		// this is Newton's Law of Universal Gravitation (https://en.wikipedia.org/wiki/Newton%27s_law_of_universal_gravitation)
 		return G * (m1 * m2) / (r * r);
-	},
+	}
 
 	//calculates the gravitational acceleration on a mass based on force
-	gaussLaw: function (f, m1) {
-		return createVector(f.x/m1, f.y/m1);
+	static gaussLaw (f, m1) {
+		return createVector(f.x/m1, f.y/m1)
 	}
 }
 
@@ -188,25 +189,25 @@ GravUtils = {
 Body
 - Defines the functionality for celestial bodies in the simulation
 *****************************/
-function Body(_id, _mass, _diameter, _pos, _vel) {
-	this.id = _id
-	this.mass = _mass
-	this.pos = createVector(0, 0)
-	this.vel = createVector(0, 0)
-	this.r = _diameter / 2
-	this.imagePath = "img/icons/" + _id + ".svg"
-	this.image = loadImage(this.imagePath)
-	this.listeners = []
-	this.listenRadius = 10 + this.r
-}
+class Body {
+	constructor (_id, _mass, _diameter, _pos, _vel) {
+		this.id = _id
+		this.mass = _mass
+		this.pos = createVector(0, 0)
+		this.vel = createVector(0, 0)
+		this.r = _diameter / 2
+		this.imagePath = "img/icons/" + _id + ".svg"
+		this.image = loadImage(this.imagePath)
+		this.listeners = []
+		this.listenRadius = 10 + this.r
+	}
 
-Body.prototype = {
-	show: function () {
+	show() {
 		// draw the body's icon
 		image(this.image, this.pos.x - this.r, this.pos.y - this.r, this.r * 2, this.r * 2)
-	},
+	}
 
-	updatePosition: function () {
+	updatePosition() {
 		if (this.parent != null) {
 			this.orbit(this.parent)
 		}
@@ -214,29 +215,28 @@ Body.prototype = {
 		// affect position by calculated velocity
 		this.pos.x += this.vel.x
 		this.pos.y += this.vel.y
-	},
+	}
 
-	force: function (f) {
+	force(f) {
 		// calculate velocity based off of force applied
 		this.vel.add(GravUtils.gaussLaw(f, this.mass));
 		this.vel.add(this.parent.vel.x, this.parent.vel.x);
-	},
+	}
 
 	//begining of implementation of observer pattern to notify probes when close enough to annother body
 
 	//add body to array of bodies that may be affected by dynamic gravity
-	subscribe: function (listener) {
+	subscribe(listener) {
 		this.listeners.push(listener)
-	},
+	}
 
 	//remove body from array of bodies that may be affected by dynamic gravity
-	unsubscribe: function (listener) {
+	unsubscribe(listener) {
 		//yes, this is how you remove a specific array item in js. Yes, it's overly complicated.
 		this.listeners = this.listeners.filter(body => body.id != listener.id)
-	},
+	}
 
-	//function to notify other body of force from this body
-	notify: function () {
+	notify() {
 		//notify all subscribed listeners
 		if (!this.listeners) {
 			return
@@ -258,9 +258,9 @@ Body.prototype = {
 				listener.update(f)
 			}
 		}.bind(this))
-	},
+	}
 
-	update: function (f) {
+	update(f) {
 		//toggle for gravity
 		//NOTE: FOR TESTING ONLY.
 		if (!gravityToggle) {
@@ -278,20 +278,15 @@ Satellite
 - Defines the functionality for a Satellite, such as a planet, moon, or asteroid
 - subclass of Body
 *****************************/
-function Satellite (_id, _mass, _diameter, _parent, _distance, _pos, _vel) {
-	Body.call(this, _id, _mass, _diameter, _pos, _vel);
-	this.parent = _parent;
-	this.distance = _distance;
-	this.path = [];
-}
+class Satellite extends Body {
+	constructor (_id, _mass, _diameter, _parent, _distance, _pos, _vel) {
+		super(_id, _mass, _diameter, _pos, _vel);
+		this.parent = _parent;
+		this.distance = _distance;
+		this.path = [];
+	}
 
-Satellite.prototype = {
-	...Object.create(Body.prototype),// defining superclass
-
-	/*
-	Initializes satellite to a random location in orbit of it's parent body/satellite.
-	*/
-	initialize: function () {
+	initialize () {
 		let origin
 		if (this.parent != null) {
 			this.parent = bodies[this.parent]
@@ -314,11 +309,9 @@ Satellite.prototype = {
 
 		this.pos = bodyPos
 		this.vel = bodyVel
-	},
+	}
 
-	show: function () {
-		Body.prototype.show.call(this);
-
+	show () {
 		// draw the points in `this.path`
 		stroke("#ffffff44")
 		strokeCap(SQUARE)
@@ -326,23 +319,21 @@ Satellite.prototype = {
 		for (let i = 0; i < this.path.length - 1; i++) {
 			line(this.path[i].x, this.path[i].y, this.path[i + 1].x, this.path[i + 1].y)
 		}
-	},
 
-	updatePosition: function () {
-		Body.prototype.updatePosition.call(this);
+		super.show()
+	}
+
+	updatePosition() {
+		super.updatePosition()
 
 		// add the current position into `this.path`
 		this.path.push(this.pos.copy());
 		if (this.path.length > this.mass * 10) {
 			this.path.splice(0, 1)
 		}
-	},
+	}
 
-	force: function (f) {
-		Body.prototype.force.call(this, f);
-	},
-
-	orbit: function (parent) {
+	orbit(parent) {
 		const r = dist(this.pos.x, this.pos.y, parent.pos.x, parent.pos.y)
 		const f = parent.pos.copy().sub(this.pos)
 
@@ -352,28 +343,6 @@ Satellite.prototype = {
 
 		// and apply it
 		this.force(f)
-	},
-
-	//begining of implementation of observer pattern to notify probes when close enough to annother body
-
-	//add body to array of bodies that may be affected by dynamic gravity
-	subscribe: function (listener) {
-		Body.prototype.subscribe.call(this, listener)
-	},
-
-	//remove body from array of bodies that may be affected by dynamic gravity
-	unsubscribe: function (listener) {
-		Body.prototype.unsubscribe.call(this, listener)
-	},
-
-	//function to notify other body of force from this body
-	notify: function () {
-		Body.prototype.notify.call(this)
-	},
-
-	update: function (f) {
-		Body.prototype.update.call(this, f);
-		console.log("gravity applied")
 	}
 }
 
@@ -381,56 +350,13 @@ Satellite.prototype = {
 Probe
 - Defines the functionality for a spacecraft
 *****************************/
-function Probe (_id, _mass, _diameter, _pos, _vel) {
-	//Body.call(this, _id, _mass, _diameter, _pos, _vel);
+class Probe extends Body {
+	constructor (_id, _mass, _diameter, _pos, _vel) {
+		super(_id, _mass, _diameter, _pos, _vel)
+	}
 
-	this.id = _id
-	this.mass = _mass
-	this.pos = createVector(0, 0)
-	this.vel = createVector(0, 0)
-	this.r = _diameter / 2
-	this.imagePath = "img/icons/" + _id + ".png"
-	this.image = loadImage(this.imagePath)
-}
-
-Probe.prototype = {
-	...Object.create(Body.prototype),// defining superclass
-
-	initialize: function () {
+	initialize () {
 		this.pos.x = bodies["earth"].pos.x;
 		this.pos.y = bodies["earth"].pos.y;
-	},
-
-	show: function () {
-		Body.prototype.show.call(this);
-	},
-
-	updatePosition: function () {
-		Body.prototype.updatePosition.call(this);
-	},
-
-	force: function (f) {
-		Body.prototype.force.call(this, f);
-	},
-
-	//begining of implementation of observer pattern to notify probes when close enough to annother body
-
-	//add body to array of bodies that may be affected by dynamic gravity
-	subscribe: function (listener) {
-		Body.prototype.subscribe.call(this, listener)
-	},
-
-	//remove body from array of bodies that may be affected by dynamic gravity
-	unsubscribe: function (listener) {
-		Body.prototype.unsubscribe.call(this, listener)
-	},
-
-	//function to notify other body of force from this body
-	notify: function () {
-		Body.prototype.notify.call(this)
-	},
-
-	update: function (f) {
-		Body.prototype.update.call(this, f);
 	}
 }
