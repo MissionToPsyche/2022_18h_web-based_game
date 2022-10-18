@@ -73,13 +73,13 @@ PlayerIcon
 *****************************/
 class PlayerIcon{
     constructor(){
-        this.x = ((canvas.width - scWidth) / 2);
-        this.y = ((canvas.height - scHeight) / 2);
+        this.x = ((canvas.width - scWidth) / 2) + 580;
+        this.y = ((canvas.height - scHeight) / 2) + 580;
     }
-    update(){
-        this.x = position.x + 40;
-		this.y = position.y + 120;
-    }
+    update(xvar,yvar){
+        this.x += xvar;
+		this.y += yvar;
+	}
 }
 
 //Create new icon in minimap
@@ -97,7 +97,7 @@ function draw() {
 	ctx.fillStyle = "#12031d";
 	ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-	ctx.drawImage(craft, icon.x, icon.y, scWidth, scHeight);
+	ctx.drawImage(craft, icon.x, icon.y, 60, 41);
 
 	// initial position of the view is on the center of the canvas, the sun
 	if (initial) {
@@ -122,24 +122,27 @@ function draw() {
     if (keyIsPressed) {
     	if (keyCode == rightArrow) {
     		position.x -= moveUnit
+			icon.update(-2,0)
     	} else if (keyCode == leftArrow) {
     		position.x += moveUnit
+			icon.update(2,0)
     	} else if (keyCode == upArrow) {
     		position.y += moveUnit
+			icon.update(0,2)
     	} else if (keyCode == downArrow) {
     		position.y -= moveUnit
+			icon.update(0,-2)
     	}
     }
 
-	console.log(position.x, position.y)
 	// For minimap
 	ctx.save();
 	ctx.restore;
 
 
-	icon.update();
+
     translate(position.x, position.y)
-    // scale(zoom, zoom)
+    scale(zoom, zoom)
 
 	for (const body in bodies) {
 		bodies[body].show()
