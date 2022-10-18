@@ -1,22 +1,24 @@
 const G = 6.67
+
 let logo
 const logoPath = "img/Psyche_Icon_Color-SVG.svg"
-const log = new Image();
-log.src = "img/Psyche_Icon_Color-SVG.svg";
-const craft = new Image();
-craft.src = "img/spacecraft.png";
+
 const spacecraftPath = "img/spacecraft.png"
 let spacecraft
 const scWidth = 400
 const scHeight = 354
 
+let bodies = {}
+const dataPath = "data/bodies.json"
+
+//Player icon in minimap
+const craft = new Image();
+craft.src = "img/spacecraft.png";
+// Minimap canvas
 const canvas = document.getElementById('canvas1');
 const ctx = canvas.getContext('2d');
 canvas.width = 800;
 canvas.height = 500;
-
-let bodies = {}
-const dataPath = "data/bodies.json"
 
 
 // key codes
@@ -36,11 +38,13 @@ let initial = true
 
 
 function setup() {
-
+	createCanvas(windowWidth, windowHeight);
 	logo = loadImage(logoPath)
 	spacecraft = loadImage(spacecraftPath)
 
 	loadJSON(dataPath, setupBodies)
+
+	//Zoomed out view for minimap
 	ctx.canvas.width = 1800
 	ctx.canvas.height = 1400
 }
@@ -63,15 +67,37 @@ function setupBodies(json) {
 	}
 }
 
+/*****************************
+PlayerIcon
+- An object prototype containing various funcitons for player icon in minimap
+*****************************/
+class PlayerIcon{
+    constructor(){
+        this.x = ((canvas.width - scWidth) / 2);
+        this.y = ((canvas.height - scHeight) / 2);
+    }
+    update(){
+        this.x = position.x + 40;
+		this.y = position.y + 120;
+    }
+}
+
+//Create new icon in minimap
+const icon = new PlayerIcon();
+
 function draw() {
+	background("#12031d")
+	image(logo, 24, 24, 96, 96)
+
+	// spacecraft should be on the center of the canvas
+	image(spacecraft, (windowWidth - scWidth) / 2, (windowHeight - scHeight) / 2, scWidth, scHeight)
+
+	//Minimap entities being shown
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	ctx.fillStyle = "#12031d";
 	ctx.fillRect(0, 0, canvas.width, canvas.height);
-	// background("#12031d")
-	ctx.drawImage(log, 24, 24, 96, 96)
 
-	// spacecraft should be on the center of the canvas
-	ctx.drawImage(craft, (canvas.width - scWidth) / 2, (canvas.height - scHeight) / 2, scWidth, scHeight)
+	ctx.drawImage(craft, icon.x, icon.y, scWidth, scHeight);
 
 	// initial position of the view is on the center of the canvas, the sun
 	if (initial) {
@@ -90,7 +116,7 @@ function draw() {
 		//NOTE: This is a bad way of doing this! Find a new way to do this later
 		// position.x = width / 2 - zoom * bodies["earth"].pos.x;
 		// position.y = height / 2 - zoom * bodies["earth"].pos.y;
-		initial = false;
+		// initial = false;
 	}
 
     if (keyIsPressed) {
@@ -105,20 +131,21 @@ function draw() {
     	}
     }
 
+	console.log(position.x, position.y)
+	// For minimap
 	ctx.save();
-    ctx.translate(position.x, position.y);
 	ctx.restore;
 
+
+	icon.update();
+    translate(position.x, position.y)
+    // scale(zoom, zoom)
 
 	for (const body in bodies) {
 		bodies[body].show()
 		bodies[body].update()
 	}
-
 }
-
-
-
 
 /*****************************
 GravUtils
@@ -157,8 +184,10 @@ function Body(_id, _parent, _mass, _diameter, _distance, _pos, _vel) {
 	this.vel = createVector(0, 0)
 	this.r = _diameter / 2
 	this.path = []
-	// this.imagePath = "img/icons/" + _id + ".svg"
-	// this.image = loadImage(this.imagePath)
+	this.imagePath = "img/icons/" + _id + ".svg"
+	this.image = loadImage(this.imagePath)
+
+	//Image for minimap
 	this.img = new Image();
 	this.img.src = "img/icons/" + _id + ".svg"
 }
@@ -170,7 +199,7 @@ Body.prototype = {
 			this.parent = bodies[this.parent]
 			origin = this.parent.pos.copy()
 		} else {
-			origin = createVector(0 , 0)
+			origin = createVector(0, 0)
 		}
 
 		this.pos = origin
@@ -185,8 +214,8 @@ Body.prototype = {
 			bodyVel.setMag(sqrt(G * (this.parent.mass / bodyPos.mag())))
 		}
 
-		this.pos = bodyPos 
-		this.vel = bodyVel 
+		this.pos = bodyPos
+		this.vel = bodyVel
 	},
 
 	show: function () {
@@ -195,9 +224,13 @@ Body.prototype = {
 		strokeCap(SQUARE)
 
 		for (let i = 0; i < this.path.length - 1; i++) {
-			line(this.path[i].x, this.path[i].y , this.path[i + 1].x, this.path[i + 1].y)
+			line(this.path[i].x, this.path[i].y, this.path[i + 1].x, this.path[i + 1].y)
 		}
-		// draw the body's icon in based on the center of the canvas
+
+		// draw the body's icon
+		image(this.image, this.pos.x - this.r, this.pos.y - this.r, this.r * 2, this.r * 2)
+
+		// draw the body's icon based on the center of the minimap
 		ctx.drawImage(this.img, ((canvas.width/2) - this.pos.x - (this.r)), ((canvas.height/2) - this.pos.y - (this.r)), this.r * 2, this.r * 2)
 	},
 
@@ -209,7 +242,6 @@ Body.prototype = {
 		// affect position by calculated velocity
 		this.pos.x += this.vel.x
 		this.pos.y += this.vel.y
-
 
 		// add the current position into `this.path`
 		this.path.push(this.pos.copy())
