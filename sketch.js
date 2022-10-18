@@ -3,11 +3,6 @@ const G = 6.67
 let logo
 const logoPath = "img/Psyche_Icon_Color-SVG.svg"
 
-const spacecraftPath = "img/spacecraft.png"
-let spacecraft
-const scWidth = 400
-const scHeight = 354
-
 let bodies = {}
 const dataPath = "data/bodies.json"
 
@@ -17,10 +12,15 @@ const leftArrow = 37
 const upArrow = 38
 const rightArrow = 39
 const downArrow = 40
+const spacebar = 32
 // zoom in in the factor of this number
 const zoom = 10
 // unit of moving when pressing a key
-const moveUnit = 20
+const moveUnit = 0.01
+
+//boolean for gravity on/off default: off
+let gravityToggle = false
+let keyHeld = false;
 
 // the initial position of the view
 let position = {x : 0, y : 0}
@@ -30,7 +30,6 @@ let initial = true
 function setup() {
 	createCanvas(windowWidth, windowHeight);
 	logo = loadImage(logoPath)
-	spacecraft = loadImage(spacecraftPath)
 
 	loadJSON(dataPath, setupBodies)
 }
@@ -38,27 +37,39 @@ function setup() {
 function setupBodies(json) {
 	for (type in json) {
 		for (body of json[type]) {
-			let id = body['id']
-			let parent = body['orbits']
-			let orbit_distance = body['orbit_distance']['value']
-			let mass = body['mass']['value']
-			let diameter = body['diameter']['value']
 
-			bodies[id] = new Body(id, parent, mass, diameter, orbit_distance)
+			let id = body['id'];
+			let mass = body['mass']['value'];
+			let diameter = body['diameter']['value'];
+
+			if(type != "probes"){
+				let parent = body['orbits'];
+				let orbit_distance = body['orbit_distance']['value'];
+				bodies[id] = new Satellite(id, mass, diameter, parent, orbit_distance);
+			} else {
+				bodies[id] = new Probe(id, mass, diameter);
+			}
 		}
 	}
 
 	for (const body in bodies) {
-		bodies[body].initialize()
+		if(bodies[body].initialize){
+			bodies[body].initialize();
+		}
+	}
+
+	//subscribe probe to all other bodies.
+	//NOTE** hard coded to psyche probe for now
+	for (const body in bodies) {
+		if(bodies[body].id != "psyche_probe"){
+			bodies[body].subscribe(bodies["psyche_probe"])
+		}
 	}
 }
 
 function draw() {
 	background("#12031d")
 	image(logo, 24, 24, 96, 96)
-
-	// spacecraft should be on the center of the canvas
-	image(spacecraft, (width - scWidth) / 2, (height - scHeight) / 2, scWidth, scHeight)
 
 	// initial position of the view is on the center of the canvas, the sun
 	if (initial) {
@@ -75,29 +86,77 @@ function draw() {
 
 		//Draw function can be called before planets exist, so checking if planet exists first.
 		//NOTE: This is a bad way of doing this! Find a new way to do this later
-		position.x = width / 2 - zoom * bodies["earth"].pos.x;
-		position.y = height / 2 - zoom * bodies["earth"].pos.y;
+		//position.x = width / 2 - zoom * bodies["earth"].pos.x;
+		//position.y = height / 2 - zoom * bodies["earth"].pos.y;
 		initial = false;
 	}
 
+	//super basic probe controls
+	//note: FOR TESTING ONLY, THIS IS A BAD WAY OF DOING THIS
     if (keyIsPressed) {
     	if (keyCode == rightArrow) {
-    		position.x -= moveUnit
+    		bodies["psyche_probe"].vel.x += moveUnit;
     	} else if (keyCode == leftArrow) {
-    		position.x += moveUnit
+    		bodies["psyche_probe"].vel.x -= moveUnit;
     	} else if (keyCode == upArrow) {
-    		position.y += moveUnit
+    		bodies["psyche_probe"].vel.y -= moveUnit;
     	} else if (keyCode == downArrow) {
-    		position.y -= moveUnit
-    	}
-    }
+    		bodies["psyche_probe"].vel.y += moveUnit;
+    	} else if (keyCode == spacebar) {
+			if (gravityToggle && !keyHeld) {
+				gravityToggle = false
+			} else if (!gravityToggle && !keyHeld) {
+				gravityToggle = true
+			}
+			keyHeld = true
+		} else {
+			keyHeld = false
+		}
+    } else {
+		keyHeld = false
+	}
 
+	//text for gravity on/off toggle
+	textSize(32)
+	if (gravityToggle) {
+		text('Gravity : On',0 ,120)
+	} else {
+		text('Gravity : Off',0 ,120)
+	}
+	fill(255, 255, 255);
+
+	//prevent psyche from going too far out for now
+	//note: FOR TESTING ONLY, THIS IS A BAD WAY OF DOING THIS
+	const boundry = 6500
+	if (bodies["psyche_probe"].pos.x >= 650) {
+		bodies["psyche_probe"].vel.x = 0
+		bodies["psyche_probe"].pos.x = 649
+	} if (bodies["psyche_probe"].pos.y >= 650) {
+		bodies["psyche_probe"].vel.y = 0
+		bodies["psyche_probe"].pos.y = 649
+	} if (bodies["psyche_probe"].pos.x <= -650) {
+		bodies["psyche_probe"].vel.x = 0
+		bodies["psyche_probe"].pos.x = -649
+	} if (bodies["psyche_probe"].pos.y <= -650) {
+		bodies["psyche_probe"].vel.y = 0
+		bodies["psyche_probe"].pos.y = -649
+	}
+
+	//camera tracking probe
+	//note: FOR TESTING ONLY, THIS IS A BAD WAY OF DOING THIS
+	position.x = bodies["psyche_probe"].pos.x * (-10) + 900;
+	position.y = bodies["psyche_probe"].pos.y * (-10) + 500;
     translate(position.x, position.y)
     scale(zoom, zoom)
 
 	for (const body in bodies) {
+		//apply dynamic gravity
+		//NOTE: THIS IS A BAD PLACE TO DO THIS. MOVE THIS TO AN APPROPRIATE PLACE LATER!!
+		bodies[body].notify() 
+
+		//update body positions
 		bodies[body].show()
-		bodies[body].update()
+		bodies[body].updatePosition()
 	}
 }
 
@@ -105,23 +164,24 @@ function draw() {
 GravUtils
 - An object prototype containing various util funcitons for gravity 
 *****************************/
-function GravUtils () {
-	//This is a static object, and the constructor should not be called
-	throw new Error('This is a static class');
-}
-
-GravUtils = {
+class GravUtils {
+	constructor() {
+		if (this instanceof GravUtils) {
+			//This is a static object, and the constructor should not be called
+			throw Error('This is a static class')
+		}
+	}
 
 	//basic calculation for gravity. b1 and b2 are the two bodies involved.
 	//R is the radius between the two
-	calcGravity: function (m1, m2, r) {
+	static calcGravity (m1, m2, r) {
 		// this is Newton's Law of Universal Gravitation (https://en.wikipedia.org/wiki/Newton%27s_law_of_universal_gravitation)
 		return G * (m1 * m2) / (r * r);
-	},
+	}
 
 	//calculates the gravitational acceleration on a mass based on force
-	gaussLaw: function (f, m1) {
-		return createVector(f.x/m1, f.y/m1);
+	static gaussLaw (f, m1) {
+		return createVector(f.x/m1, f.y/m1)
 	}
 }
 
@@ -129,21 +189,104 @@ GravUtils = {
 Body
 - Defines the functionality for celestial bodies in the simulation
 *****************************/
-function Body(_id, _parent, _mass, _diameter, _distance, _pos, _vel) {
-	this.id = _id
-	this.parent = _parent
-	this.mass = _mass
-	this.distance = _distance
-	this.pos = createVector(0, 0)
-	this.vel = createVector(0, 0)
-	this.r = _diameter / 2
-	this.path = []
-	this.imagePath = "img/icons/" + _id + ".svg"
-	this.image = loadImage(this.imagePath)
+class Body {
+	constructor (_id, _mass, _diameter, _pos, _vel) {
+		this.id = _id
+		this.mass = _mass
+		this.pos = createVector(0, 0)
+		this.vel = createVector(0, 0)
+		this.r = _diameter / 2
+		this.imagePath = "img/icons/" + _id + ".svg"
+		this.image = loadImage(this.imagePath)
+		this.listeners = []
+		this.listenRadius = 10 + this.r
+	}
+
+	show() {
+		// draw the body's icon
+		image(this.image, this.pos.x - this.r, this.pos.y - this.r, this.r * 2, this.r * 2)
+	}
+
+	updatePosition() {
+		if (this.parent != null) {
+			this.orbit(this.parent)
+		}
+
+		// affect position by calculated velocity
+		this.pos.x += this.vel.x
+		this.pos.y += this.vel.y
+	}
+
+	force(f) {
+		// calculate velocity based off of force applied
+		this.vel.add(GravUtils.gaussLaw(f, this.mass));
+		this.vel.add(this.parent.vel.x, this.parent.vel.x);
+	}
+
+	//begining of implementation of observer pattern to notify probes when close enough to annother body
+
+	//add body to array of bodies that may be affected by dynamic gravity
+	subscribe(listener) {
+		this.listeners.push(listener)
+	}
+
+	//remove body from array of bodies that may be affected by dynamic gravity
+	unsubscribe(listener) {
+		//yes, this is how you remove a specific array item in js. Yes, it's overly complicated.
+		this.listeners = this.listeners.filter(body => body.id != listener.id)
+	}
+
+	notify() {
+		//notify all subscribed listeners
+		if (!this.listeners) {
+			return
+		}
+
+		this.listeners.forEach(function (listener) {
+			//calculate radius from origin (this body) to lister
+			const r = dist(listener.pos.x, listener.pos.y, this.pos.x, this.pos.y)
+
+			//check if lister is within listen radius
+			//also check if it's not within the planet so the probe isn't flung out of existance.
+			if (r <= this.listenRadius && r > this.r) {
+				//create vector f in direction of the listening body
+				const f = this.pos.copy().sub(listener.pos)
+				//set direction vector to the length of the force applied by gravity between
+				//the two bodies, resulting in the force vector between the two bodies
+				f.setMag(GravUtils.calcGravity(listener.mass, this.mass, r))
+				//inform the listener of the force.
+				listener.update(f)
+			}
+		}.bind(this))
+	}
+
+	update(f) {
+		//toggle for gravity
+		//NOTE: FOR TESTING ONLY.
+		if (!gravityToggle) {
+			return
+		}
+
+		//apply force from body subscribed to
+		//NOTE** Might want to merge this function with this.force(f) at some point
+		this.vel.add(GravUtils.gaussLaw(f, this.mass).div(10)); //TEMP divide by 2 'cause gravity too stronk
+	}
 }
 
-Body.prototype = {
-	initialize: function () {
+/*****************************
+Satellite
+- Defines the functionality for a Satellite, such as a planet, moon, or asteroid
+- subclass of Body
+*****************************/
+class Satellite extends Body {
+	constructor (_id, _mass, _diameter, _parent, _distance, _pos, _vel) {
+		super(_id, _mass, _diameter, _pos, _vel);
+		this.parent = _parent;
+		this.distance = _distance;
+		this.path = [];
+	}
+
+	initialize () {
 		let origin
 		if (this.parent != null) {
 			this.parent = bodies[this.parent]
@@ -166,9 +309,9 @@ Body.prototype = {
 
 		this.pos = bodyPos
 		this.vel = bodyVel
-	},
+	}
 
-	show: function () {
+	show () {
 		// draw the points in `this.path`
 		stroke("#ffffff44")
 		strokeCap(SQUARE)
@@ -177,33 +320,20 @@ Body.prototype = {
 			line(this.path[i].x, this.path[i].y, this.path[i + 1].x, this.path[i + 1].y)
 		}
 
-		// draw the body's icon
-		image(this.image, this.pos.x - this.r, this.pos.y - this.r, this.r * 2, this.r * 2)
-	},
+		super.show()
+	}
 
-	update: function () {
-		if (this.parent != null) {
-			this.orbit(this.parent)
-		}
-
-		// affect position by calculated velocity
-		this.pos.x += this.vel.x
-		this.pos.y += this.vel.y
+	updatePosition() {
+		super.updatePosition()
 
 		// add the current position into `this.path`
-		this.path.push(this.pos.copy())
+		this.path.push(this.pos.copy());
 		if (this.path.length > this.mass * 10) {
 			this.path.splice(0, 1)
 		}
-	},
+	}
 
-	force: function (f) {
-		// calculate velocity based off of force applied
-		this.vel.add(GravUtils.gaussLaw(f, this.mass));
-		this.vel.add(this.parent.vel.x, this.parent.vel.x);
-	},
-
-	orbit: function (parent) {
+	orbit(parent) {
 		const r = dist(this.pos.x, this.pos.y, parent.pos.x, parent.pos.y)
 		const f = parent.pos.copy().sub(this.pos)
 
@@ -213,5 +343,20 @@ Body.prototype = {
 
 		// and apply it
 		this.force(f)
+	}
+}
+
+/*****************************
+Probe
+- Defines the functionality for a spacecraft
+*****************************/
+class Probe extends Body {
+	constructor (_id, _mass, _diameter, _pos, _vel) {
+		super(_id, _mass, _diameter, _pos, _vel)
+	}
+
+	initialize () {
+		this.pos.x = bodies["earth"].pos.x;
+		this.pos.y = bodies["earth"].pos.y;
 	}
 }
