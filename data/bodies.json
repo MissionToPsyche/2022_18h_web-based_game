@@ -227,7 +227,7 @@
     ],
     "probes": [
         {
-            "id": "psyche",
+            "id": "psyche_probe",
             "name": "Psyche",
             "mass": {
                 "value": 0.0000001,
