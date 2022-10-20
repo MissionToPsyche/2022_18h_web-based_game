@@ -6,7 +6,7 @@ class Body {
 	constructor (_id, _mass, _diameter, _pos, _vel) {
 		this.id = _id
 		this.mass = _mass
-		this.pos = new Phaser.Math.Vector2(0, 0)
+		this.pos = new Phaser.Geom.Point(0, 0)
 		this.vel = new Phaser.Math.Vector2(0, 0)
 		this.r = _diameter / 2
 		this.imagePath = "img/icons/" + _id + ".svg"
@@ -35,7 +35,7 @@ class Body {
         //update position in scene
         //**TO DO: find better way to center everything.
         var finalX = this.pos.x + 1024/2;
-        var finalY = this.pos.x + 768/2;
+        var finalY = this.pos.y + 768/2;
         this.sprite.setPosition(finalX, finalY)
 	}
 
@@ -67,7 +67,7 @@ class Body {
 
 		this.listeners.forEach(function (listener) {
 			//calculate radius from origin (this body) to lister
-			const r = this.pos.distance(listener.pos)
+			const r = Phaser.Math.Distance.BetweenPoints(this.pos, listener.pos)
 
 			//check if lister is within listen radius
 			//also check if it's not within the planet so the probe isn't flung out of existance.
@@ -105,30 +105,27 @@ class Satellite extends Body {
 
 	initialize (scene) {
         super.initialize(scene)
-		let origin = new Phaser.Math.Vector2(0,0)
+		let origin = new Phaser.Geom.Point(0, 0)
 		if (this.parent != null) {
 			this.parent = scene.bodies[this.parent]
-			origin.copy(this.parent.pos)
+			Phaser.Geom.Point.CopyFrom(this.parent.pos, origin)
 		}
 
 		this.pos = origin
 
 		// this calculates a random initial position in the orbit, at `distance` from `parent`
 		var theta = Phaser.Math.FloatBetween(0, Phaser.Math.PI2)
-		console.log(theta)
-		var bodyPos = origin.add(new Phaser.Math.Vector2(this.distance * Math.cos(theta), this.distance * Math.sin(theta)))
-		var bodyVel = new Phaser.Math.Vector2(0, 0).copy(bodyPos)
+		var bodyPos = origin.setTo(origin.x + this.distance * Math.cos(theta), origin.y + this.distance * Math.sin(theta))
+		var bodyVel = new Phaser.Math.Vector2(bodyPos.x, bodyPos.y)
 
 		if (this.parent != null) {
 			bodyVel.rotate(Phaser.Math.TAU)
-			bodyVel.setLength(Math.sqrt(G * (this.parent.mass / bodyPos.length())))
+			bodyVel.setLength(Math.sqrt(G * (this.parent.mass / 
+				Phaser.Math.Distance.BetweenPoints(bodyPos, this.parent.pos))));
 		}
 
 		this.pos = bodyPos
 		this.vel = bodyVel
-
-        console.log(this.id + " pos: " + this.pos.x + " " + this.pos.y)
-        console.log(this.id + " vel: " + this.vel.x + " " + this.vel.y)
 	}
 
     /*
@@ -147,14 +144,14 @@ class Satellite extends Body {
 		super.updatePosition(scene)
 
 		// add the current position into `this.path`
-		this.path.push(new Phaser.Math.Vector2(0,0).copy(this.pos));
+		this.path.push(Phaser.Geom.Point.Clone(this.pos));
 		if (this.path.length > this.mass * 10) {
 			this.path.splice(0, 1)
 		}
 	}
 
 	orbit(parent) {
-		const r = this.pos.distance(parent.pos)
+		const r = Phaser.Math.Distance.BetweenPoints(this.pos, parent.pos)
 		const f = new Phaser.Math.Vector2(0, 0).copy(parent.pos).subtract(this.pos)
 
 		// this is Newton's Law of Universal Gravitation (https://en.wikipedia.org/wiki/Newton%27s_law_of_universal_gravitation)
