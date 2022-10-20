@@ -1,0 +1,195 @@
+/*****************************
+Body
+- Defines the functionality for celestial bodies in the simulation
+*****************************/
+class Body {
+	constructor (_id, _mass, _diameter, _pos, _vel) {
+		this.id = _id
+		this.mass = _mass
+		this.pos = new Phaser.Math.Vector2(0, 0)
+		this.vel = new Phaser.Math.Vector2(0, 0)
+		this.r = _diameter / 2
+		this.imagePath = "img/icons/" + _id + ".svg"
+		this.sprite;
+		this.listeners = []
+		this.listenRadius = 10 + this.r
+	}
+
+    //loads the Body's image into memory
+    //'scene' is the scene the image is being loaded into
+    initialize(scene) {
+        this.sprite = scene.add.sprite(this.pos.x,this.pos.y,this.id)
+            .setDisplaySize(this.r * 2, this.r *2)
+            .setSize(this.r * 2, this.r *2);
+    }
+
+	updatePosition(scene) {
+		if (this.parent != null) {
+			this.orbit(this.parent)
+		}
+
+		// affect position by calculated velocity
+		this.pos.x += this.vel.x
+		this.pos.y += this.vel.y
+
+        //update position in scene
+        //**TO DO: find better way to center everything.
+        var finalX = this.pos.x + 1024/2;
+        var finalY = this.pos.x + 768/2;
+        this.sprite.setPosition(finalX, finalY)
+	}
+
+	force(f) {
+		// calculate velocity based off of force applied
+        var g = gaussLaw(f, this.mass);
+		this.vel.add(gaussLaw(f, this.mass));
+		this.vel.add(this.parent.vel);
+	}
+
+	//begining of implementation of observer pattern to notify probes when close enough to annother body
+
+	//add body to array of bodies that may be affected by dynamic gravity
+	subscribe(listener) {
+		this.listeners.push(listener)
+	}
+
+	//remove body from array of bodies that may be affected by dynamic gravity
+	unsubscribe(listener) {
+		//yes, this is how you remove a specific array item in js. Yes, it's overly complicated.
+		this.listeners = this.listeners.filter(body => body.id != listener.id)
+	}
+
+	notify() {
+		//notify all subscribed listeners
+		if (!this.listeners) {
+			return
+		}
+
+		this.listeners.forEach(function (listener) {
+			//calculate radius from origin (this body) to lister
+			const r = this.pos.distance(listener.pos)
+
+			//check if lister is within listen radius
+			//also check if it's not within the planet so the probe isn't flung out of existance.
+			if (r <= this.listenRadius && r > this.r) {
+				//create vector f in direction of the listening body
+                const f = new Phaser.Math.Vector2(0, 0).copy(this.pos).subtract(listener.pos)
+				//set direction vector to the length of the force applied by gravity between
+				//the two bodies, resulting in the force vector between the two bodies
+				f.setLength(calcGravity(listener.mass, this.mass, r))
+				//inform the listener of the force.
+				listener.update(f)
+			}
+		}.bind(this))
+	}
+
+	update(f) {
+		//apply force from body subscribed to
+		//NOTE** Might want to merge this function with this.force(f) at some point
+		this.vel.add(gaussLaw(f, this.mass).divide(10)); //TEMP divide by 2 'cause gravity too stronk
+	}
+}
+
+/*****************************
+Satellite
+- Defines the functionality for a Satellite, such as a planet, moon, or asteroid
+- subclass of Body
+*****************************/
+class Satellite extends Body {
+	constructor (_id, _mass, _diameter, _parent, _distance, _pos, _vel) {
+		super(_id, _mass, _diameter, _pos, _vel);
+		this.parent = _parent;
+		this.distance = _distance;
+		this.path = [];
+	}
+
+	initialize (scene) {
+        super.initialize(scene)
+		let origin = new Phaser.Math.Vector2(0,0)
+		if (this.parent != null) {
+			this.parent = scene.bodies[this.parent]
+			origin.copy(this.parent.pos)
+		}
+
+		this.pos = origin
+
+		// this calculates a random initial position in the orbit, at `distance` from `parent`
+		var theta = Phaser.Math.FloatBetween(0, Phaser.Math.PI2)
+		console.log(theta)
+		var bodyPos = origin.add(new Phaser.Math.Vector2(this.distance * Math.cos(theta), this.distance * Math.sin(theta)))
+		var bodyVel = new Phaser.Math.Vector2(0, 0).copy(bodyPos)
+
+		if (this.parent != null) {
+			bodyVel.rotate(Phaser.Math.TAU)
+			bodyVel.setLength(Math.sqrt(G * (this.parent.mass / bodyPos.length())))
+		}
+
+		this.pos = bodyPos
+		this.vel = bodyVel
+
+        console.log(this.id + " pos: " + this.pos.x + " " + this.pos.y)
+        console.log(this.id + " vel: " + this.vel.x + " " + this.vel.y)
+	}
+
+    /*
+	drawPath (scene) {
+		// draw the points in `this.path`
+		stroke("#ffffff44")
+		strokeCap(SQUARE)
+
+		for (let i = 0; i < this.path.length - 1; i++) {
+			line(this.path[i].x, this.path[i].y, this.path[i + 1].x, this.path[i + 1].y)
+		}
+	}
+    */
+
+	updatePosition(scene) {
+		super.updatePosition(scene)
+
+		// add the current position into `this.path`
+		this.path.push(new Phaser.Math.Vector2(0,0).copy(this.pos));
+		if (this.path.length > this.mass * 10) {
+			this.path.splice(0, 1)
+		}
+	}
+
+	orbit(parent) {
+		const r = this.pos.distance(parent.pos)
+		const f = new Phaser.Math.Vector2(0, 0).copy(parent.pos).subtract(this.pos)
+
+		// this is Newton's Law of Universal Gravitation (https://en.wikipedia.org/wiki/Newton%27s_law_of_universal_gravitation)
+		// we use it here to calculate the force `parent` applies
+		f.setLength(calcGravity(this.mass, parent.mass, r));
+
+		// and apply it
+		this.force(f)
+	}
+}
+
+/*****************************
+Probe
+- Defines the functionality for a spacecraft
+*****************************/
+class Probe extends Body {
+	constructor (_id, _mass, _diameter, _pos, _vel) {
+		super(_id, _mass, _diameter, _pos, _vel)
+	}
+
+	initialize (scene) {
+        super.initialize(scene);
+		this.pos.x = scene.bodies["earth"].pos.x;
+		this.pos.y = scene.bodies["earth"].pos.y;
+	}
+
+    update (f) {
+        //toggle for gravity
+		//NOTE: FOR TESTING ONLY.
+        /*
+		if (!gravityToggle) {
+			return
+		}
+        */
+
+        super.update(f);
+    }
+}
