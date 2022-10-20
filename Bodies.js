@@ -64,6 +64,10 @@ class Body {
 			if (r <= this.listenRadius && r > this.r) {
 				//create vector f in direction of the listening body
 				const f = this.pos.copy().sub(listener.pos)
+
+				//us-53 ask about this at the next standup
+				text('You crashed into a planet!', 0, 240)
+				
 				//set direction vector to the length of the force applied by gravity between
 				//the two bodies, resulting in the force vector between the two bodies
 				f.setMag(GravUtils.calcGravity(listener.mass, this.mass, r))

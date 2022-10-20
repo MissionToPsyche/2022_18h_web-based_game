@@ -125,6 +125,7 @@ function draw() {
 	}
 	fill(255, 255, 255);
 
+
 	//prevent psyche from going too far out for now
 	//note: FOR TESTING ONLY, THIS IS A BAD WAY OF DOING THIS
 	const boundry = 6500
