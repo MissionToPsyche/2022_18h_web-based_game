@@ -159,3 +159,55 @@ function draw() {
 		bodies[body].updatePosition()
 	}
 }
+
+// used in mocha tests
+class Game {
+	constructor(G, logo, logoPath, spacecraftPath, spacecraft, scWidth, scHeight, bodies, dataPath,
+		leftArrow, upArrow, rightArrow, downArrow, zoom, moveUnit, position, initial) {
+		this.G = G;
+		this.logo = logo;
+		this.logoPath = logoPath;
+		this.spacecraftPath = spacecraftPath;
+		this.spacecraft = spacecraft;
+		this.scWidth = scWidth;
+		this.scHeight = scHeight;
+		this.bodies = bodies;
+		this.dataPath = dataPath;
+		this.leftArrow = leftArrow;
+		this.upArrow = upArrow;
+		this.rightArrow = rightArrow;
+		this.downArrow = downArrow;
+		this.zoom = zoom;
+		this.moveUnit = moveUnit;
+		this.position = position;
+		this.initial = initial;
+	}
+
+	// this should be exposed to our test files because it is a member of the Game class
+	exampleHelperFunction() {
+	}
+
+	// helper used in draw() to handle player inputs
+	playerInputHandler() {
+		if (keyIsPressed) {
+	    	if (keyCode == rightArrow) {
+	    		position.x -= moveUnit
+	    	} else if (keyCode == leftArrow) {
+	    		position.x += moveUnit
+	    	} else if (keyCode == upArrow) {
+	    		position.y += moveUnit
+	    	} else if (keyCode == downArrow) {
+	    		position.y -= moveUnit
+	    	}
+	    }
+	}
+
+	// helper used in GravUtils() to throw an error
+	throwError(error) {
+		throw new Error(error);
+	}
+}
+module.exports = Game;
+
+// export functions so that mocha tests can see them
+//module.exports = { setup, setupBodies, draw, Body }

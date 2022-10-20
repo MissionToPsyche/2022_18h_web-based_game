@@ -1,0 +1,36 @@
+{
+  "name": "2022_18h_web-based_game",
+  "version": "1.0.0",
+  "description": "Web-Based Game",
+  "main": "sketch.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "nyc mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MissionToPsyche/2022_18h_web-based_game.git"
+  },
+  "keywords": [
+    "SER401",
+    "Capstone",
+    "Web-Based",
+    "Game",
+    "NASA",
+    "Psyche",
+    "Mission"
+  ],
+  "author": "SER401 Team 40",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MissionToPsyche/2022_18h_web-based_game/issues"
+  },
+  "homepage": "https://github.com/MissionToPsyche/2022_18h_web-based_game#readme",
+  "dependencies": {
+    "chai": "^4.3.6",
+    "mocha": "^10.0.0",
+    "nyc": "^15.1.0"
+  }
+}
