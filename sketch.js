@@ -6,7 +6,6 @@ const logoPath = "img/Psyche_Icon_Color-SVG.svg"
 let bodies = {}
 const dataPath = "data/bodies.json"
 
-
 // key codes
 const leftArrow = 37
 const upArrow = 38
@@ -36,18 +35,29 @@ function setup() {
 
 function setupBodies(json) {
 	for (type in json) {
-		for (body of json[type]) {
+		if (type != "satellites") {
+			for (body of json[type]) {
 
-			let id = body['id'];
-			let mass = body['mass']['value'];
-			let diameter = body['diameter']['value'];
+				let id = body['id'];
+				let mass = body['mass']['value'];
+				let diameter = body['diameter']['value'];
 
-			if(type != "probes"){
+				if(type != "probes"){
+					let parent = body['orbits'];
+					let orbit_distance = body['orbit_distance']['value'];
+					bodies[id] = new Planet(id, mass, diameter, parent, orbit_distance);
+				} else {
+					bodies[id] = new Probe(id, mass, diameter);
+				}
+			}
+		} else {
+			for (body of json[type]) {
+				let id = body['id'];
+				let mass = body['mass']['value'];
+				let diameter = body['diameter']['value'];
 				let parent = body['orbits'];
 				let orbit_distance = body['orbit_distance']['value'];
 				bodies[id] = new Satellite(id, mass, diameter, parent, orbit_distance);
-			} else {
-				bodies[id] = new Probe(id, mass, diameter);
 			}
 		}
 	}
@@ -128,24 +138,26 @@ function draw() {
 	//prevent psyche from going too far out for now
 	//note: FOR TESTING ONLY, THIS IS A BAD WAY OF DOING THIS
 	const boundry = 6500
-	if (bodies["psyche_probe"].pos.x >= 650) {
-		bodies["psyche_probe"].vel.x = 0
-		bodies["psyche_probe"].pos.x = 649
-	} if (bodies["psyche_probe"].pos.y >= 650) {
-		bodies["psyche_probe"].vel.y = 0
-		bodies["psyche_probe"].pos.y = 649
-	} if (bodies["psyche_probe"].pos.x <= -650) {
-		bodies["psyche_probe"].vel.x = 0
-		bodies["psyche_probe"].pos.x = -649
-	} if (bodies["psyche_probe"].pos.y <= -650) {
-		bodies["psyche_probe"].vel.y = 0
-		bodies["psyche_probe"].pos.y = -649
-	}
+	if (typeof(bodies["psyche_probe"]) != "undefined") {
+		if (bodies["psyche_probe"].pos.x >= 650) {
+			bodies["psyche_probe"].vel.x = 0
+			bodies["psyche_probe"].pos.x = 649
+		} if (bodies["psyche_probe"].pos.y >= 650) {
+			bodies["psyche_probe"].vel.y = 0
+			bodies["psyche_probe"].pos.y = 649
+		} if (bodies["psyche_probe"].pos.x <= -650) {
+			bodies["psyche_probe"].vel.x = 0
+			bodies["psyche_probe"].pos.x = -649
+		} if (bodies["psyche_probe"].pos.y <= -650) {
+			bodies["psyche_probe"].vel.y = 0
+			bodies["psyche_probe"].pos.y = -649
+		}
 
-	//camera tracking probe
-	//note: FOR TESTING ONLY, THIS IS A BAD WAY OF DOING THIS
-	position.x = bodies["psyche_probe"].pos.x * (-10) + 900;
-	position.y = bodies["psyche_probe"].pos.y * (-10) + 500;
+		//camera tracking probe
+		//note: FOR TESTING ONLY, THIS IS A BAD WAY OF DOING THIS
+		position.x = bodies["psyche_probe"].pos.x * (-10) + 900;
+		position.y = bodies["psyche_probe"].pos.y * (-10) + 500;
+	}
     translate(position.x, position.y)
     scale(zoom, zoom)
 
