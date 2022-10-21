@@ -17,6 +17,7 @@ const upArrow = 38
 const rightArrow = 39
 const downArrow = 40
 const spacebar = 32
+const p = 80
 // zoom in in the factor of this number
 const zoom = 10
 // unit of moving when pressing a key
@@ -106,26 +107,43 @@ function draw() {
 
 	//super basic probe controls
 	//note: FOR TESTING ONLY, THIS IS A BAD WAY OF DOING THIS
-    if (keyIsPressed) {
-    	if (keyCode == rightArrow) {
-    		bodies["psyche_probe"].vel.x += moveUnit;
-    	} else if (keyCode == leftArrow) {
-    		bodies["psyche_probe"].vel.x -= moveUnit;
-    	} else if (keyCode == upArrow) {
-    		bodies["psyche_probe"].vel.y -= moveUnit;
-    	} else if (keyCode == downArrow) {
-    		bodies["psyche_probe"].vel.y += moveUnit;
-    	} else if (keyCode == spacebar) {
-			if (gravityToggle && !keyHeld) {
-				gravityToggle = false
-			} else if (!gravityToggle && !keyHeld) {
-				gravityToggle = true
-			}
-			keyHeld = true
-		} else {
-			keyHeld = false
+	if (keyIsPressed) {
+		switch (keyCode) {
+			case rightArrow:
+				bodies["psyche_probe"].vel.x += moveUnit;
+				break
+			case leftArrow:
+				bodies["psyche_probe"].vel.x -= moveUnit;
+				break
+			default:
+				break;
 		}
-    } else {
+
+		switch (keyCode) {
+			case downArrow:
+				bodies["psyche_probe"].vel.y += moveUnit;
+				break
+			case upArrow:
+				bodies["psyche_probe"].vel.y -= moveUnit;
+				break
+			default:
+				break;
+		}
+
+		switch (keyCode) {
+			case spacebar:
+				gravityToggle = !keyHeld ? !gravityToggle : gravityToggle
+				keyHeld = true
+				break
+			case p:
+				paused = !keyHeld ? !paused : paused
+				keyHeld = true
+				break
+			default:
+				keyHeld = false
+				break
+		}
+	} else {
 		keyHeld = false
 	}
 
