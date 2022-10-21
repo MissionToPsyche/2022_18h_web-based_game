@@ -34,8 +34,8 @@ class Body {
 
         //update position in scene
         //**TO DO: find better way to center everything.
-        var finalX = this.pos.x + 1024/2;
-        var finalY = this.pos.y + 768/2;
+        var finalX = this.pos.x + 2048/2;
+        var finalY = this.pos.y + 2048/2;
         this.sprite.setPosition(finalX, finalY)
 	}
 
@@ -86,7 +86,7 @@ class Body {
 	update(f) {
 		//apply force from body subscribed to
 		//NOTE** Might want to merge this function with this.force(f) at some point
-		this.vel.add(gaussLaw(f, this.mass).divide(10)); //TEMP divide by 2 'cause gravity too stronk
+		this.vel.add(gaussLaw(f, this.mass).scale(0.1)); //TEMP divide by 2 'cause gravity too stronk
 	}
 }
 
@@ -128,17 +128,16 @@ class Satellite extends Body {
 		this.vel = bodyVel
 	}
 
-    /*
-	drawPath (scene) {
+	/*
+	drawPath (graphics) {
 		// draw the points in `this.path`
-		stroke("#ffffff44")
-		strokeCap(SQUARE)
-
+		graphics.lineStyle(2, 0xffffff44, 0.5)
 		for (let i = 0; i < this.path.length - 1; i++) {
-			line(this.path[i].x, this.path[i].y, this.path[i + 1].x, this.path[i + 1].y)
+			graphics.lineBetween(this.path[i].x + 2048/2, this.path[i].y + 2048/2, 
+				this.path[i + 1].x + 2048/2, this.path[i + 1].y + 2048/2)
 		}
 	}
-    */
+	*/
 
 	updatePosition(scene) {
 		super.updatePosition(scene)
@@ -170,22 +169,21 @@ Probe
 class Probe extends Body {
 	constructor (_id, _mass, _diameter, _pos, _vel) {
 		super(_id, _mass, _diameter, _pos, _vel)
+		this.gravityToggle = false; //TO DO: REMOVE WHEN DONE TESTING GRAVITY
 	}
 
 	initialize (scene) {
         super.initialize(scene);
-		this.pos.x = scene.bodies["earth"].pos.x;
-		this.pos.y = scene.bodies["earth"].pos.y;
+		this.pos.x = scene.bodies["sol"].pos.x;
+		this.pos.y = scene.bodies["sol"].pos.y;
 	}
 
     update (f) {
         //toggle for gravity
 		//NOTE: FOR TESTING ONLY.
-        /*
-		if (!gravityToggle) {
+		if (!this.gravityToggle) {
 			return
 		}
-        */
 
         super.update(f);
     }
