@@ -1,7 +1,11 @@
 const G = 6.67
 
 let logo
+let pause
+let play
 const logoPath = "img/Psyche_Icon_Color-SVG.svg"
+const playPath = "img/icons/play-circle.svg"
+const pausePath = "img/icons/pause-circle.svg"
 
 let bodies = {}
 const dataPath = "data/bodies.json"
@@ -21,6 +25,7 @@ const moveUnit = 0.01
 //boolean for gravity on/off default: off
 let gravityToggle = false
 let keyHeld = false;
+let paused = false;
 
 // the initial position of the view
 let position = {x : 0, y : 0}
@@ -30,6 +35,8 @@ let initial = true
 function setup() {
 	createCanvas(windowWidth, windowHeight);
 	logo = loadImage(logoPath)
+	play = loadImage(playPath)
+	pause = loadImage(pausePath)
 
 	loadJSON(dataPath, setupBodies)
 }
@@ -70,6 +77,12 @@ function setupBodies(json) {
 function draw() {
 	background("#12031d")
 	image(logo, 24, 24, 96, 96)
+
+	if (paused) {
+		image(pause, windowWidth - 120, windowHeight - 120, 96, 96)
+	} else {
+		image(play, windowWidth - 120, windowHeight - 120, 96, 96)
+	}
 
 	// initial position of the view is on the center of the canvas, the sun
 	if (initial) {
