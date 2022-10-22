@@ -164,51 +164,73 @@ class Planet extends Body {
 
 /*****************************
 Satellite
-- Defines the functionality for a satellite that orbit around a planet
+- Defines the functionality for a Satellite, such as a planet, moon, or asteroid
 - subclass of Body
 *****************************/
 class Satellite extends Body {
 	constructor (_id, _mass, _diameter, _parent, _distance, _pos, _vel) {
 		super(_id, _mass, _diameter, _pos, _vel);
-		this.parent = bodies[_parent];
+		this.parent = _parent;
 		this.distance = _distance;
 		this.path = [];
-		this.theta = 0;
-		this.deltaTheta = 0.17;
 	}
 
-	initialize () {
-		// copy parent's position
-		if (typeof(this.parent.pos) != "undefined" && this.parent.pos.x != 0) {
-			this.pos.x = this.parent.pos.x + this.distance * cos(this.theta);
-			this.pos.y = this.parent.pos.y + this.distance * sin(this.theta);
+	initialize (scene) {
+        super.initialize(scene)
+		let origin = new Phaser.Geom.Point(0, 0)
+		if (this.parent != null) {
+			this.parent = scene.bodies[this.parent]
+			Phaser.Geom.Point.CopyFrom(this.parent.pos, origin)
 		}
+
+		this.pos = origin
+
+		// this calculates a random initial position in the orbit, at `distance` from `parent`
+		var theta = Phaser.Math.FloatBetween(0, Phaser.Math.PI2)
+		var bodyPos = origin.setTo(origin.x + this.distance * Math.cos(theta), origin.y + this.distance * Math.sin(theta))
+		var bodyVel = new Phaser.Math.Vector2(bodyPos.x, bodyPos.y)
+
+		if (this.parent != null) {
+			bodyVel.rotate(Phaser.Math.TAU)
+			bodyVel.setLength(Math.sqrt(G * (this.parent.mass / 
+				Phaser.Math.Distance.BetweenPoints(bodyPos, this.parent.pos))));
+		}
+
+		this.pos = bodyPos
+		this.vel = bodyVel
 	}
 
-	show () {
+	/*
+	drawPath (graphics) {
 		// draw the points in `this.path`
-		stroke("#ffffff44")
-		strokeCap(SQUARE)
-
+		graphics.lineStyle(2, 0xffffff44, 0.5)
 		for (let i = 0; i < this.path.length - 1; i++) {
-			line(this.path[i].x, this.path[i].y, this.path[i + 1].x, this.path[i + 1].y)
+			graphics.lineBetween(this.path[i].x + 2048/2, this.path[i].y + 2048/2, 
+				this.path[i + 1].x + 2048/2, this.path[i + 1].y + 2048/2)
 		}
-
-		super.show()
 	}
+	*/
 
-	updatePosition() {
-		if (typeof(this.parent.pos) != "undefined" && this.parent.pos.x != 0) {
-			this.theta += this.deltaTheta;
-			this.pos.x = this.parent.pos.x + this.distance * cos(this.theta);
-			this.pos.y = this.parent.pos.y + this.distance * sin(this.theta);
-		}
+	updatePosition(scene) {
+		super.updatePosition(scene)
 
 		// add the current position into `this.path`
-		this.path.push(this.pos.copy());
+		this.path.push(Phaser.Geom.Point.Clone(this.pos));
 		if (this.path.length > this.mass * 10) {
 			this.path.splice(0, 1)
 		}
+	}
+
+	orbit(parent) {
+		const r = Phaser.Math.Distance.BetweenPoints(this.pos, parent.pos)
+		const f = new Phaser.Math.Vector2(0, 0).copy(parent.pos).subtract(this.pos)
+
+		// this is Newton's Law of Universal Gravitation (https://en.wikipedia.org/wiki/Newton%27s_law_of_universal_gravitation)
+		// we use it here to calculate the force `parent` applies
+		f.setLength(calcGravity(this.mass, parent.mass, r));
+
+		// and apply it
+		this.force(f)
 	}
 }
 
