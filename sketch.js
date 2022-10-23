@@ -187,6 +187,9 @@ function draw() {
 
 		//update body positions
 		bodies[body].show()
-		bodies[body].updatePosition()
+
+		if (!paused) {
+			bodies[body].updatePosition()
+		}
 	}
 }
