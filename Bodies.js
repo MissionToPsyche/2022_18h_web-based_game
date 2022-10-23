@@ -94,18 +94,22 @@ Satellite
 class Satellite extends Body {
 	constructor (_id, _mass, _diameter, _parent, _distance, _pos, _vel) {
 		super(_id, _mass, _diameter, _pos, _vel);
-		this.parent = _parent;
+		this.parent_id = _parent_id;
+		this.parent = null;
 		this.distance = _distance;
 		this.path = [];
 	}
 
 	initialize () {
 		let origin
-		if (this.parent != null) {
-			this.parent = bodies[this.parent]
-			origin = this.parent.pos.copy()
-		} else {
+		if (this.parent_id == null) {
+			// this is the sun
 			origin = createVector(0, 0)
+		} else {
+			// this is everything else, and should only be called after all
+			// bodies have been initialized
+			this.parent = bodies[this.parent_id]
+			origin = this.parent.pos.copy()
 		}
 
 		this.pos = origin
@@ -115,7 +119,7 @@ class Satellite extends Body {
 		const bodyPos = origin.add(createVector(this.distance * cos(theta), this.distance * sin(theta)))
 		const bodyVel = bodyPos.copy()
 
-		if (this.parent != null) {
+		if (this.parent_id != null) {
 			bodyVel.rotate(HALF_PI)
 			bodyVel.setMag(sqrt(G * (this.parent.mass / bodyPos.mag())))
 		}
@@ -137,13 +141,13 @@ class Satellite extends Body {
 	}
 
 	updatePosition() {
-		super.updatePosition()
-
 		// add the current position into `this.path`
 		this.path.push(this.pos.copy());
 		if (this.path.length > this.mass * 10) {
 			this.path.splice(0, 1)
 		}
+
+		super.updatePosition()
 	}
 
 	orbit(parent) {

@@ -42,12 +42,14 @@ function setupBodies(json) {
 			let mass = body['mass']['value'];
 			let diameter = body['diameter']['value'];
 
-			if(type != "probes"){
+			if (type == "probes") {
+				bodies[id] = new Probe(id, mass, diameter);
+			} else {
 				let parent = body['orbits'];
 				let orbit_distance = body['orbit_distance']['value'];
+
+				// at first, set 'parent' to the id of the body: i.e. "earth"
 				bodies[id] = new Satellite(id, mass, diameter, parent, orbit_distance);
-			} else {
-				bodies[id] = new Probe(id, mass, diameter);
 			}
 		}
 	}
