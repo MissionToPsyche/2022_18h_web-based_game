@@ -92,7 +92,7 @@ Satellite
 - subclass of Body
 *****************************/
 class Satellite extends Body {
-	constructor (_id, _mass, _diameter, _parent, _distance, _pos, _vel) {
+	constructor(_id, _mass, _diameter, _parent_id, _distance, _pos, _vel) {
 		super(_id, _mass, _diameter, _pos, _vel);
 		this.parent_id = _parent_id;
 		this.parent = null;
