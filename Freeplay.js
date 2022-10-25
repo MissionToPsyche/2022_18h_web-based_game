@@ -62,6 +62,16 @@ class Freeplay extends Phaser.Scene {
                         this.bodies[id] = new Probe(id, mass, diameter);
                     }
                 }
+            } else {
+                // create satellites such as luna
+                for (var body of this.json[type]) {
+                    let id = body['id'];
+                    let mass = body['mass']['value'];
+                    let diameter = body['diameter']['value'];
+                    let parent = body['orbits'];
+                    let orbit_distance = body['orbit_distance']['value'];
+                    this.bodies[id] = new Satellite(id, mass, diameter, parent, orbit_distance);
+                }
             }
         }
 
