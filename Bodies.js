@@ -91,11 +91,11 @@ class Body {
 }
 
 /*****************************
-Satellite
-- Defines the functionality for a Satellite, such as a planet, moon, or asteroid
+Planet
+- Defines the functionality for a planet that orbit around the sun
 - subclass of Body
 *****************************/
-class Satellite extends Body {
+class Planet extends Body {
 	constructor (_id, _mass, _diameter, _parent, _distance, _pos, _vel) {
 		super(_id, _mass, _diameter, _pos, _vel);
 		this.parent = _parent;
