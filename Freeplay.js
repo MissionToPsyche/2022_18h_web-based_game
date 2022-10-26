@@ -68,7 +68,7 @@ class Freeplay extends Phaser.Scene {
                     if(type != "probes"){
                         let parent = body['orbits'];
                         let orbit_distance = body['orbit_distance']['value'];
-                        this.bodies[id] = new Planet(id, mass, diameter, parent, orbit_distance);
+                        this.bodies[id] = new Satellite(id, mass, diameter, parent, orbit_distance);
                     } else {
                         this.bodies[id] = new Probe(id, mass, diameter);
                     }
@@ -81,7 +81,7 @@ class Freeplay extends Phaser.Scene {
                     let diameter = body['diameter']['value'];
                     let parent = body['orbits'];
                     let orbit_distance = body['orbit_distance']['value'];
-                    this.bodies[id] = new Satellite(id, mass, diameter, parent, orbit_distance);
+                    this.bodies[id] = new Moon(id, mass, diameter, parent, orbit_distance);
                 }
             }
         }
