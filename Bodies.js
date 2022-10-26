@@ -41,7 +41,6 @@ class Body {
 
 	force(f) {
 		// calculate velocity based off of force applied
-        var g = gaussLaw(f, this.mass);
 		this.vel.add(gaussLaw(f, this.mass));
 		this.vel.add(this.parent.vel);
 	}
@@ -128,23 +127,17 @@ class Satellite extends Body {
 		this.vel = bodyVel
 	}
 
-	/*
-	drawPath (graphics) {
-		// draw the points in `this.path`
-		graphics.lineStyle(2, 0xffffff44, 0.5)
-		for (let i = 0; i < this.path.length - 1; i++) {
-			graphics.lineBetween(this.path[i].x + 2048/2, this.path[i].y + 2048/2, 
-				this.path[i + 1].x + 2048/2, this.path[i + 1].y + 2048/2)
-		}
+	getPathCurve () {
+		// return points on path as a curve
+		return new Phaser.Curves.Spline(this.path);
 	}
-	*/
 
 	updatePosition(scene) {
 		super.updatePosition(scene)
 
 		// add the current position into `this.path`
-		this.path.push(Phaser.Geom.Point.Clone(this.pos));
-		if (this.path.length > this.mass * 10) {
+		this.path.push(new Phaser.Math.Vector2(this.pos.x + 2048/2, this.pos.y + 2048/2));
+		if (this.path.length > Math.min(this.mass * 10, (this.distance * Phaser.Math.PI2)/2)) {
 			this.path.splice(0, 1)
 		}
 	}

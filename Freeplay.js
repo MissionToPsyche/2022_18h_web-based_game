@@ -7,6 +7,10 @@ class Freeplay extends Phaser.Scene {
         this.keyToggle = true //for testing only
         this.graphics;
         this.gravText;
+        this.path;
+        this.curve;
+        this.points;
+        this.graphics;
     }
 
     preload () {
@@ -32,6 +36,12 @@ class Freeplay extends Phaser.Scene {
     }
 
     create () {
+        this.graphics = this.add.graphics();
+
+        this.path = { t: 0, vec: new Phaser.Math.Vector2() };
+
+        this.curve = new Phaser.Curves.Spline(this.points);
+
         //Solar system is 2048x2048
         this.matter.world.setBounds(0, 0, 2048, 2048);
         this.cameras.main.setBounds(0, 0, 2048, 2048).setZoom(3).setName('main');
@@ -66,7 +76,6 @@ class Freeplay extends Phaser.Scene {
         //creating a UI camera for UI elements
         const UICam = this.cameras.add(0, 0, 2048, 2048)
 
-        console.log("========Initializing========")
         //initialize all bodies
         for (const body in this.bodies) {
             if(this.bodies[body].initialize){
@@ -79,7 +88,6 @@ class Freeplay extends Phaser.Scene {
         }
 
         this.player = this.bodies["psyche_probe"].sprite;
-        console.log(this.player);
         this.cameras.main.startFollow(this.player, false);
 
         //subscribe probe to all other bodies.
@@ -90,13 +98,17 @@ class Freeplay extends Phaser.Scene {
             }
         }
 
+        UICam.ignore(this.graphics);
+
         this.cursors = this.input.keyboard.createCursorKeys();
         this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-        console.log(Phaser.Input.Keyboard.SPACEBAR)
     }
 
     //this is the scene's main update loop
     update () {
+        this.graphics.clear(); //clear previous itteration's graphics
+        
+
         //Probe controls
         //**TO DO: Wrap in a custom controler later.
         const moveUnit = 0.01
@@ -146,23 +158,18 @@ class Freeplay extends Phaser.Scene {
         }
 
         for (const body in this.bodies) {
-            /*
-            if(this.graphics){
-                this.graphics.destroy()
-            }
-            this.graphics = this.add.graphics()
-            */
-
             //apply dynamic gravity
             //NOTE: THIS IS A BAD PLACE TO DO THIS. MOVE THIS TO AN APPROPRIATE PLACE LATER!!
             this.bodies[body].notify() 
 
             //draw paths
-            /*
-            if(this.bodies[body].id != "psyche_probe"){
-                this.bodies[body].drawPath(this.graphics)
+            var path = this.bodies[body].path;
+            if(path && path.length > 0){
+                this.graphics.lineStyle(1, 0xffffff, 0.5);
+                this.bodies[body].getPathCurve().draw(this.graphics, 64);
+        
+                this.graphics.fillStyle(0x00ff00, 1);
             }
-            */
     
             //update body positions
             this.bodies[body].updatePosition(this)
