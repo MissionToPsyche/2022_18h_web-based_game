@@ -47,18 +47,30 @@ class Freeplay extends Phaser.Scene {
         //creating Body objects
         this.json = this.cache.json.get('bodies');
         for (var type in this.json) {
-            for (var body of this.json[type]) {
-    
-                let id = body['id'];
-                let mass = body['mass']['value'];
-                let diameter = body['diameter']['value'];
-    
-                if(type != "probes"){
+            if (type != "satellites") {
+                for (var body of this.json[type]) {
+        
+                    let id = body['id'];
+                    let mass = body['mass']['value'];
+                    let diameter = body['diameter']['value'];
+        
+                    if(type != "probes"){
+                        let parent = body['orbits'];
+                        let orbit_distance = body['orbit_distance']['value'];
+                        this.bodies[id] = new Planet(id, mass, diameter, parent, orbit_distance);
+                    } else {
+                        this.bodies[id] = new Probe(id, mass, diameter);
+                    }
+                }
+            } else {
+                // create satellites such as luna
+                for (var body of this.json[type]) {
+                    let id = body['id'];
+                    let mass = body['mass']['value'];
+                    let diameter = body['diameter']['value'];
                     let parent = body['orbits'];
                     let orbit_distance = body['orbit_distance']['value'];
                     this.bodies[id] = new Satellite(id, mass, diameter, parent, orbit_distance);
-                } else {
-                    this.bodies[id] = new Probe(id, mass, diameter);
                 }
             }
         }

@@ -29,7 +29,7 @@ class Body {
 		}
 
 		// affect position by calculated velocity
-		this.pos.x += this.vel.x
+		this.pos.x += this.vel.x 
 		this.pos.y += this.vel.y
 
         //update position in scene
@@ -91,11 +91,11 @@ class Body {
 }
 
 /*****************************
-Satellite
-- Defines the functionality for a Satellite, such as a planet, moon, or asteroid
+Planet
+- Defines the functionality for a planet that orbit around the sun
 - subclass of Body
 *****************************/
-class Satellite extends Body {
+class Planet extends Body {
 	constructor (_id, _mass, _diameter, _parent, _distance, _pos, _vel) {
 		super(_id, _mass, _diameter, _pos, _vel);
 		this.parent = _parent;
@@ -159,6 +159,50 @@ class Satellite extends Body {
 
 		// and apply it
 		this.force(f)
+	}
+}
+
+/*****************************
+Satellite
+- Defines the functionality for a satellite that orbit around a planet
+- subclass of Body
+*****************************/
+class Satellite extends Body {
+	constructor (_id, _mass, _diameter, _parent, _distance, _pos, _vel) {
+		super(_id, _mass, _diameter, _pos, _vel);
+		this.parent = _parent;
+		this.distance = _distance;
+		this.path = [];
+		this.theta = 0;
+		this.deltaTheta = 0.17;
+	}
+
+	initialize (scene) {
+		// copy parent's position
+		if (typeof(scene.bodies[this.parent].pos) != "undefined" && scene.bodies[this.parent].pos.x != 0) {
+			this.pos.x = scene.bodies[this.parent].pos.x + this.distance * Math.cos(this.theta);
+			this.pos.y = scene.bodies[this.parent].pos.y + this.distance * Math.sin(this.theta);
+		}
+
+		super.initialize(scene);
+	}
+
+	updatePosition(scene) {
+		if (typeof(scene.bodies[this.parent].pos) != "undefined" && scene.bodies[this.parent].pos.x != 0) {
+			this.theta += this.deltaTheta;
+			this.pos.x = scene.bodies[this.parent].pos.x + this.distance * Math.cos(this.theta);
+			this.pos.y = scene.bodies[this.parent].pos.y + this.distance * Math.sin(this.theta);
+		}
+
+		//update position in scene
+        //**TO DO: find better way to center everything.
+        this.sprite.setPosition(this.pos.x + 2048/2, this.pos.y + 2048/2)
+
+		// add the current position into `this.path`
+		this.path.push(Phaser.Geom.Point.Clone(this.pos));
+		if (this.path.length > this.mass * 10) {
+			this.path.splice(0, 1)
+		}
 	}
 }
 
