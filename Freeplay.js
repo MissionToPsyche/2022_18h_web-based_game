@@ -58,7 +58,7 @@ class Freeplay extends Phaser.Scene {
         //creating Body objects
         this.json = this.cache.json.get('bodies');
         for (var type in this.json) {
-            if (type != "satellites") {
+            if (type != "moons") {
                 for (var body of this.json[type]) {
         
                     let id = body['id'];

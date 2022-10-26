@@ -171,20 +171,28 @@ class Satellite extends Body {
 	}
 
 	initialize (scene) {
-		// copy parent's position
-		if (typeof(scene.bodies[this.parent].pos) != "undefined" && scene.bodies[this.parent].pos.x != 0) {
-			this.pos.x = scene.bodies[this.parent].pos.x + this.distance * Math.cos(this.theta);
-			this.pos.y = scene.bodies[this.parent].pos.y + this.distance * Math.sin(this.theta);
-		}
+		super.initialize(scene)
 
-		super.initialize(scene);
+		if (this.parent != null) {
+			this.parent = scene.bodies[this.parent]
+		}
+		// copy parent's position
+		if (typeof(this.parent.pos) != "undefined" && this.parent.pos.x != 0) {
+			this.pos.x = this.parent.pos.x + this.distance * Math.cos(this.theta);
+			this.pos.y = this.parent.pos.y + this.distance * Math.sin(this.theta);
+		}
+	}
+
+	getPathCurve () {
+		// return points on path as a curve
+		return new Phaser.Curves.Spline(this.path);
 	}
 
 	updatePosition(scene) {
-		if (typeof(scene.bodies[this.parent].pos) != "undefined" && scene.bodies[this.parent].pos.x != 0) {
+		if (typeof(this.parent.pos) != "undefined" && this.parent.pos.x != 0) {
 			this.theta += this.deltaTheta;
-			this.pos.x = scene.bodies[this.parent].pos.x + this.distance * Math.cos(this.theta);
-			this.pos.y = scene.bodies[this.parent].pos.y + this.distance * Math.sin(this.theta);
+			this.pos.x = this.parent.pos.x + this.distance * Math.cos(this.theta);
+			this.pos.y = this.parent.pos.y + this.distance * Math.sin(this.theta);
 		}
 
 		//update position in scene
@@ -192,8 +200,8 @@ class Satellite extends Body {
         this.sprite.setPosition(this.pos.x + 2048/2, this.pos.y + 2048/2)
 
 		// add the current position into `this.path`
-		this.path.push(Phaser.Geom.Point.Clone(this.pos));
-		if (this.path.length > this.mass * 10) {
+		this.path.push(new Phaser.Math.Vector2(this.pos.x + 2048/2, this.pos.y + 2048/2));
+		if (this.path.length > Math.min(this.mass * 10, (this.distance * Phaser.Math.PI2)/2)) {
 			this.path.splice(0, 1)
 		}
 	}
