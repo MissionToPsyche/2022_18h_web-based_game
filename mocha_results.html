@@ -16,11 +16,23 @@
     </script>
 
     <script src="https://unpkg.com/chai/chai.js"></script>
-    <script>let assert = chai.assert;</script>
+    <script>
+      let assert = chai.assert;
+      let expect = chai.expect;
+    </script>
 
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>
+
+    <script src = Bodies.js></script>
     <script src = example_function.js></script>
+    <script src = Freeplay.js></script>
+    <script src = GravUtils.js></script>
 
+    <script src="test/test.Bodies.js"></script>
     <script src="test/test.example_function.js"></script>
+    <script src="test/test.Freeplay.js"></script>
+    <script src="test/test.GravUtils.js"></script>
+    
     <script class="mocha-exec">
       mocha.run();
     </script>

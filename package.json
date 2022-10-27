@@ -2,7 +2,7 @@
   "name": "2022_18h_web-based_game",
   "version": "1.0.0",
   "description": "Web-Based Game",
-  "main": "sketch.js",
+  "main": "Freeplay.js",
   "directories": {
     "test": "test"
   },
@@ -31,6 +31,7 @@
   "dependencies": {
     "chai": "^4.3.6",
     "mocha": "^10.0.0",
-    "nyc": "^15.1.0"
+    "nyc": "^15.1.0",
+    "phaser": "^3.55.2"
   }
 }
