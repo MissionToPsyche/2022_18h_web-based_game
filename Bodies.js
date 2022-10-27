@@ -91,11 +91,11 @@ class Body {
 }
 
 /*****************************
-Satellite
-- Defines the functionality for a Satellite, such as a planet, moon, or asteroid
+Planet
+- Defines the functionality for a planet that orbit around the sun
 - subclass of Body
 *****************************/
-class Satellite extends Body {
+class Planet extends Body {
 	constructor (_id, _mass, _diameter, _parent, _distance, _pos, _vel) {
 		super(_id, _mass, _diameter, _pos, _vel);
 		this.parent = _parent;
@@ -160,6 +160,56 @@ class Satellite extends Body {
 
 		// and apply it
 		this.force(f)
+	}
+}
+
+/*****************************
+Satellite
+- Defines the functionality for a satellite that orbit around a planet
+- subclass of Body
+*****************************/
+class Satellite extends Body {
+	constructor (_id, _mass, _diameter, _parent, _distance, _pos, _vel) {
+		super(_id, _mass, _diameter, _pos, _vel);
+		this.parent = bodies[_parent];
+		this.distance = _distance;
+		this.path = [];
+		this.theta = 0;
+		this.deltaTheta = 0.17;
+	}
+
+	initialize () {
+		// copy parent's position
+		if (typeof(this.parent.pos) != "undefined" && this.parent.pos.x != 0) {
+			this.pos.x = this.parent.pos.x + this.distance * cos(this.theta);
+			this.pos.y = this.parent.pos.y + this.distance * sin(this.theta);
+		}
+	}
+
+	show () {
+		// draw the points in `this.path`
+		stroke("#ffffff44")
+		strokeCap(SQUARE)
+
+		for (let i = 0; i < this.path.length - 1; i++) {
+			line(this.path[i].x, this.path[i].y, this.path[i + 1].x, this.path[i + 1].y)
+		}
+
+		super.show()
+	}
+
+	updatePosition() {
+		if (typeof(this.parent.pos) != "undefined" && this.parent.pos.x != 0) {
+			this.theta += this.deltaTheta;
+			this.pos.x = this.parent.pos.x + this.distance * cos(this.theta);
+			this.pos.y = this.parent.pos.y + this.distance * sin(this.theta);
+		}
+
+		// add the current position into `this.path`
+		this.path.push(this.pos.copy());
+		if (this.path.length > this.mass * 10) {
+			this.path.splice(0, 1)
+		}
 	}
 }
 
