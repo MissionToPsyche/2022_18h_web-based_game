@@ -94,7 +94,7 @@ Planet
 - Defines the functionality for a planet that orbit around the sun
 - subclass of Body
 *****************************/
-class Planet extends Body {
+class Satellite extends Body {
 	constructor (_id, _mass, _diameter, _parent, _distance, _pos, _vel) {
 		super(_id, _mass, _diameter, _pos, _vel);
 		this.parent = _parent;
@@ -160,7 +160,7 @@ Satellite
 - Defines the functionality for a satellite that orbit around a planet
 - subclass of Body
 *****************************/
-class Satellite extends Body {
+class Moon extends Body {
 	constructor (_id, _mass, _diameter, _parent, _distance, _pos, _vel) {
 		super(_id, _mass, _diameter, _pos, _vel);
 		this.parent = _parent;
