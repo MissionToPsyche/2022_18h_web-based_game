@@ -26,6 +26,7 @@
             "id": "mercury",
             "name": "Mercury",
             "orbits": "sol",
+            "angle": 0.49,
             "mass": {
                 "value": 30,
                 "unit": "px",
@@ -46,6 +47,7 @@
             "id": "venus",
             "name": "Venus",
             "orbits": "sol",
+            "angle": 3.25,
             "mass": {
                 "value": 50,
                 "unit": "px",
@@ -66,6 +68,7 @@
             "id": "earth",
             "name": "Earth",
             "orbits": "sol",
+            "angle": 0.59,
             "mass": {
                 "value": 60,
                 "unit": "px",
@@ -86,6 +89,7 @@
             "id": "mars",
             "name": "Mars",
             "orbits": "sol",
+            "angle": 6.62,
             "mass": {
                 "value": 60,
                 "unit": "px",
@@ -106,6 +110,7 @@
             "id": "jupiter",
             "name": "Jupiter",
             "orbits": "sol",
+            "angle": 1.46,
             "mass": {
                 "value": 2000,
                 "unit": "px",
@@ -126,6 +131,7 @@
             "id": "saturn",
             "name": "Saturn",
             "orbits": "sol",
+            "angle": 1.52,
             "mass": {
                 "value": 600,
                 "unit": "px",
@@ -146,6 +152,7 @@
             "id": "neptune",
             "name": "Neptune",
             "orbits": "sol",
+            "angle": 5.21,
             "mass": {
                 "value": 90,
                 "unit": "px",
@@ -166,6 +173,7 @@
             "id": "uranus",
             "name": "Uranus",
             "orbits": "sol",
+            "angle": 2.01,
             "mass": {
                 "value": 100,
                 "unit": "px",
@@ -186,6 +194,7 @@
             "id": "pluto",
             "name": "Pluto",
             "orbits": "sol",
+            "angle": 3.82,
             "mass": {
                 "value": 5,
                 "unit": "px",
@@ -198,6 +207,27 @@
             },
             "orbit_distance": {
                 "value": 650,
+                "unit": "px",
+                "magnitude": 1
+            }
+        },
+        {
+            "id": "psyche",
+            "name": "Psyche",
+            "orbits": "sol",
+            "angle": 3.17,
+            "mass": {
+                "value": 10,
+                "unit": "px",
+                "magnitude": 1
+            },
+            "diameter": {
+                "value": 15,
+                "unit": "px",
+                "magnitude": 1
+            },
+            "orbit_distance": {
+                "value": 290,
                 "unit": "px",
                 "magnitude": 1
             }
@@ -220,26 +250,6 @@
             },
             "orbit_distance": {
                 "value": 10,
-                "unit": "px",
-                "magnitude": 1
-            }
-        },
-        {
-            "id": "psyche",
-            "name": "Psyche",
-            "orbits": "sol",
-            "mass": {
-                "value": 10,
-                "unit": "px",
-                "magnitude": 1
-            },
-            "diameter": {
-                "value": 15,
-                "unit": "px",
-                "magnitude": 1
-            },
-            "orbit_distance": {
-                "value": 290,
                 "unit": "px",
                 "magnitude": 1
             }
