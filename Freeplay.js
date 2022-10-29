@@ -13,7 +13,8 @@ class Freeplay extends Phaser.Scene {
         this.load.json('bodies', 'data/bodies.json');
 
         //loading in all image assets
-        this.load.image('logo', 'img/Psyche_Icon_Color-SVG.svg'); //asset for psyche logo
+        this.load.image('logo', 'img/Psyche_Icon_Color-SVG.svg');
+        this.load.image('minimap_border', 'img/icons/minimap-border.png'); //border for minimap
 
         //staticly loading all the individual assets for now
         //**TO DO: */ change to a more general
@@ -38,17 +39,18 @@ class Freeplay extends Phaser.Scene {
         this.cameras.main.centerOn(0, 0);
 
         //Minimap
-        this.minimap = this.cameras.add(750, 10, 300, 200).setZoom(0.15).setName('mini');
+        this.minimap = this.cameras.add(745, 10, 300, 205).setZoom(0.15).setName('mini');
         this.minimap.setBackgroundColor("Black");
         this.minimap.scrollX = 900;
         this.minimap.scrollY = 900;
         
         var logo = this.add.image(50,50,'logo').setScale(0.5);
+        var map_border = this.add.image(880,110,'minimap_border').setScale(0.35);
         this.gravText = this.add.text(4, 90, '0')
         this.gravText.setText("Gravity: OFF")
 
         //ignore all UI elements on main camera.
-        this.cameras.main.ignore([ logo, this.gravText ])
+        this.cameras.main.ignore([ logo, this.gravText, map_border ])
 
         //creating Body objects
         this.json = this.cache.json.get('bodies');
