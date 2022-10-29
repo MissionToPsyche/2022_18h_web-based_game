@@ -96,11 +96,15 @@ Planet
 - subclass of Body
 *****************************/
 class Planet extends Body {
-	constructor (_id, _mass, _diameter, _parent, _distance, _pos, _vel) {
-		super(_id, _mass, _diameter, _pos, _vel);
+	constructor (_id, _mass, _diameter, _parent, _angle, _distance) {
+		super(_id, _mass, _diameter);
 		this.parent = _parent;
 		this.distance = _distance;
 		this.path = [];
+		this.angle = _angle;
+		if (typeof(this.angle) == "undefined") {
+			this.angle = 0;
+		}
 	}
 
 	initialize (scene) {
@@ -113,9 +117,8 @@ class Planet extends Body {
 
 		this.pos = origin
 
-		// this calculates a random initial position in the orbit, at `distance` from `parent`
-		var theta = Phaser.Math.FloatBetween(0, Phaser.Math.PI2)
-		var bodyPos = origin.setTo(origin.x + this.distance * Math.cos(theta), origin.y + this.distance * Math.sin(theta))
+		// this calculates the initial position in the orbit, at `distance` from `parent`
+		var bodyPos = origin.setTo(origin.x + this.distance * Math.cos(this.angle), origin.y + this.distance * Math.sin(this.angle))
 		var bodyVel = new Phaser.Math.Vector2(bodyPos.x, bodyPos.y)
 
 		if (this.parent != null) {
