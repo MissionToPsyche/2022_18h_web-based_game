@@ -130,8 +130,6 @@ class Freeplay extends Phaser.Scene {
 
     //this is the scene's main update loop
     update () {
-        this.graphics.clear(); //clear previous itteration's graphics
-
         //Probe controls
         //**TO DO: Wrap in a custom controler later.
         const moveUnit = 0.01
@@ -193,6 +191,8 @@ class Freeplay extends Phaser.Scene {
         if (this.paused) {
             return
         }
+
+        this.graphics.clear(); //clear previous itteration's graphics
 
         for (const body in this.bodies) {
             //apply dynamic gravity
