@@ -41,7 +41,6 @@ class Body {
 
 	force(f) {
 		// calculate velocity based off of force applied
-        var g = gaussLaw(f, this.mass);
 		this.vel.add(gaussLaw(f, this.mass));
 		this.vel.add(this.parent.vel);
 	}
@@ -95,7 +94,7 @@ Planet
 - Defines the functionality for a planet that orbit around the sun
 - subclass of Body
 *****************************/
-class Planet extends Body {
+class Satellite extends Body {
 	constructor (_id, _mass, _diameter, _parent, _angle, _distance) {
 		super(_id, _mass, _diameter);
 		this.parent = _parent;
@@ -131,23 +130,17 @@ class Planet extends Body {
 		this.vel = bodyVel
 	}
 
-	/*
-	drawPath (graphics) {
-		// draw the points in `this.path`
-		graphics.lineStyle(2, 0xffffff44, 0.5)
-		for (let i = 0; i < this.path.length - 1; i++) {
-			graphics.lineBetween(this.path[i].x + 2048/2, this.path[i].y + 2048/2, 
-				this.path[i + 1].x + 2048/2, this.path[i + 1].y + 2048/2)
-		}
+	getPathCurve () {
+		// return points on path as a curve
+		return new Phaser.Curves.Spline(this.path);
 	}
-	*/
 
 	updatePosition(scene) {
 		super.updatePosition(scene)
 
 		// add the current position into `this.path`
-		this.path.push(Phaser.Geom.Point.Clone(this.pos));
-		if (this.path.length > this.mass * 10) {
+		this.path.push(new Phaser.Math.Vector2(this.pos.x + 2048/2, this.pos.y + 2048/2));
+		if (this.path.length > Math.min(this.mass * 10, (this.distance * Phaser.Math.PI2)/2)) {
 			this.path.splice(0, 1)
 		}
 	}
@@ -170,7 +163,7 @@ Satellite
 - Defines the functionality for a satellite that orbit around a planet
 - subclass of Body
 *****************************/
-class Satellite extends Body {
+class Moon extends Body {
 	constructor (_id, _mass, _diameter, _parent, _distance, _pos, _vel) {
 		super(_id, _mass, _diameter, _pos, _vel);
 		this.parent = _parent;
@@ -181,20 +174,28 @@ class Satellite extends Body {
 	}
 
 	initialize (scene) {
-		// copy parent's position
-		if (typeof(scene.bodies[this.parent].pos) != "undefined" && scene.bodies[this.parent].pos.x != 0) {
-			this.pos.x = scene.bodies[this.parent].pos.x + this.distance * Math.cos(this.theta);
-			this.pos.y = scene.bodies[this.parent].pos.y + this.distance * Math.sin(this.theta);
-		}
+		super.initialize(scene)
 
-		super.initialize(scene);
+		if (this.parent != null) {
+			this.parent = scene.bodies[this.parent]
+		}
+		// copy parent's position
+		if (typeof(this.parent.pos) != "undefined" && this.parent.pos.x != 0) {
+			this.pos.x = this.parent.pos.x + this.distance * Math.cos(this.theta);
+			this.pos.y = this.parent.pos.y + this.distance * Math.sin(this.theta);
+		}
+	}
+
+	getPathCurve () {
+		// return points on path as a curve
+		return new Phaser.Curves.Spline(this.path);
 	}
 
 	updatePosition(scene) {
-		if (typeof(scene.bodies[this.parent].pos) != "undefined" && scene.bodies[this.parent].pos.x != 0) {
+		if (typeof(this.parent.pos) != "undefined" && this.parent.pos.x != 0) {
 			this.theta += this.deltaTheta;
-			this.pos.x = scene.bodies[this.parent].pos.x + this.distance * Math.cos(this.theta);
-			this.pos.y = scene.bodies[this.parent].pos.y + this.distance * Math.sin(this.theta);
+			this.pos.x = this.parent.pos.x + this.distance * Math.cos(this.theta);
+			this.pos.y = this.parent.pos.y + this.distance * Math.sin(this.theta);
 		}
 
 		//update position in scene
@@ -202,8 +203,8 @@ class Satellite extends Body {
         this.sprite.setPosition(this.pos.x + 2048/2, this.pos.y + 2048/2)
 
 		// add the current position into `this.path`
-		this.path.push(Phaser.Geom.Point.Clone(this.pos));
-		if (this.path.length > this.mass * 10) {
+		this.path.push(new Phaser.Math.Vector2(this.pos.x + 2048/2, this.pos.y + 2048/2));
+		if (this.path.length > Math.min(this.mass * 10, (this.distance * Phaser.Math.PI2)/2)) {
 			this.path.splice(0, 1)
 		}
 	}

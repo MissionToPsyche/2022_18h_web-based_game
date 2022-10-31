@@ -8,6 +8,10 @@ class Freeplay extends Phaser.Scene {
         this.paused = false
         this.graphics;
         this.gravText;
+        this.path;
+        this.curve;
+        this.points;
+        this.graphics;
         this.pauseIndicator;
     }
 
@@ -37,6 +41,12 @@ class Freeplay extends Phaser.Scene {
     }
 
     create () {
+        this.graphics = this.add.graphics();
+
+        this.path = { t: 0, vec: new Phaser.Math.Vector2() };
+
+        this.curve = new Phaser.Curves.Spline(this.points);
+
         //Solar system is 2048x2048
         this.matter.world.setBounds(0, 0, 2048, 2048);
         this.cameras.main.setBounds(0, 0, 2048, 2048).setZoom(3).setName('main');
@@ -56,7 +66,7 @@ class Freeplay extends Phaser.Scene {
         //creating Body objects
         this.json = this.cache.json.get('bodies');
         for (var type in this.json) {
-            if (type != "satellites") {
+            if (type != "moons") {
                 for (var body of this.json[type]) {
         
                     let id = body['id'];
@@ -67,7 +77,7 @@ class Freeplay extends Phaser.Scene {
                         let parent = body['orbits'];
                         let angle = body['angle'];
                         let orbit_distance = body['orbit_distance']['value'];
-                        this.bodies[id] = new Planet(id, mass, diameter, parent, angle, orbit_distance);
+                        this.bodies[id] = new Satellite(id, mass, diameter, parent, angle, orbit_distance);
                     } else {
                         this.bodies[id] = new Probe(id, mass, diameter);
                     }
@@ -80,7 +90,7 @@ class Freeplay extends Phaser.Scene {
                     let diameter = body['diameter']['value'];
                     let parent = body['orbits'];
                     let orbit_distance = body['orbit_distance']['value'];
-                    this.bodies[id] = new Satellite(id, mass, diameter, parent, orbit_distance);
+                    this.bodies[id] = new Moon(id, mass, diameter, parent, orbit_distance);
                 }
             }
         }
@@ -88,7 +98,6 @@ class Freeplay extends Phaser.Scene {
         //creating a UI camera for UI elements
         const UICam = this.cameras.add(0, 0, 2048, 2048)
 
-        console.log("========Initializing========")
         //initialize all bodies
         for (const body in this.bodies) {
             if(this.bodies[body].initialize){
@@ -101,7 +110,6 @@ class Freeplay extends Phaser.Scene {
         }
 
         this.player = this.bodies["psyche_probe"].sprite;
-        console.log(this.player);
         this.cameras.main.startFollow(this.player, false);
 
         //subscribe probe to all other bodies.
@@ -112,6 +120,8 @@ class Freeplay extends Phaser.Scene {
             }
         }
 
+        UICam.ignore(this.graphics);
+
         this.cursors = this.input.keyboard.createCursorKeys();
         this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         this.pauseKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
@@ -119,7 +129,7 @@ class Freeplay extends Phaser.Scene {
     }
 
     //this is the scene's main update loop
-    update() {
+    update () {
         //Probe controls
         //**TO DO: Wrap in a custom controler later.
         const moveUnit = 0.01
@@ -182,24 +192,21 @@ class Freeplay extends Phaser.Scene {
             return
         }
 
-        for (const body in this.bodies) {
-            /*
-            if(this.graphics){
-                this.graphics.destroy()
-            }
-            this.graphics = this.add.graphics()
-            */
+        this.graphics.clear(); //clear previous itteration's graphics
 
+        for (const body in this.bodies) {
             //apply dynamic gravity
             //NOTE: THIS IS A BAD PLACE TO DO THIS. MOVE THIS TO AN APPROPRIATE PLACE LATER!!
             this.bodies[body].notify() 
 
             //draw paths
-            /*
-            if(this.bodies[body].id != "psyche_probe"){
-                this.bodies[body].drawPath(this.graphics)
+            var path = this.bodies[body].path;
+            if(path && path.length > 0){
+                this.graphics.lineStyle(1, 0xffffff, 0.5);
+                this.bodies[body].getPathCurve().draw(this.graphics, 64);
+        
+                this.graphics.fillStyle(0x00ff00, 1);
             }
-            */
     
             //update body positions
             this.bodies[body].updatePosition(this)
