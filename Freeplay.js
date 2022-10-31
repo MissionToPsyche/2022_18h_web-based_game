@@ -95,6 +95,7 @@ class Freeplay extends Phaser.Scene {
             //appear on UI camera
             CameraManager.addGameSprite(this.bodies[body].sprite);
         }
+        CameraManager.addGameSprite(this.graphics); //adding graphics to game sprites so that it doesn't show up in UI.
 
         //subscribe probe to all other bodies.
         //NOTE** hard coded to psyche probe for now

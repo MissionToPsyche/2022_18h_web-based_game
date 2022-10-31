@@ -29,14 +29,14 @@ class Body {
 		}
 
 		// affect position by calculated velocity
-		this.pos.x += this.vel.x 
-		this.pos.y += this.vel.y
+		this.pos.x += this.vel.x;
+		this.pos.y += this.vel.y;
 
         //update position in scene
-        //**TO DO: find better way to center everything.
-        var finalX = this.pos.x + 2048/2;
-        var finalY = this.pos.y + 2048/2;
-        this.sprite.setPosition(finalX, finalY)
+        this.sprite.setPosition(this.pos.x, this.pos.y);
+		//since the body class considers 0,0 as the center,
+		//have to offset the sprite so that it's in the right place
+		CameraManager.offsetByScreensize(this.sprite);
 	}
 
 	force(f) {
@@ -138,8 +138,8 @@ class Satellite extends Body {
 	updatePosition(scene) {
 		super.updatePosition(scene)
 
-		// add the current position into `this.path`
-		this.path.push(new Phaser.Math.Vector2(this.pos.x + 2048/2, this.pos.y + 2048/2));
+		// add the current onscreen position into `this.path`
+		this.path.push(new Phaser.Math.Vector2(this.sprite.x, this.sprite.y));
 		if (this.path.length > Math.min(this.mass * 10, (this.distance * Phaser.Math.PI2)/2)) {
 			this.path.splice(0, 1)
 		}

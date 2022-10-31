@@ -59,4 +59,8 @@ class CameraManager {
         this.followSprite = sprite;
         this.mainCamera.startFollow(sprite, false);
     }
+
+    static offsetByScreensize(sprite) {
+        sprite.setPosition(sprite.x + this.cameraWidth/2, sprite.y + this.cameraHeight/2);
+    }
 }
