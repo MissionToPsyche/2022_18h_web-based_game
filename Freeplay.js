@@ -1,4 +1,6 @@
 class Freeplay extends Phaser.Scene {
+    //Variable used to contain the angle of the probe.
+    angle = 0;
     constructor () {
         super({key:"Freeplay"});
         //creating body objects
@@ -111,24 +113,65 @@ class Freeplay extends Phaser.Scene {
         
         if (this.cursors.left.isDown)
         {
-            this.bodies["psyche_probe"].vel.x -= moveUnit; 
-            this.bodies["psyche_probe"].sprite.angle = -45;           
+            this.bodies["psyche_probe"].vel.x -= moveUnit;
+            //Either turn the probe left or right depending on its current angle.
+            if(this.angle > -45){
+                this.bodies["psyche_probe"].sprite.angle -= 1;
+                this.angle --; 
+            } else if(this.angle < -45){
+                this.bodies["psyche_probe"].sprite.angle += 1;
+                this.angle ++; 
+            }         
             
         }
         else if (this.cursors.right.isDown)
         {
             this.bodies["psyche_probe"].vel.x += moveUnit;
-            this.bodies["psyche_probe"].sprite.angle = 135;
+
+            //Either turn the probe left or right depending on its current angle.
+            // Set the value of the probe to 225 if it is currently facing down 
+            //to make it turn the shortest distance.
+            if(this.angle == -135){
+                this.angle = 225;
+            } else if(this.angle < 135){
+                this.bodies["psyche_probe"].sprite.angle += 1;
+                this.angle ++; 
+                console.log(this.bodies["psyche_probe"].sprite.angle);
+            } else if(this.angle > 135){
+                this.bodies["psyche_probe"].sprite.angle -= 1;
+                console.log(this.bodies["psyche_probe"].sprite.angle);
+                this.angle --; 
+            }
         }
         if (this.cursors.up.isDown)
         {
             this.bodies["psyche_probe"].vel.y -= moveUnit;
-            this.bodies["psyche_probe"].sprite.angle = 45;
+
+            //Either turn the probe left or right depending on its current angle.
+            if(this.angle > 45){
+                this.bodies["psyche_probe"].sprite.angle -= 1;
+                this.angle --; 
+            } else if(this.angle < 45){
+                this.bodies["psyche_probe"].sprite.angle += 1;
+                this.angle ++; 
+            }  
         }
         else if (this.cursors.down.isDown)
         {
             this.bodies["psyche_probe"].vel.y += moveUnit;
-            this.bodies["psyche_probe"].sprite.angle = -135;
+
+            //Either turn the probe left or right depending on its current angle.
+            // Set the value of the probe to -225 if it is currently facing right 
+            //to make it turn the shortest distance.
+            if(this.angle == 135){
+                this.angle = -225;
+            } else if(this.angle < -135){
+                this.bodies["psyche_probe"].sprite.angle += 1;
+                this.angle ++; 
+            } else if(this.angle > -135){
+                this.bodies["psyche_probe"].sprite.angle -= 1;
+                this.angle --; 
+            }
         }
         if (this.spaceKey.isDown && this.keyToggle) {
             if (this.bodies["psyche_probe"].gravityToggle){
