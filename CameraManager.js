@@ -60,7 +60,7 @@ class CameraManager {
         this.mainCamera.startFollow(sprite, false);
     }
 
-    static offsetByScreensize(sprite) {
-        sprite.setPosition(sprite.x + this.cameraWidth/2, sprite.y + this.cameraHeight/2);
+    static getCenter() {
+        return new Phaser.Geom.Point(this.cameraWidth/2, this.cameraHeight/2);
     }
 }

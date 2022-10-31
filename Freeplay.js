@@ -172,18 +172,18 @@ class Freeplay extends Phaser.Scene {
 
         //prevent psyche from going too far out for now
 	    //note: FOR TESTING ONLY, THIS IS A BAD WAY OF DOING THIS
-        if (this.bodies["psyche_probe"].pos.x >= 650) {
+        if (this.bodies["psyche_probe"].pos.x >= 650 + 1024) {
             this.bodies["psyche_probe"].vel.x = 0
-            this.bodies["psyche_probe"].pos.x = 649
-        } if (this.bodies["psyche_probe"].pos.y >= 650) {
+            this.bodies["psyche_probe"].pos.x = 649 + 1024
+        } if (this.bodies["psyche_probe"].pos.y >= 650 + 1024) {
             this.bodies["psyche_probe"].vel.y = 0
-            this.bodies["psyche_probe"].pos.y = 649
-        } if (this.bodies["psyche_probe"].pos.x <= -650) {
+            this.bodies["psyche_probe"].pos.y = 649 + 1024
+        } if (this.bodies["psyche_probe"].pos.x <= -650 + 1024) {
             this.bodies["psyche_probe"].vel.x = 0
-            this.bodies["psyche_probe"].pos.x = -649
-        } if (this.bodies["psyche_probe"].pos.y <= -650) {
+            this.bodies["psyche_probe"].pos.x = -649 + 1024
+        } if (this.bodies["psyche_probe"].pos.y <= -650 + 1024) {
             this.bodies["psyche_probe"].vel.y = 0
-            this.bodies["psyche_probe"].pos.y = -649
+            this.bodies["psyche_probe"].pos.y = -649 + 1024
         }
 
         // don't update bodies if paused
