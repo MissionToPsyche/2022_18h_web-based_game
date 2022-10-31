@@ -216,13 +216,16 @@ Probe
 class Probe extends Body {
 	constructor (_id, _mass, _diameter, _pos, _vel) {
 		super(_id, _mass, _diameter, _pos, _vel)
-		this.gravityToggle = false; //TO DO: REMOVE WHEN DONE TESTING GRAVITY
+		// the initial state of gravity system
+		// if the gravify is on at the beginning of the game, the Probe will have a 
+		// initial velocity when starting from the earth
+		this.gravityToggle = true; //TO DO: REMOVE WHEN DONE TESTING GRAVITY
 	}
 
 	initialize (scene) {
         super.initialize(scene);
-		this.pos.x = scene.bodies["sol"].pos.x;
-		this.pos.y = scene.bodies["sol"].pos.y;
+        this.pos.x = scene.bodies["earth"].pos.x;
+		this.pos.y = scene.bodies["earth"].pos.y;
 	}
 
     update (f) {

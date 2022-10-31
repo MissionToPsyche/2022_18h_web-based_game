@@ -48,7 +48,7 @@ class Freeplay extends Phaser.Scene {
 
         this.add.image(50, 50, 'logo').setScale(0.5);
         this.gravText = this.add.text(4, 90, '0')
-        this.gravText.setText("Gravity: OFF")
+        this.gravText.setText("Gravity: ON")
 
         //ignore all UI elements on main camera.
         this.cameras.main.ignore([logo, this.gravText, this.playIndicator, this.pauseIndicator])
