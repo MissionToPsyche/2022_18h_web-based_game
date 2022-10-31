@@ -108,21 +108,27 @@ class Freeplay extends Phaser.Scene {
         //Probe controls
         //**TO DO: Wrap in a custom controler later.
         const moveUnit = 0.01
+        
         if (this.cursors.left.isDown)
         {
-            this.bodies["psyche_probe"].vel.x -= moveUnit;
+            this.bodies["psyche_probe"].vel.x -= moveUnit; 
+            this.bodies["psyche_probe"].sprite.angle = -45;           
+            
         }
         else if (this.cursors.right.isDown)
         {
             this.bodies["psyche_probe"].vel.x += moveUnit;
+            this.bodies["psyche_probe"].sprite.angle = 135;
         }
         if (this.cursors.up.isDown)
         {
             this.bodies["psyche_probe"].vel.y -= moveUnit;
+            this.bodies["psyche_probe"].sprite.angle = 45;
         }
         else if (this.cursors.down.isDown)
         {
             this.bodies["psyche_probe"].vel.y += moveUnit;
+            this.bodies["psyche_probe"].sprite.angle = -135;
         }
         if (this.spaceKey.isDown && this.keyToggle) {
             if (this.bodies["psyche_probe"].gravityToggle){
