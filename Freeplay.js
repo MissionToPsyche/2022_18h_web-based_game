@@ -115,6 +115,11 @@ class Freeplay extends Phaser.Scene {
         this.cursors = this.input.keyboard.createCursorKeys();
         this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         this.pauseKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
+        this.input.on("pointerdown", function (pointer){
+            if ((pointer.x > 934) && (pointer.x < 994) && (pointer.y > 678) &&(pointer.y < 738)) {
+                this.paused = !this.paused;
+            }
+        }, this);
         console.log(Phaser.Input.Keyboard.SPACEBAR)
     }
 
