@@ -6,7 +6,7 @@ class Body {
 	constructor (_id, _mass, _diameter, _pos, _vel) {
 		this.id = _id
 		this.mass = _mass
-		this.pos = new Phaser.Geom.Point(0, 0)
+		this.pos = CameraManager.getCenter()
 		this.vel = new Phaser.Math.Vector2(0, 0)
 		this.r = _diameter / 2
 		this.imagePath = "img/icons/" + _id + ".svg"
@@ -29,14 +29,11 @@ class Body {
 		}
 
 		// affect position by calculated velocity
-		this.pos.x += this.vel.x 
-		this.pos.y += this.vel.y
+		this.pos.x += this.vel.x;
+		this.pos.y += this.vel.y;
 
         //update position in scene
-        //**TO DO: find better way to center everything.
-        var finalX = this.pos.x + 2048/2;
-        var finalY = this.pos.y + 2048/2;
-        this.sprite.setPosition(finalX, finalY)
+        this.sprite.setPosition(this.pos.x, this.pos.y);
 	}
 
 	force(f) {
@@ -90,7 +87,7 @@ class Body {
 }
 
 /*****************************
-Planet
+Satellite
 - Defines the functionality for a planet that orbit around the sun
 - subclass of Body
 *****************************/
@@ -108,7 +105,7 @@ class Satellite extends Body {
 
 	initialize (scene) {
         super.initialize(scene)
-		let origin = new Phaser.Geom.Point(0, 0)
+		let origin = CameraManager.getCenter();
 		if (this.parent != null) {
 			this.parent = scene.bodies[this.parent]
 			Phaser.Geom.Point.CopyFrom(this.parent.pos, origin)
@@ -117,8 +114,8 @@ class Satellite extends Body {
 		this.pos = origin
 
 		// this calculates the initial position in the orbit, at `distance` from `parent`
-		var bodyPos = origin.setTo(origin.x + this.distance * Math.cos(this.angle), origin.y + this.distance * Math.sin(this.angle))
-		var bodyVel = new Phaser.Math.Vector2(bodyPos.x, bodyPos.y)
+		var bodyPos = origin.setTo(origin.x + (this.distance * Math.cos(this.angle)), origin.y + (this.distance * Math.sin(this.angle)))
+		var bodyVel = new Phaser.Math.Vector2(this.distance * Math.cos(this.angle), this.distance * Math.sin(this.angle))
 
 		if (this.parent != null) {
 			bodyVel.rotate(Phaser.Math.TAU)
@@ -138,8 +135,8 @@ class Satellite extends Body {
 	updatePosition(scene) {
 		super.updatePosition(scene)
 
-		// add the current position into `this.path`
-		this.path.push(new Phaser.Math.Vector2(this.pos.x + 2048/2, this.pos.y + 2048/2));
+		// add the current onscreen position into `this.path`
+		this.path.push(new Phaser.Math.Vector2(this.sprite.x, this.sprite.y));
 		if (this.path.length > Math.min(this.mass * 10, (this.distance * Phaser.Math.PI2)/2)) {
 			this.path.splice(0, 1)
 		}
@@ -200,10 +197,10 @@ class Moon extends Body {
 
 		//update position in scene
         //**TO DO: find better way to center everything.
-        this.sprite.setPosition(this.pos.x + 2048/2, this.pos.y + 2048/2)
+        this.sprite.setPosition(this.pos.x, this.pos.y)
 
 		// add the current position into `this.path`
-		this.path.push(new Phaser.Math.Vector2(this.pos.x + 2048/2, this.pos.y + 2048/2));
+		this.path.push(new Phaser.Math.Vector2(this.sprite.x, this.sprite.y));
 		if (this.path.length > Math.min(this.mass * 10, (this.distance * Phaser.Math.PI2)/2)) {
 			this.path.splice(0, 1)
 		}

@@ -24,7 +24,7 @@ class Freeplay extends Phaser.Scene {
         this.load.image('pause', 'img/icons/pause-circle.svg'); //asset for psyche logo
 
         //staticly loading all the individual assets for now
-        //**TO DO: */ change to a more general
+        //**TO DO: change to a more general method of preloading images
         this.load.image('earth', "img/icons/earth.svg");
         this.load.image('jupiter', "img/icons/jupiter.svg");
         this.load.image('luna', "img/icons/luna.svg");
@@ -49,19 +49,9 @@ class Freeplay extends Phaser.Scene {
 
         //Solar system is 2048x2048
         this.matter.world.setBounds(0, 0, 2048, 2048);
-        this.cameras.main.setBounds(0, 0, 2048, 2048).setZoom(3).setName('main');
-        this.cameras.main.centerOn(0, 0);
-
-        var logo = this.add.image(50, 50, 'logo').setScale(0.5);
-        this.playIndicator = this.add.image(964, 708, 'play').setScale(0.5)
-        this.pauseIndicator = this.add.image(964, 708, 'pause').setScale(0.5)
-
-        this.add.image(50, 50, 'logo').setScale(0.5);
-        this.gravText = this.add.text(4, 90, '0')
-        this.gravText.setText("Gravity: OFF")
-
-        //ignore all UI elements on main camera.
-        this.cameras.main.ignore([logo, this.gravText, this.playIndicator, this.pauseIndicator])
+        //initializing cameras
+        CameraManager.initializeMainCamera(this);
+        CameraManager.initializeUICamera(this);
 
         //creating Body objects
         this.json = this.cache.json.get('bodies');
@@ -95,22 +85,17 @@ class Freeplay extends Phaser.Scene {
             }
         }
 
-        //creating a UI camera for UI elements
-        const UICam = this.cameras.add(0, 0, 2048, 2048)
-
         //initialize all bodies
         for (const body in this.bodies) {
             if(this.bodies[body].initialize){
                 this.bodies[body].initialize(this);
                 
             }
-            //made sure every body ignores UICamera
-            //Everything not in the UI NEEDS to be added to this.
-            UICam.ignore(this.bodies[body].sprite)
+            //add each body's to game sprites so that they don't
+            //appear on UI camera
+            CameraManager.addGameSprite(this.bodies[body].sprite);
         }
-
-        this.player = this.bodies["psyche_probe"].sprite;
-        this.cameras.main.startFollow(this.player, false);
+        CameraManager.addGameSprite(this.graphics); //adding graphics to game sprites so that it doesn't show up in UI.
 
         //subscribe probe to all other bodies.
         //NOTE** hard coded to psyche probe for now
@@ -119,13 +104,27 @@ class Freeplay extends Phaser.Scene {
                 this.bodies[body].subscribe(this.bodies["psyche_probe"]);
             }
         }
+        //setting probe as the player
+        this.player = this.bodies["psyche_probe"].sprite;
+        CameraManager.setFollowSprite(this.player);
 
-        UICam.ignore(this.graphics);
+        //creating UISprites
+        var logo = this.add.image(50,50,'logo').setScale(0.5);
+        this.gravText = this.add.text(4, 90, '0')
+        this.gravText.setText("Gravity: OFF")
+        this.playIndicator = this.add.image(964, 708, 'play').setScale(0.5)
+        this.pauseIndicator = this.add.image(964, 708, 'pause').setScale(0.5)
 
+        //adding to UIsprites so main camera ignores them
+        CameraManager.addUISprite(logo);
+        CameraManager.addUISprite(this.gravText);
+        CameraManager.addUISprite(this.playIndicator);
+        CameraManager.addUISprite(this.pauseIndicator);
+
+        //creating control keys
         this.cursors = this.input.keyboard.createCursorKeys();
         this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         this.pauseKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
-        console.log(Phaser.Input.Keyboard.SPACEBAR)
     }
 
     //this is the scene's main update loop
@@ -173,18 +172,18 @@ class Freeplay extends Phaser.Scene {
 
         //prevent psyche from going too far out for now
 	    //note: FOR TESTING ONLY, THIS IS A BAD WAY OF DOING THIS
-        if (this.bodies["psyche_probe"].pos.x >= 650) {
+        if (this.bodies["psyche_probe"].pos.x >= 650 + 1024) {
             this.bodies["psyche_probe"].vel.x = 0
-            this.bodies["psyche_probe"].pos.x = 649
-        } if (this.bodies["psyche_probe"].pos.y >= 650) {
+            this.bodies["psyche_probe"].pos.x = 649 + 1024
+        } if (this.bodies["psyche_probe"].pos.y >= 650 + 1024) {
             this.bodies["psyche_probe"].vel.y = 0
-            this.bodies["psyche_probe"].pos.y = 649
-        } if (this.bodies["psyche_probe"].pos.x <= -650) {
+            this.bodies["psyche_probe"].pos.y = 649 + 1024
+        } if (this.bodies["psyche_probe"].pos.x <= -650 + 1024) {
             this.bodies["psyche_probe"].vel.x = 0
-            this.bodies["psyche_probe"].pos.x = -649
-        } if (this.bodies["psyche_probe"].pos.y <= -650) {
+            this.bodies["psyche_probe"].pos.x = -649 + 1024
+        } if (this.bodies["psyche_probe"].pos.y <= -650 + 1024) {
             this.bodies["psyche_probe"].vel.y = 0
-            this.bodies["psyche_probe"].pos.y = -649
+            this.bodies["psyche_probe"].pos.y = -649 + 1024
         }
 
         // don't update bodies if paused
