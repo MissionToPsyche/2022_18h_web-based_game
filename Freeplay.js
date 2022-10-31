@@ -4,9 +4,15 @@ class Freeplay extends Phaser.Scene {
         //creating body objects
         this.bodies = {};
         this.json;
-        this.keyToggle = true //for testing only
+        this.keyToggle = false //for testing only
+        this.paused = false
         this.graphics;
         this.gravText;
+        this.path;
+        this.curve;
+        this.points;
+        this.graphics;
+        this.pauseIndicator;
     }
 
     preload () {
@@ -14,6 +20,8 @@ class Freeplay extends Phaser.Scene {
 
         //loading in all image assets
         this.load.image('logo', 'img/Psyche_Icon_Color-SVG.svg'); //asset for psyche logo
+        this.load.image('play', 'img/icons/play-circle.svg'); //asset for psyche logo
+        this.load.image('pause', 'img/icons/pause-circle.svg'); //asset for psyche logo
 
         //staticly loading all the individual assets for now
         //**TO DO: change to a more general method of preloading images
@@ -24,6 +32,7 @@ class Freeplay extends Phaser.Scene {
         this.load.image('mercury', "img/icons/mercury.svg");
         this.load.image('neptune', "img/icons/neptune.svg");
         this.load.image('pluto', "img/icons/pluto.svg");
+        this.load.image('psyche', "img/icons/psyche.svg");
         this.load.image('psyche_probe', "img/icons/psyche_probe.svg");
         this.load.image('saturn', "img/icons/saturn.svg");
         this.load.image('sol', "img/icons/sol.svg");
@@ -32,6 +41,12 @@ class Freeplay extends Phaser.Scene {
     }
 
     create () {
+        this.graphics = this.add.graphics();
+
+        this.path = { t: 0, vec: new Phaser.Math.Vector2() };
+
+        this.curve = new Phaser.Curves.Spline(this.points);
+
         //Solar system is 2048x2048
         this.matter.world.setBounds(0, 0, 2048, 2048);
         //initializing cameras
@@ -41,18 +56,31 @@ class Freeplay extends Phaser.Scene {
         //creating Body objects
         this.json = this.cache.json.get('bodies');
         for (var type in this.json) {
-            for (var body of this.json[type]) {
-    
-                let id = body['id'];
-                let mass = body['mass']['value'];
-                let diameter = body['diameter']['value'];
-    
-                if(type != "probes"){
+            if (type != "moons") {
+                for (var body of this.json[type]) {
+        
+                    let id = body['id'];
+                    let mass = body['mass']['value'];
+                    let diameter = body['diameter']['value'];
+        
+                    if(type != "probes"){
+                        let parent = body['orbits'];
+                        let angle = body['angle'];
+                        let orbit_distance = body['orbit_distance']['value'];
+                        this.bodies[id] = new Satellite(id, mass, diameter, parent, angle, orbit_distance);
+                    } else {
+                        this.bodies[id] = new Probe(id, mass, diameter);
+                    }
+                }
+            } else {
+                // create satellites such as luna
+                for (var body of this.json[type]) {
+                    let id = body['id'];
+                    let mass = body['mass']['value'];
+                    let diameter = body['diameter']['value'];
                     let parent = body['orbits'];
                     let orbit_distance = body['orbit_distance']['value'];
-                    this.bodies[id] = new Satellite(id, mass, diameter, parent, orbit_distance);
-                } else {
-                    this.bodies[id] = new Probe(id, mass, diameter);
+                    this.bodies[id] = new Moon(id, mass, diameter, parent, orbit_distance);
                 }
             }
         }
@@ -83,14 +111,19 @@ class Freeplay extends Phaser.Scene {
         var logo = this.add.image(50,50,'logo').setScale(0.5);
         this.gravText = this.add.text(4, 90, '0')
         this.gravText.setText("Gravity: OFF")
+        this.playIndicator = this.add.image(964, 708, 'play').setScale(0.5)
+        this.pauseIndicator = this.add.image(964, 708, 'pause').setScale(0.5)
 
         //adding to UIsprites so main camera ignores them
         CameraManager.addUISprite(logo);
         CameraManager.addUISprite(this.gravText);
+        CameraManager.addUISprite(this.playIndicator);
+        CameraManager.addUISprite(this.pauseIndicator);
 
         //creating control keys
         this.cursors = this.input.keyboard.createCursorKeys();
         this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+        this.pauseKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
     }
 
     //this is the scene's main update loop
@@ -98,33 +131,42 @@ class Freeplay extends Phaser.Scene {
         //Probe controls
         //**TO DO: Wrap in a custom controler later.
         const moveUnit = 0.01
-        if (this.cursors.left.isDown)
-        {
-            this.bodies["psyche_probe"].vel.x -= moveUnit;
+
+        // update pause/play indicator
+        if (this.paused) {
+            this.playIndicator.setVisible(false)
+            this.pauseIndicator.setVisible(true)
+        } else {
+            this.pauseIndicator.setVisible(false)
+            this.playIndicator.setVisible(true)
         }
-        else if (this.cursors.right.isDown)
-        {
-            this.bodies["psyche_probe"].vel.x += moveUnit;
-        }
-        if (this.cursors.up.isDown)
-        {
-            this.bodies["psyche_probe"].vel.y -= moveUnit;
-        }
-        else if (this.cursors.down.isDown)
-        {
-            this.bodies["psyche_probe"].vel.y += moveUnit;
-        }
-        if (this.spaceKey.isDown && this.keyToggle) {
-            if (this.bodies["psyche_probe"].gravityToggle){
-                this.bodies["psyche_probe"].gravityToggle = false
-                this.gravText.setText("Gravity: OFF")
-            } else {
-                this.bodies["psyche_probe"].gravityToggle = true
-                this.gravText.setText("Gravity: ON")
+
+        // only move if not paused
+        if (!this.paused) {
+            if (this.cursors.left.isDown) {
+                this.bodies["psyche_probe"].vel.x -= moveUnit;
             }
-            this.keyToggle = false
-        } else if (!this.spaceKey.isDown) {
+            else if (this.cursors.right.isDown) {
+                this.bodies["psyche_probe"].vel.x += moveUnit;
+            }
+
+            if (this.cursors.up.isDown) {
+                this.bodies["psyche_probe"].vel.y -= moveUnit;
+            }
+            else if (this.cursors.down.isDown) {
+                this.bodies["psyche_probe"].vel.y += moveUnit;
+            }
+        }
+
+        if (this.spaceKey.isDown) {
+            this.bodies["psyche_probe"].gravityToggle = !this.keyToggle ? !this.bodies["psyche_probe"].gravityToggle : this.bodies["psyche_probe"].gravityToggle
+            this.gravText.setText("Gravity: " + (this.bodies["psyche_probe"].gravityToggle ? "ON" : "OFF"))
             this.keyToggle = true
+        } else if (this.pauseKey.isDown) {
+            this.paused = !this.keyToggle ? !this.paused : this.paused
+            this.keyToggle = true
+        } else {
+            this.keyToggle = false
         }
 
         //prevent psyche from going too far out for now
@@ -143,24 +185,26 @@ class Freeplay extends Phaser.Scene {
             this.bodies["psyche_probe"].pos.y = -649
         }
 
-        for (const body in this.bodies) {
-            /*
-            if(this.graphics){
-                this.graphics.destroy()
-            }
-            this.graphics = this.add.graphics()
-            */
+        // don't update bodies if paused
+        if (this.paused) {
+            return
+        }
 
+        this.graphics.clear(); //clear previous itteration's graphics
+
+        for (const body in this.bodies) {
             //apply dynamic gravity
             //NOTE: THIS IS A BAD PLACE TO DO THIS. MOVE THIS TO AN APPROPRIATE PLACE LATER!!
             this.bodies[body].notify() 
 
             //draw paths
-            /*
-            if(this.bodies[body].id != "psyche_probe"){
-                this.bodies[body].drawPath(this.graphics)
+            var path = this.bodies[body].path;
+            if(path && path.length > 0){
+                this.graphics.lineStyle(1, 0xffffff, 0.5);
+                this.bodies[body].getPathCurve().draw(this.graphics, 64);
+        
+                this.graphics.fillStyle(0x00ff00, 1);
             }
-            */
     
             //update body positions
             this.bodies[body].updatePosition(this)
