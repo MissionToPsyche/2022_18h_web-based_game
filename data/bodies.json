@@ -21,7 +21,7 @@
             }
         }
     ],
-    "planets": [
+    "satellites": [
         {
             "id": "mercury",
             "name": "Mercury",
@@ -233,7 +233,7 @@
             }
         }
     ],
-    "satellites": [
+    "moons": [
         {
             "id": "luna",
             "name": "Moon",
