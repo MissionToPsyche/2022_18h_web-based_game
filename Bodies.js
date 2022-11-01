@@ -120,7 +120,7 @@ class Satellite extends Body {
 		if (this.parent != null) {
 			bodyVel.rotate(Phaser.Math.TAU)
 			bodyVel.setLength(Math.sqrt(G * (this.parent.mass / 
-				Phaser.Math.Distance.BetweenPoints(bodyPos, this.parent.pos))));
+			Phaser.Math.Distance.BetweenPoints(bodyPos, this.parent.pos))));
 		}
 
 		this.pos = bodyPos
@@ -234,5 +234,17 @@ class Probe extends Body {
 		}
 
         super.update(f);
+    }
+
+    getPsycheDistance(scene) {
+    	let psycheX = scene.bodies["psyche"].pos.x;
+    	let psycheY = scene.bodies["psyche"].pos.y;
+    	return Math.sqrt((this.pos.x - psycheX) * (this.pos.x - psycheX) + (this.pos.y - psycheY) * (this.pos.y - psycheY));
+    }
+
+    getPsycheDirection(scene) {
+    	let psycheX = scene.bodies["psyche"].pos.x;
+    	let psycheY = scene.bodies["psyche"].pos.y;
+    	return (psycheY - this.pos.y) / (psycheX - this.pos.x);
     }
 }

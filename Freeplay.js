@@ -217,6 +217,14 @@ class Freeplay extends Phaser.Scene {
     
             //update body positions
             this.bodies[body].updatePosition(this)
+
+            // find psyche
+            let distance = this.bodies["psyche_probe"].getPsycheDistance(this);
+            let line = new Phaser.Geom.Line(this.bodies["psyche_probe"].pos.x, this.bodies["psyche_probe"].pos.y, this.bodies["psyche"].pos.x, this.bodies["psyche"].pos.y);
+            this.graphics.strokeLineShape(line);
+            if (distance < 100) {
+                console.log(this.bodies["psyche_probe"].getPsycheDirection(this));
+            }
         }
     }
 }
