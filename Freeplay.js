@@ -116,11 +116,11 @@ class Freeplay extends Phaser.Scene {
             this.bodies["psyche_probe"].vel.x -= moveUnit;
             //Either turn the probe left or right depending on its current angle.
             if(this.angle > -45){
-                this.bodies["psyche_probe"].sprite.angle -= 1;
-                this.angle --; 
+                this.bodies["psyche_probe"].sprite.angle -= 5;
+                this.angle -=5; 
             } else if(this.angle < -45){
-                this.bodies["psyche_probe"].sprite.angle += 1;
-                this.angle ++; 
+                this.bodies["psyche_probe"].sprite.angle += 5;
+                this.angle +=5; 
             }         
             
         }
@@ -134,13 +134,13 @@ class Freeplay extends Phaser.Scene {
             if(this.angle == -135){
                 this.angle = 225;
             } else if(this.angle < 135){
-                this.bodies["psyche_probe"].sprite.angle += 1;
-                this.angle ++; 
+                this.bodies["psyche_probe"].sprite.angle += 5;
+                this.angle +=5; 
                 console.log(this.bodies["psyche_probe"].sprite.angle);
             } else if(this.angle > 135){
-                this.bodies["psyche_probe"].sprite.angle -= 1;
+                this.bodies["psyche_probe"].sprite.angle -= 5;
                 console.log(this.bodies["psyche_probe"].sprite.angle);
-                this.angle --; 
+                this.angle -=5; 
             }
         }
         if (this.cursors.up.isDown)
@@ -149,11 +149,11 @@ class Freeplay extends Phaser.Scene {
 
             //Either turn the probe left or right depending on its current angle.
             if(this.angle > 45){
-                this.bodies["psyche_probe"].sprite.angle -= 1;
-                this.angle --; 
+                this.bodies["psyche_probe"].sprite.angle -= 5;
+                this.angle -=5; 
             } else if(this.angle < 45){
-                this.bodies["psyche_probe"].sprite.angle += 1;
-                this.angle ++; 
+                this.bodies["psyche_probe"].sprite.angle += 5;
+                this.angle +=5; 
             }  
         }
         else if (this.cursors.down.isDown)
@@ -166,11 +166,11 @@ class Freeplay extends Phaser.Scene {
             if(this.angle == 135){
                 this.angle = -225;
             } else if(this.angle < -135){
-                this.bodies["psyche_probe"].sprite.angle += 1;
-                this.angle ++; 
+                this.bodies["psyche_probe"].sprite.angle += 5;
+                this.angle +=5; 
             } else if(this.angle > -135){
-                this.bodies["psyche_probe"].sprite.angle -= 1;
-                this.angle --; 
+                this.bodies["psyche_probe"].sprite.angle -= 5;
+                this.angle -=5; 
             }
         }
         if (this.spaceKey.isDown && this.keyToggle) {
