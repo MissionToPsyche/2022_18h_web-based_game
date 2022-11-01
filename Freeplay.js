@@ -112,7 +112,7 @@ class Freeplay extends Phaser.Scene {
         //creating UISprites
         var logo = this.add.image(50,50,'logo').setScale(0.5);
         this.gravText = this.add.text(4, 90, '0')
-        this.gravText.setText("Gravity: OFF")
+        this.gravText.setText("Gravity: ON")
         this.playIndicator = this.add.image(964, 708, 'play').setScale(0.5)
         this.pauseIndicator = this.add.image(964, 708, 'pause').setScale(0.5)
 
