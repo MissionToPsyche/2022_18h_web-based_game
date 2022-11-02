@@ -39,7 +39,6 @@ class Body {
 	force(f) {
 		// calculate velocity based off of force applied
 		this.vel.add(gaussLaw(f, this.mass));
-		this.vel.add(this.parent.vel);
 	}
 
 	//begining of implementation of observer pattern to notify probes when close enough to annother body
@@ -108,23 +107,18 @@ class Satellite extends Body {
 		let origin = CameraManager.getCenter();
 		if (this.parent != null) {
 			this.parent = scene.bodies[this.parent]
-			Phaser.Geom.Point.CopyFrom(this.parent.pos, origin)
+			origin.x = this.parent.pos.x;
+			origin.y = this.parent.pos.y;
 		}
 
 		this.pos = origin
 
-		// this calculates the initial position in the orbit, at `distance` from `parent`
-		var bodyPos = origin.setTo(origin.x + (this.distance * Math.cos(this.angle)), origin.y + (this.distance * Math.sin(this.angle)))
-		var bodyVel = new Phaser.Math.Vector2(this.distance * Math.cos(this.angle), this.distance * Math.sin(this.angle))
+		this.pos.x = origin.x + this.distance * Math.cos(this.angle);
+		this.pos.y = origin.y + this.distance * Math.sin(this.angle);
 
 		if (this.parent != null) {
-			bodyVel.rotate(Phaser.Math.TAU)
-			bodyVel.setLength(Math.sqrt(G * (this.parent.mass / 
-				Phaser.Math.Distance.BetweenPoints(bodyPos, this.parent.pos))));
+			this.vel = orbitVelocity(this, this.parent, this.angle)
 		}
-
-		this.pos = bodyPos
-		this.vel = bodyVel
 	}
 
 	getPathCurve () {
@@ -161,13 +155,13 @@ Satellite
 - subclass of Body
 *****************************/
 class Moon extends Body {
-	constructor (_id, _mass, _diameter, _parent, _distance, _pos, _vel) {
+	constructor (_id, _mass, _diameter, _parent, _angle, _distance, _pos, _vel) {
 		super(_id, _mass, _diameter, _pos, _vel);
 		this.parent = _parent;
 		this.distance = _distance;
 		this.path = [];
-		this.theta = 0;
-		this.deltaTheta = 0.17;
+		this.theta = _angle;
+		this.deltaTheta = 0.30;
 	}
 
 	initialize (scene) {
@@ -219,8 +213,8 @@ class Probe extends Body {
 
 	initialize (scene) {
         super.initialize(scene);
-		this.pos.x = scene.bodies["sol"].pos.x;
-		this.pos.y = scene.bodies["sol"].pos.y;
+		this.pos.x = scene.bodies["earth"].pos.x;
+		this.pos.y = scene.bodies["earth"].pos.y;
 	}
 
     update (f) {

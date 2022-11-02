@@ -79,8 +79,9 @@ class Freeplay extends Phaser.Scene {
                     let mass = body['mass']['value'];
                     let diameter = body['diameter']['value'];
                     let parent = body['orbits'];
+                    let angle = body['angle'];
                     let orbit_distance = body['orbit_distance']['value'];
-                    this.bodies[id] = new Moon(id, mass, diameter, parent, orbit_distance);
+                    this.bodies[id] = new Moon(id, mass, diameter, parent, angle, orbit_distance);
                 }
             }
         }
@@ -104,6 +105,7 @@ class Freeplay extends Phaser.Scene {
                 this.bodies[body].subscribe(this.bodies["psyche_probe"]);
             }
         }
+        this.bodies["earth"].subscribe(this.bodies["luna"]);
         //setting probe as the player
         this.player = this.bodies["psyche_probe"].sprite;
         CameraManager.setFollowSprite(this.player);
