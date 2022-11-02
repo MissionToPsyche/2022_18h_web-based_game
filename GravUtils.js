@@ -14,7 +14,9 @@ function gaussLaw (f, m1) {
 }
 
 function orbitVelocity(satellite, parent, angle) {
-	var r = Phaser.Math.Distance.BetweenPoints(satellite.pos, parent.pos);
+	var p1 = new Phaser.Geom.Point(satellite.x, satellite.y);
+	var p2 = new Phaser.Geom.Point(parent.x, parent.y);
+	var r = Phaser.Math.Distance.BetweenPoints(p1, p2);
 	var v = Math.sqrt((G * parent.mass) / r);
 	var final = new Phaser.Math.Vector2(r * Math.cos(angle), r * Math.sin(angle));
 

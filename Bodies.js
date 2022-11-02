@@ -2,26 +2,19 @@
 Body
 - Defines the functionality for celestial bodies in the simulation
 *****************************/
-class Body {
-	constructor (_id, _mass, _diameter, _pos, _vel) {
+class Body extends Phaser.GameObjects.Sprite {
+	constructor (_scene, _pos, _id, _mass, _diameter, _frame) {
+		super(_scene, _pos.x, _pos.y, _id, _frame);
 		this.id = _id
 		this.mass = _mass
-		this.pos = CameraManager.getCenter()
 		this.vel = new Phaser.Math.Vector2(0, 0)
 		this.r = _diameter / 2
-		this.imagePath = "img/icons/" + _id + ".svg"
-		this.sprite;
 		this.listeners = []
 		this.listenRadius = 10 + this.r
-	}
 
-    //loads the Body's image into memory
-    //'scene' is the scene the image is being loaded into
-    initialize(scene) {
-        this.sprite = scene.add.sprite(this.pos.x,this.pos.y,this.id)
-            .setDisplaySize(this.r * 2, this.r *2)
-            .setSize(this.r * 2, this.r *2);
-    }
+		this.setDisplaySize(this.r * 2, this.r * 2)
+			.setSize(this.r * 2, this.r *2);
+	}
 
 	updatePosition(scene) {
 		if (this.parent != null) {
@@ -29,11 +22,8 @@ class Body {
 		}
 
 		// affect position by calculated velocity
-		this.pos.x += this.vel.x;
-		this.pos.y += this.vel.y;
-
-        //update position in scene
-        this.sprite.setPosition(this.pos.x, this.pos.y);
+		this.x += this.vel.x;
+		this.y += this.vel.y;
 	}
 
 	force(f) {
@@ -62,20 +52,22 @@ class Body {
 
 		this.listeners.forEach(function (listener) {
 			//calculate radius from origin (this body) to lister
-			const r = Phaser.Math.Distance.BetweenPoints(this.pos, listener.pos)
+			var p1 = new Phaser.Geom.Point(this.x, this.y);
+			var p2 = new Phaser.Geom.Point(listener.x, listener.y);
+			const r = Phaser.Math.Distance.BetweenPoints(p1, p2);
 
 			//check if lister is within listen radius
 			//also check if it's not within the planet so the probe isn't flung out of existance.
 			if (r <= this.listenRadius && r > this.r) {
 				//create vector f in direction of the listening body
-                const f = new Phaser.Math.Vector2(0, 0).copy(this.pos).subtract(listener.pos)
+                const f = new Phaser.Math.Vector2(this.x - listener.x, this.y - listener.y);
 				//set direction vector to the length of the force applied by gravity between
 				//the two bodies, resulting in the force vector between the two bodies
-				f.setLength(calcGravity(listener.mass, this.mass, r))
+				f.setLength(calcGravity(listener.mass, this.mass, r));
 				//inform the listener of the force.
-				listener.update(f)
+				listener.update(f);
 			}
-		}.bind(this))
+		}.bind(this));
 	}
 
 	update(f) {
@@ -91,30 +83,24 @@ Satellite
 - subclass of Body
 *****************************/
 class Satellite extends Body {
-	constructor (_id, _mass, _diameter, _parent, _angle, _distance) {
-		super(_id, _mass, _diameter);
-		this.parent = _parent;
+	constructor (_scene, _id, _mass, _diameter, _parent, _angle, _distance, _frame) {
+		super(_scene, CameraManager.getCenter(), _id, _mass, _diameter, _frame);
+		this.scene = _scene;
 		this.distance = _distance;
 		this.path = [];
 		this.angle = _angle;
-		if (typeof(this.angle) == "undefined") {
+		if (!this.angle) {
 			this.angle = 0;
 		}
-	}
 
-	initialize (scene) {
-        super.initialize(scene)
-		let origin = CameraManager.getCenter();
-		if (this.parent != null) {
-			this.parent = scene.bodies[this.parent]
-			origin.x = this.parent.pos.x;
-			origin.y = this.parent.pos.y;
+		if (_parent != null) {
+			this.parent = _parent;
+			this.x = this.parent.x;
+			this.y = this.parent.y;
 		}
 
-		this.pos = origin
-
-		this.pos.x = origin.x + this.distance * Math.cos(this.angle);
-		this.pos.y = origin.y + this.distance * Math.sin(this.angle);
+		this.x = this.x + this.distance * Math.cos(this.angle);
+		this.y = this.y + this.distance * Math.sin(this.angle);
 
 		if (this.parent != null) {
 			this.vel = orbitVelocity(this, this.parent, this.angle)
@@ -130,15 +116,17 @@ class Satellite extends Body {
 		super.updatePosition(scene)
 
 		// add the current onscreen position into `this.path`
-		this.path.push(new Phaser.Math.Vector2(this.sprite.x, this.sprite.y));
+		this.path.push(new Phaser.Math.Vector2(this.x, this.y));
 		if (this.path.length > Math.min(this.mass * 10, (this.distance * Phaser.Math.PI2)/2)) {
 			this.path.splice(0, 1)
 		}
 	}
 
 	orbit(parent) {
-		const r = Phaser.Math.Distance.BetweenPoints(this.pos, parent.pos)
-		const f = new Phaser.Math.Vector2(0, 0).copy(parent.pos).subtract(this.pos)
+		var p1 = new Phaser.Geom.Point(this.x, this.y);
+		var p2 = new Phaser.Geom.Point(parent.x, parent.y);
+		const r = Phaser.Math.Distance.BetweenPoints(p1, p2)
+		const f = new Phaser.Math.Vector2(0, 0).copy(p2).subtract(p1)
 
 		// this is Newton's Law of Universal Gravitation (https://en.wikipedia.org/wiki/Newton%27s_law_of_universal_gravitation)
 		// we use it here to calculate the force `parent` applies
@@ -155,25 +143,22 @@ Satellite
 - subclass of Body
 *****************************/
 class Moon extends Body {
-	constructor (_id, _mass, _diameter, _parent, _angle, _distance, _pos, _vel) {
-		super(_id, _mass, _diameter, _pos, _vel);
+	constructor (_scene, _id, _mass, _diameter, _parent, _angle, _distance, _frame) {
+		super(_scene, CameraManager.getCenter(), _id, _mass, _diameter, _frame);
+		this.scene = _scene
 		this.parent = _parent;
 		this.distance = _distance;
 		this.path = [];
 		this.theta = _angle;
 		this.deltaTheta = 0.30;
-	}
-
-	initialize (scene) {
-		super.initialize(scene)
 
 		if (this.parent != null) {
-			this.parent = scene.bodies[this.parent]
+			this.parent = _parent;
 		}
 		// copy parent's position
 		if (typeof(this.parent.pos) != "undefined" && this.parent.pos.x != 0) {
-			this.pos.x = this.parent.pos.x + this.distance * Math.cos(this.theta);
-			this.pos.y = this.parent.pos.y + this.distance * Math.sin(this.theta);
+			this.x = this.parent.x + this.distance * Math.cos(this.theta);
+			this.y = this.parent.y + this.distance * Math.sin(this.theta);
 		}
 	}
 
@@ -183,18 +168,14 @@ class Moon extends Body {
 	}
 
 	updatePosition(scene) {
-		if (typeof(this.parent.pos) != "undefined" && this.parent.pos.x != 0) {
+		if (typeof(this.parent) != "undefined" && this.parent.x != 0) {
 			this.theta += this.deltaTheta;
-			this.pos.x = this.parent.pos.x + this.distance * Math.cos(this.theta);
-			this.pos.y = this.parent.pos.y + this.distance * Math.sin(this.theta);
+			this.x = this.parent.x + this.distance * Math.cos(this.theta);
+			this.y = this.parent.y + this.distance * Math.sin(this.theta);
 		}
 
-		//update position in scene
-        //**TO DO: find better way to center everything.
-        this.sprite.setPosition(this.pos.x, this.pos.y)
-
 		// add the current position into `this.path`
-		this.path.push(new Phaser.Math.Vector2(this.sprite.x, this.sprite.y));
+		this.path.push(new Phaser.Math.Vector2(this.x, this.y));
 		if (this.path.length > Math.min(this.mass * 10, (this.distance * Phaser.Math.PI2)/2)) {
 			this.path.splice(0, 1)
 		}
@@ -206,15 +187,12 @@ Probe
 - Defines the functionality for a spacecraft
 *****************************/
 class Probe extends Body {
-	constructor (_id, _mass, _diameter, _pos, _vel) {
-		super(_id, _mass, _diameter, _pos, _vel)
+	constructor (_scene, _id, _mass, _diameter, _frame) {
+		super(_scene, CameraManager.getCenter(), _id, _mass, _diameter, _frame)
 		this.gravityToggle = false; //TO DO: REMOVE WHEN DONE TESTING GRAVITY
-	}
 
-	initialize (scene) {
-        super.initialize(scene);
-		this.pos.x = scene.bodies["earth"].pos.x;
-		this.pos.y = scene.bodies["earth"].pos.y;
+		this.x = this.scene.bodies["earth"].x;
+		this.y = this.scene.bodies["earth"].y;
 	}
 
     update (f) {
