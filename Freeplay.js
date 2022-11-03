@@ -58,18 +58,17 @@ class Freeplay extends Phaser.Scene {
         for (var type in this.json) {
             if (type != "moons") {
                 for (var body of this.json[type]) {
-        
                     let id = body['id'];
                     let mass = body['mass']['value'];
                     let diameter = body['diameter']['value'];
-        
+
                     if(type != "probes"){
-                        let parent = body['orbits'];
+                        let parent = this.bodies[body['orbits']];
                         let angle = body['angle'];
                         let orbit_distance = body['orbit_distance']['value'];
-                        this.bodies[id] = new Satellite(id, mass, diameter, parent, angle, orbit_distance);
+                        this.bodies[id] = new Satellite(this, id, mass, diameter, parent, angle, orbit_distance);
                     } else {
-                        this.bodies[id] = new Probe(id, mass, diameter);
+                        this.bodies[id] = new Probe(this, id, mass, diameter);
                     }
                 }
             } else {
@@ -78,22 +77,20 @@ class Freeplay extends Phaser.Scene {
                     let id = body['id'];
                     let mass = body['mass']['value'];
                     let diameter = body['diameter']['value'];
-                    let parent = body['orbits'];
+                    let parent = this.bodies[body['orbits']];
+                    let angle = body['angle'];
                     let orbit_distance = body['orbit_distance']['value'];
-                    this.bodies[id] = new Moon(id, mass, diameter, parent, orbit_distance);
+                    this.bodies[id] = new Moon(this, id, mass, diameter, parent, angle, orbit_distance);
                 }
             }
         }
 
-        //initialize all bodies
         for (const body in this.bodies) {
-            if(this.bodies[body].initialize){
-                this.bodies[body].initialize(this);
-                
-            }
-            //add each body's to game sprites so that they don't
+            //add each body to the scene
+            this.add.existing(this.bodies[body]);
+            //add bodies to game sprites so that they don't
             //appear on UI camera
-            CameraManager.addGameSprite(this.bodies[body].sprite);
+            CameraManager.addGameSprite(this.bodies[body]);
         }
         CameraManager.addGameSprite(this.graphics); //adding graphics to game sprites so that it doesn't show up in UI.
 
@@ -104,8 +101,9 @@ class Freeplay extends Phaser.Scene {
                 this.bodies[body].subscribe(this.bodies["psyche_probe"]);
             }
         }
+        this.bodies["earth"].subscribe(this.bodies["luna"]);
         //setting probe as the player
-        this.player = this.bodies["psyche_probe"].sprite;
+        this.player = this.bodies["psyche_probe"];
         CameraManager.setFollowSprite(this.player);
 
         //creating UISprites
@@ -172,18 +170,18 @@ class Freeplay extends Phaser.Scene {
 
         //prevent psyche from going too far out for now
 	    //note: FOR TESTING ONLY, THIS IS A BAD WAY OF DOING THIS
-        if (this.bodies["psyche_probe"].pos.x >= 650 + 1024) {
+        if (this.bodies["psyche_probe"].x >= 650 + 1024) {
             this.bodies["psyche_probe"].vel.x = 0
-            this.bodies["psyche_probe"].pos.x = 649 + 1024
-        } if (this.bodies["psyche_probe"].pos.y >= 650 + 1024) {
+            this.bodies["psyche_probe"].x = 649 + 1024
+        } if (this.bodies["psyche_probe"].y >= 650 + 1024) {
             this.bodies["psyche_probe"].vel.y = 0
-            this.bodies["psyche_probe"].pos.y = 649 + 1024
-        } if (this.bodies["psyche_probe"].pos.x <= -650 + 1024) {
+            this.bodies["psyche_probe"].y = 649 + 1024
+        } if (this.bodies["psyche_probe"].x <= -650 + 1024) {
             this.bodies["psyche_probe"].vel.x = 0
-            this.bodies["psyche_probe"].pos.x = -649 + 1024
-        } if (this.bodies["psyche_probe"].pos.y <= -650 + 1024) {
+            this.bodies["psyche_probe"].x = -649 + 1024
+        } if (this.bodies["psyche_probe"].y <= -650 + 1024) {
             this.bodies["psyche_probe"].vel.y = 0
-            this.bodies["psyche_probe"].pos.y = -649 + 1024
+            this.bodies["psyche_probe"].y = -649 + 1024
         }
 
         // don't update bodies if paused
