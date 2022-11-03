@@ -3,7 +3,7 @@ Body
 - Defines the functionality for celestial bodies in the simulation
 *****************************/
 class Body {
-	constructor (_id, _mass, _diameter, _pos, _vel) {
+	constructor (_id, _mass, _diameter, _pos, _vel, _collisionGroup) {
 		this.id = _id
 		this.mass = _mass
 		this.pos = CameraManager.getCenter()
@@ -13,12 +13,13 @@ class Body {
 		this.sprite;
 		this.listeners = []
 		this.listenRadius = 10 + this.r
+		this.collisionGroup = _collisionGroup
 	}
 
     //loads the Body's image into memory
     //'scene' is the scene the image is being loaded into
     initialize(scene) {
-        this.sprite = scene.add.sprite(this.pos.x,this.pos.y,this.id)
+        this.sprite = scene.matter.add.sprite(this.pos.x,this.pos.y,this.id).setBounce(1).setFriction(0, 0, 0).setCollisionGroup(this.collisionGroup)
             .setDisplaySize(this.r * 2, this.r *2)
             .setSize(this.r * 2, this.r *2);
     }
@@ -92,8 +93,8 @@ Satellite
 - subclass of Body
 *****************************/
 class Satellite extends Body {
-	constructor (_id, _mass, _diameter, _parent, _angle, _distance) {
-		super(_id, _mass, _diameter);
+	constructor (_id, _mass, _diameter, _parent, _angle, _distance, _collisionGroup) {
+		super(_id, _mass, _diameter, _collisionGroup);
 		this.parent = _parent;
 		this.distance = _distance;
 		this.path = [];
@@ -161,8 +162,8 @@ Satellite
 - subclass of Body
 *****************************/
 class Moon extends Body {
-	constructor (_id, _mass, _diameter, _parent, _distance, _pos, _vel) {
-		super(_id, _mass, _diameter, _pos, _vel);
+	constructor (_id, _mass, _diameter, _parent, _distance, _pos, _vel, _collisionGroup) {
+		super(_id, _mass, _diameter, _pos, _vel, _collisionGroup);
 		this.parent = _parent;
 		this.distance = _distance;
 		this.path = [];
@@ -212,8 +213,8 @@ Probe
 - Defines the functionality for a spacecraft
 *****************************/
 class Probe extends Body {
-	constructor (_id, _mass, _diameter, _pos, _vel) {
-		super(_id, _mass, _diameter, _pos, _vel)
+	constructor (_id, _mass, _diameter, _pos, _vel, _collisionGroup) {
+		super(_id, _mass, _diameter, _pos, _vel, _collisionGroup)
 		this.gravityToggle = false; //TO DO: REMOVE WHEN DONE TESTING GRAVITY
 	}
 

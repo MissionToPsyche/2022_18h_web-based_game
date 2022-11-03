@@ -62,14 +62,18 @@ class Freeplay extends Phaser.Scene {
                     let id = body['id'];
                     let mass = body['mass']['value'];
                     let diameter = body['diameter']['value'];
+                    //objects in group 1 (in this case Satellites) will not collide with each other
+                    let collisionGroup1 = this.matter.world.nextGroup(true);
+                    let collisionGroup2 = this.matter.world.nextGroup();
         
                     if(type != "probes"){
                         let parent = body['orbits'];
                         let angle = body['angle'];
                         let orbit_distance = body['orbit_distance']['value'];
-                        this.bodies[id] = new Satellite(id, mass, diameter, parent, angle, orbit_distance);
+
+                        this.bodies[id] = new Satellite(id, mass, diameter, parent, angle, orbit_distance, collisionGroup1);
                     } else {
-                        this.bodies[id] = new Probe(id, mass, diameter);
+                        this.bodies[id] = new Probe(id, mass, diameter, collisionGroup2);
                     }
                 }
             } else {
