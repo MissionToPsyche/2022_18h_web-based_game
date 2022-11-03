@@ -242,9 +242,15 @@ class Probe extends Body {
     	return Math.sqrt((this.pos.x - psycheX) * (this.pos.x - psycheX) + (this.pos.y - psycheY) * (this.pos.y - psycheY));
     }
 
-    getPsycheDirection(scene) {
+    getPsycheDirectionX(scene) {
     	let psycheX = scene.bodies["psyche"].pos.x;
-    	let psycheY = scene.bodies["psyche"].pos.y;
-    	return (psycheY - this.pos.y) / (psycheX - this.pos.x);
+    	return (psycheX - this.pos.x) / this.getPsycheDistance(scene);
     }
+
+    getPsycheDirectionY(scene) {
+    	let psycheY = scene.bodies["psyche"].pos.y;
+    	return (psycheY - this.pos.y) / this.getPsycheDistance(scene);
+    }
+
+
 }

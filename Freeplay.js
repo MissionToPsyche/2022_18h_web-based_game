@@ -13,6 +13,7 @@ class Freeplay extends Phaser.Scene {
         this.points;
         this.graphics;
         this.pauseIndicator;
+        this.direction;
     }
 
     preload () {
@@ -22,6 +23,7 @@ class Freeplay extends Phaser.Scene {
         this.load.image('logo', 'img/Psyche_Icon_Color-SVG.svg'); //asset for psyche logo
         this.load.image('play', 'img/icons/play-circle.svg'); //asset for psyche logo
         this.load.image('pause', 'img/icons/pause-circle.svg'); //asset for psyche logo
+        this.load.image('direction', 'img/icons/direction.png'); // an arrow
 
         //staticly loading all the individual assets for now
         //**TO DO: change to a more general method of preloading images
@@ -115,6 +117,10 @@ class Freeplay extends Phaser.Scene {
         this.gravText.setText("Gravity: ON")
         this.playIndicator = this.add.image(964, 708, 'play').setScale(0.5)
         this.pauseIndicator = this.add.image(964, 708, 'pause').setScale(0.5)
+
+        // add direction pointer image
+        this.direction = this.add.image(0, 0, 'direction');
+        this.direction.setVisible(false);
 
         //adding to UIsprites so main camera ignores them
         CameraManager.addUISprite(logo);
@@ -220,11 +226,21 @@ class Freeplay extends Phaser.Scene {
 
             // find psyche
             let distance = this.bodies["psyche_probe"].getPsycheDistance(this);
-            let line = new Phaser.Geom.Line(this.bodies["psyche_probe"].pos.x, this.bodies["psyche_probe"].pos.y, this.bodies["psyche"].pos.x, this.bodies["psyche"].pos.y);
-            this.graphics.strokeLineShape(line);
-            if (distance < 100) {
-                console.log(this.bodies["psyche_probe"].getPsycheDirection(this));
+            let arrowDistance = 300;
+            let width = 1024;
+            let height = 768;
+            let directionX = width / 2 + this.bodies["psyche_probe"].getPsycheDirectionX(this) * arrowDistance;
+            let directionY = height / 2 + this.bodies["psyche_probe"].getPsycheDirectionY(this) * arrowDistance;
+            
+            // set the rotation of the arrow image
+            let directionAngle = Math.asin(this.bodies["psyche_probe"].getPsycheDirectionY(this));
+            if (this.bodies["psyche_probe"].getPsycheDirectionX(this) < 0) {
+                directionAngle = Math.PI - directionAngle;
             }
+
+            this.direction.setPosition(directionX, directionY);
+            this.direction.rotation = directionAngle;
+            this.direction.setVisible(true);
         }
     }
 }
