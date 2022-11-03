@@ -198,7 +198,7 @@ class Freeplay extends Phaser.Scene {
         for (const body in this.bodies) {
             //apply dynamic gravity
             //NOTE: THIS IS A BAD PLACE TO DO THIS. MOVE THIS TO AN APPROPRIATE PLACE LATER!!
-            this.bodies[body].notify() 
+            this.bodies[body].notify()
 
             //draw paths
             var path = this.bodies[body].path;

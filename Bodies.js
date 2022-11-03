@@ -11,6 +11,7 @@ class Body extends Phaser.GameObjects.Sprite {
 		this.r = _diameter / 2
 		this.listeners = []
 		this.listenRadius = 10 + this.r
+		this.collided = false;
 
 		this.setDisplaySize(this.r * 2, this.r * 2)
 			.setSize(this.r * 2, this.r *2);
@@ -66,6 +67,12 @@ class Body extends Phaser.GameObjects.Sprite {
 				f.setLength(calcGravity(listener.mass, this.mass, r));
 				//inform the listener of the force.
 				listener.update(f);
+			}
+
+			//check if this body and a listener within its range collided
+			if (r <= this.r && this.collided == false) {
+				console.log(listener.id + " collided with " + this.id + "!");
+				this.collided = true;
 			}
 		}.bind(this));
 	}
@@ -191,7 +198,8 @@ class Probe extends Body {
 		super(_scene, CameraManager.getCenter(), _id, _mass, _diameter, _frame)
 		this.gravityToggle = false; //TO DO: REMOVE WHEN DONE TESTING GRAVITY
 
-		this.x = this.scene.bodies["earth"].x;
+		//deploy the probe near earth so that it doesn't immediately collide
+		this.x = this.scene.bodies["earth"].x - 35;
 		this.y = this.scene.bodies["earth"].y;
 	}
 
