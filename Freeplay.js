@@ -118,10 +118,6 @@ class Freeplay extends Phaser.Scene {
         this.playIndicator = this.add.image(964, 708, 'play').setScale(0.5)
         this.pauseIndicator = this.add.image(964, 708, 'pause').setScale(0.5)
 
-        // add direction pointer image
-        this.direction = this.add.image(0, 0, 'direction');
-        this.direction.setVisible(false);
-
         //adding to UIsprites so main camera ignores them
         CameraManager.addUISprite(logo);
         CameraManager.addUISprite(this.gravText);
@@ -226,21 +222,36 @@ class Freeplay extends Phaser.Scene {
 
             // find psyche
             let distance = this.bodies["psyche_probe"].getPsycheDistance(this);
-            let arrowDistance = 300;
+
+            // the distance between pshche probe and the arrow
+            let arrowDistance = 50;
             let width = 1024;
             let height = 768;
             let directionX = width / 2 + this.bodies["psyche_probe"].getPsycheDirectionX(this) * arrowDistance;
             let directionY = height / 2 + this.bodies["psyche_probe"].getPsycheDirectionY(this) * arrowDistance;
             
-            // set the rotation of the arrow image
+            // calculate the rotation of the arrow image
             let directionAngle = Math.asin(this.bodies["psyche_probe"].getPsycheDirectionY(this));
             if (this.bodies["psyche_probe"].getPsycheDirectionX(this) < 0) {
                 directionAngle = Math.PI - directionAngle;
             }
 
+            // add the image of the arrow if it not added
+            if (typeof(this.direction) == "undefined") {
+                this.direction = this.add.image(directionX, directionY, 'direction').setScale(0.2);
+                CameraManager.addUISprite(this.direction);
+            }
+
+            // set the correct position and angle of the arrow to point to psyche
             this.direction.setPosition(directionX, directionY);
             this.direction.rotation = directionAngle;
-            this.direction.setVisible(true);
+
+            // decrease opacity when near psyche
+            if (distance < 90) {
+                this.direction.alpha = (distance - 50)/50;
+            } else {
+                this.direction.alpha = 0.8;
+            }
         }
     }
 }
