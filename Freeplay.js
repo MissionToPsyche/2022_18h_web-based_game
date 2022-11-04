@@ -28,6 +28,7 @@ class Freeplay extends Phaser.Scene {
         this.load.image('neptune', "img/icons/neptune.svg");
         this.load.image('pluto', "img/icons/pluto.svg");
         this.load.image('psyche_probe', "img/icons/psyche_probe.svg");
+        this.load.image('psyche_probe_icon', "img/icons/arrow.png");
         this.load.image('saturn', "img/icons/saturn.svg");
         this.load.image('sol', "img/icons/sol.svg");
         this.load.image('uranus', "img/icons/uranus.svg");
@@ -52,7 +53,7 @@ class Freeplay extends Phaser.Scene {
         this.gravText.setText("Gravity: OFF")
 
         //ignore all UI elements on main camera.
-        this.cameras.main.ignore([ logo, this.gravText, map_border ])
+        this.cameras.main.ignore([ logo, this.gravText, map_border])
 
         //creating Body objects
         this.json = this.cache.json.get('bodies');
@@ -91,6 +92,8 @@ class Freeplay extends Phaser.Scene {
         this.player = this.bodies["psyche_probe"].sprite;
         console.log(this.player);
         this.cameras.main.startFollow(this.player, false);
+        // Make the main camera ignore the player icon.
+        this.cameras.main.ignore([this.bodies["psyche_probe_icon"].sprite])
 
         //subscribe probe to all other bodies.
         //NOTE** hard coded to psyche probe for now
@@ -114,6 +117,7 @@ class Freeplay extends Phaser.Scene {
         if (this.cursors.left.isDown)
         {
             this.bodies["psyche_probe"].vel.x -= moveUnit;
+            this.bodies["psyche_probe_icon"].vel.x -= moveUnit;
             //Either turn the probe left or right depending on its current angle.
             if(this.angle > -45){
                 this.bodies["psyche_probe"].sprite.angle -= 5;
@@ -127,6 +131,7 @@ class Freeplay extends Phaser.Scene {
         else if (this.cursors.right.isDown)
         {
             this.bodies["psyche_probe"].vel.x += moveUnit;
+            this.bodies["psyche_probe_icon"].vel.x += moveUnit;
 
             //Either turn the probe left or right depending on its current angle.
             // Set the value of the probe to 225 if it is currently facing down 
@@ -136,16 +141,16 @@ class Freeplay extends Phaser.Scene {
             } else if(this.angle < 135){
                 this.bodies["psyche_probe"].sprite.angle += 5;
                 this.angle +=5; 
-                console.log(this.bodies["psyche_probe"].sprite.angle);
+
             } else if(this.angle > 135){
                 this.bodies["psyche_probe"].sprite.angle -= 5;
-                console.log(this.bodies["psyche_probe"].sprite.angle);
                 this.angle -=5; 
             }
         }
         if (this.cursors.up.isDown)
         {
             this.bodies["psyche_probe"].vel.y -= moveUnit;
+            this.bodies["psyche_probe_icon"].vel.y -= moveUnit;
 
             //Either turn the probe left or right depending on its current angle.
             if(this.angle > 45){
@@ -159,6 +164,7 @@ class Freeplay extends Phaser.Scene {
         else if (this.cursors.down.isDown)
         {
             this.bodies["psyche_probe"].vel.y += moveUnit;
+            this.bodies["psyche_probe_icon"].vel.y += moveUnit;
 
             //Either turn the probe left or right depending on its current angle.
             // Set the value of the probe to -225 if it is currently facing right 
@@ -191,15 +197,23 @@ class Freeplay extends Phaser.Scene {
         if (this.bodies["psyche_probe"].pos.x >= 650) {
             this.bodies["psyche_probe"].vel.x = 0
             this.bodies["psyche_probe"].pos.x = 649
+            this.bodies["psyche_probe_icon"].vel.x = 0
+            this.bodies["psyche_probe_icon"].pos.x = 649
         } if (this.bodies["psyche_probe"].pos.y >= 650) {
             this.bodies["psyche_probe"].vel.y = 0
             this.bodies["psyche_probe"].pos.y = 649
+            this.bodies["psyche_probe_icon"].vel.y = 0
+            this.bodies["psyche_probe_icon"].pos.y = 649
         } if (this.bodies["psyche_probe"].pos.x <= -650) {
             this.bodies["psyche_probe"].vel.x = 0
             this.bodies["psyche_probe"].pos.x = -649
+            this.bodies["psyche_probe_icon"].vel.x = 0
+            this.bodies["psyche_probe_icon"].pos.x = -649
         } if (this.bodies["psyche_probe"].pos.y <= -650) {
             this.bodies["psyche_probe"].vel.y = 0
             this.bodies["psyche_probe"].pos.y = -649
+            this.bodies["psyche_probe_icon"].vel.y = 0
+            this.bodies["psyche_probe_icon"].pos.y = -649
         }
 
         for (const body in this.bodies) {
