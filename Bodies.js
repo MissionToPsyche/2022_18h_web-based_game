@@ -67,12 +67,19 @@ class Body extends Phaser.GameObjects.Sprite {
 				f.setLength(calcGravity(listener.mass, this.mass, r));
 				//inform the listener of the force.
 				listener.update(f);
-			}
+			} else if (r <= this.r) { //detect a collision
 
-			//check if this body and a listener within its range collided
-			if (r <= this.r && this.collided == false) {
+				//debug, remove later
 				console.log(listener.id + " collided with " + this.id + "!");
-				this.collided = true;
+				console.log(listener.id + " horizontal velocity: " + Math.abs(listener.vel.x));
+				console.log(listener.id + " vertical velocity:   " + Math.abs(listener.vel.y));
+
+				//bounce!
+				listener.vel.x *= -1;
+				listener.vel.y *= -1;
+
+				//trigger the failstate
+				//todo
 			}
 		}.bind(this));
 	}

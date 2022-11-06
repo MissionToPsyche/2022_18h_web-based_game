@@ -49,6 +49,7 @@ class Freeplay extends Phaser.Scene {
 
         //Solar system is 2048x2048
         this.matter.world.setBounds(0, 0, 2048, 2048);
+        
         //initializing cameras
         CameraManager.initializeMainCamera(this);
         CameraManager.initializeUICamera(this);
