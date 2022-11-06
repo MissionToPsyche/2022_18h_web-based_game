@@ -12,7 +12,8 @@ class Freeplay extends Phaser.Scene {
         this.curve;
         this.points;
         this.graphics;
-        this.pauseIndicator;
+        this.playButton;
+        this.pauseButton;
     }
 
     preload () {
@@ -20,8 +21,8 @@ class Freeplay extends Phaser.Scene {
 
         //loading in all image assets
         this.load.image('logo', 'img/Psyche_Icon_Color-SVG.svg'); //asset for psyche logo
-        this.load.image('play', 'img/icons/play-circle.svg'); //asset for psyche logo
-        this.load.image('pause', 'img/icons/pause-circle.svg'); //asset for psyche logo
+        this.playButton = this.load.image('play', 'img/icons/play-circle.svg'); //asset for psyche logo
+        this.pauseButton = this.load.image('pause', 'img/icons/pause-circle.svg'); //asset for psyche logo
 
         //staticly loading all the individual assets for now
         //**TO DO: change to a more general method of preloading images
@@ -110,14 +111,17 @@ class Freeplay extends Phaser.Scene {
         var logo = this.add.image(50,50,'logo').setScale(0.5);
         this.gravText = this.add.text(4, 90, '0')
         this.gravText.setText("Gravity: OFF")
-        this.playIndicator = this.add.image(964, 708, 'play').setScale(0.5)
-        this.pauseIndicator = this.add.image(964, 708, 'pause').setScale(0.5)
+        this.playButton = this.add.image(964, 708, 'play').setScale(0.5)
+        this.pauseButton = this.add.image(964, 708, 'pause').setScale(0.5)
+
+        this.playButton.setInteractive().on('pointerdown', this.togglePause);
+        this.pauseButton.setInteractive().on('pointerdown', this.togglePause);
 
         //adding to UIsprites so main camera ignores them
         CameraManager.addUISprite(logo);
         CameraManager.addUISprite(this.gravText);
-        CameraManager.addUISprite(this.playIndicator);
-        CameraManager.addUISprite(this.pauseIndicator);
+        CameraManager.addUISprite(this.playButton);
+        CameraManager.addUISprite(this.pauseButton);
 
         //creating control keys
         this.cursors = this.input.keyboard.createCursorKeys();
@@ -133,11 +137,11 @@ class Freeplay extends Phaser.Scene {
 
         // update pause/play indicator
         if (this.paused) {
-            this.playIndicator.setVisible(false)
-            this.pauseIndicator.setVisible(true)
+            this.playButton.setVisible(false)
+            this.pauseButton.setVisible(true)
         } else {
-            this.pauseIndicator.setVisible(false)
-            this.playIndicator.setVisible(true)
+            this.pauseButton.setVisible(false)
+            this.playButton.setVisible(true)
         }
 
         // only move if not paused
@@ -162,7 +166,10 @@ class Freeplay extends Phaser.Scene {
             this.gravText.setText("Gravity: " + (this.bodies["psyche_probe"].gravityToggle ? "ON" : "OFF"))
             this.keyToggle = true
         } else if (this.pauseKey.isDown) {
-            this.paused = !this.keyToggle ? !this.paused : this.paused
+            if (!this.keyToggle) {
+                this.togglePlay()
+            }
+
             this.keyToggle = true
         } else {
             this.keyToggle = false
@@ -208,5 +215,9 @@ class Freeplay extends Phaser.Scene {
             //update body positions
             this.bodies[body].updatePosition(this)
         }
+    }
+
+    togglePause() {
+        this.scene.paused = !this.scene.paused
     }
 }
