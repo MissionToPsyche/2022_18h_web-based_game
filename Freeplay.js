@@ -160,12 +160,6 @@ class Freeplay extends Phaser.Scene {
             this.bodies["psyche_probe"].gravityToggle = !this.keyToggle ? !this.bodies["psyche_probe"].gravityToggle : this.bodies["psyche_probe"].gravityToggle
             this.gravText.setText("Gravity: " + (this.bodies["psyche_probe"].gravityToggle ? "ON" : "OFF"))
             this.keyToggle = true
-        } else if (this.pauseKey.isDown) {
-            if (!this.keyToggle) {
-                this.togglePlay()
-            }
-
-            this.keyToggle = true
         } else {
             this.keyToggle = false
         }
@@ -174,8 +168,8 @@ class Freeplay extends Phaser.Scene {
 	    //note: FOR TESTING ONLY, THIS IS A BAD WAY OF DOING THIS
         if (this.bodies["psyche_probe"].x >= 650 + 1024) {
             this.bodies["psyche_probe"].vel.x = 0
-            this.bodies["psyche_probe"].x = 649 + 1024
         } if (this.bodies["psyche_probe"].y >= 650 + 1024) {
+            this.bodies["psyche_probe"].x = 649 + 1024
             this.bodies["psyche_probe"].vel.y = 0
             this.bodies["psyche_probe"].y = 649 + 1024
         } if (this.bodies["psyche_probe"].x <= -650 + 1024) {
@@ -184,11 +178,6 @@ class Freeplay extends Phaser.Scene {
         } if (this.bodies["psyche_probe"].y <= -650 + 1024) {
             this.bodies["psyche_probe"].vel.y = 0
             this.bodies["psyche_probe"].y = -649 + 1024
-        }
-
-        // don't update bodies if paused
-        if (this.paused) {
-            return
         }
 
         this.graphics.clear(); //clear previous itteration's graphics
