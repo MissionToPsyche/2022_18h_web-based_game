@@ -12,8 +12,6 @@ class Freeplay extends Phaser.Scene {
         this.curve;
         this.points;
         this.graphics;
-        this.playButton;
-        this.pauseButton;
     }
 
     preload () {
@@ -21,8 +19,8 @@ class Freeplay extends Phaser.Scene {
 
         //loading in all image assets
         this.load.image('logo', 'img/Psyche_Icon_Color-SVG.svg'); //asset for psyche logo
-        this.playButton = this.load.image('play', 'img/icons/play-circle.svg'); //asset for psyche logo
-        this.pauseButton = this.load.image('pause', 'img/icons/pause-circle.svg'); //asset for psyche logo
+        this.load.image('play', 'img/icons/play-circle.svg'); //asset for psyche logo
+        this.load.image('pause', 'img/icons/pause-circle.svg'); //asset for psyche logo
 
         //staticly loading all the individual assets for now
         //**TO DO: change to a more general method of preloading images
@@ -108,25 +106,19 @@ class Freeplay extends Phaser.Scene {
         CameraManager.setFollowSprite(this.player);
 
         //creating UISprites
-        var logo = this.add.image(50,50,'logo').setScale(0.5);
+        var logo = this.add.image(50, 50, 'logo').setScale(0.5);
         this.gravText = this.add.text(4, 90, '0')
         this.gravText.setText("Gravity: OFF")
-        this.playButton = this.add.image(964, 708, 'play').setScale(0.5)
-        this.pauseButton = this.add.image(964, 708, 'pause').setScale(0.5)
-
-        this.playButton.setInteractive().on('pointerdown', this.togglePause);
-        this.pauseButton.setInteractive().on('pointerdown', this.togglePause);
 
         //adding to UIsprites so main camera ignores them
         CameraManager.addUISprite(logo);
         CameraManager.addUISprite(this.gravText);
-        CameraManager.addUISprite(this.playButton);
-        CameraManager.addUISprite(this.pauseButton);
 
         //creating control keys
         this.cursors = this.input.keyboard.createCursorKeys();
         this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-        this.pauseKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
+
+        this.createPauseButton();
     }
 
     //this is the scene's main update loop
@@ -135,7 +127,8 @@ class Freeplay extends Phaser.Scene {
         //**TO DO: Wrap in a custom controler later.
         const moveUnit = 0.01
 
-        // update pause/play indicator
+        this.updatePauseButton();
+
         if (this.paused) {
             this.playButton.setVisible(false)
             this.pauseButton.setVisible(true)
@@ -145,7 +138,9 @@ class Freeplay extends Phaser.Scene {
         }
 
         // only move if not paused
-        if (!this.paused) {
+        if (this.paused) {
+            return
+        } else {
             if (this.cursors.left.isDown) {
                 this.bodies["psyche_probe"].vel.x -= moveUnit;
             }
@@ -217,7 +212,67 @@ class Freeplay extends Phaser.Scene {
         }
     }
 
-    togglePause() {
-        this.scene.paused = !this.scene.paused
+    createPauseButton() {
+        this.playButton = this.add.image(964, 708, 'play').setScale(0.5)
+        this.pauseButton = this.add.image(964, 708, 'pause').setScale(0.5)
+
+        this.input.keyboard
+            .on('keydown-P', () => {
+                this.playButton.setTint(0xABABAB);
+                this.pauseButton.setTint(0xABABAB);
+            }).on('keyup-P', () => {
+                this.playButton.setTint(0xFFFFFF);
+                this.pauseButton.setTint(0xFFFFFF);
+                this.paused = !this.paused
+            });
+
+        this.playButton.setInteractive()
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
+                this.playButton.setTint(0xDEDEDE);
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OUT, () => {
+                this.playButton.setTint(0xFFFFFF);
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
+                this.playButton.setTint(0xABABAB);
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
+                this.playButton.setTint(0xFFFFFF);
+                this.paused = !this.paused
+            })
+
+        this.pauseButton.setInteractive()
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
+                this.pauseButton.setTint(0xDEDEDE);
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OUT, () => {
+                this.pauseButton.setTint(0xFFFFFF);
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
+                this.pauseButton.setTint(0xABABAB);
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
+                this.pauseButton.setTint(0xFFFFFF);
+                this.paused = !this.paused
+            })
+            .on('keydown-P', () => {
+                this.pauseButton.setTint(0x8AFBFF);
+            }).on('keyup-P', () => {
+                this.pauseButton.setTint(0xFFFFFF);
+                this.paused = !this.paused
+            });
+
+        CameraManager.addUISprite(this.playButton);
+        CameraManager.addUISprite(this.pauseButton);
+    }
+
+    updatePauseButton() {
+        if (this.paused) {
+            this.playButton.setVisible(false)
+            this.pauseButton.setVisible(true)
+        } else {
+            this.pauseButton.setVisible(false)
+            this.playButton.setVisible(true)
+        }
     }
 }
