@@ -121,9 +121,11 @@ class Freeplay extends Phaser.Scene {
             //Either turn the probe left or right depending on its current angle.
             if(this.angle > -45){
                 this.bodies["psyche_probe"].sprite.angle -= 5;
+                this.bodies["psyche_probe_icon"].sprite.angle -= 5;
                 this.angle -=5; 
             } else if(this.angle < -45){
                 this.bodies["psyche_probe"].sprite.angle += 5;
+                this.bodies["psyche_probe_icon"].sprite.angle += 5;
                 this.angle +=5; 
             }         
             
@@ -140,10 +142,12 @@ class Freeplay extends Phaser.Scene {
                 this.angle = 225;
             } else if(this.angle < 135){
                 this.bodies["psyche_probe"].sprite.angle += 5;
+                this.bodies["psyche_probe_icon"].sprite.angle += 5;
                 this.angle +=5; 
 
             } else if(this.angle > 135){
                 this.bodies["psyche_probe"].sprite.angle -= 5;
+                this.bodies["psyche_probe_icon"].sprite.angle -= 5;
                 this.angle -=5; 
             }
         }
@@ -155,9 +159,11 @@ class Freeplay extends Phaser.Scene {
             //Either turn the probe left or right depending on its current angle.
             if(this.angle > 45){
                 this.bodies["psyche_probe"].sprite.angle -= 5;
+                this.bodies["psyche_probe_icon"].sprite.angle -= 5;
                 this.angle -=5; 
             } else if(this.angle < 45){
                 this.bodies["psyche_probe"].sprite.angle += 5;
+                this.bodies["psyche_probe_icon"].sprite.angle += 5;
                 this.angle +=5; 
             }  
         }
@@ -173,18 +179,22 @@ class Freeplay extends Phaser.Scene {
                 this.angle = -225;
             } else if(this.angle < -135){
                 this.bodies["psyche_probe"].sprite.angle += 5;
+                this.bodies["psyche_probe_icon"].sprite.angle += 5;
                 this.angle +=5; 
             } else if(this.angle > -135){
                 this.bodies["psyche_probe"].sprite.angle -= 5;
+                this.bodies["psyche_probe_icon"].sprite.angle -= 5;
                 this.angle -=5; 
             }
         }
         if (this.spaceKey.isDown && this.keyToggle) {
             if (this.bodies["psyche_probe"].gravityToggle){
                 this.bodies["psyche_probe"].gravityToggle = false
+                this.bodies["psyche_probe_icon"].gravityToggle = false
                 this.gravText.setText("Gravity: OFF")
             } else {
                 this.bodies["psyche_probe"].gravityToggle = true
+                this.bodies["psyche_probe_icon"].gravityToggle = true
                 this.gravText.setText("Gravity: ON")
             }
             this.keyToggle = false
