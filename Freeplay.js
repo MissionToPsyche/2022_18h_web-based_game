@@ -19,8 +19,8 @@ class Freeplay extends Phaser.Scene {
 
         //loading in all image assets
         this.load.image('logo', 'img/Psyche_Icon_Color-SVG.svg'); //asset for psyche logo
-        this.load.image('play', 'img/icons/play-circle.svg'); //asset for psyche logo
-        this.load.image('pause', 'img/icons/pause-circle.svg'); //asset for psyche logo
+        this.load.image('play', 'img/icons/play-circle.svg');
+        this.load.image('pause', 'img/icons/pause-circle.svg');
 
         //staticly loading all the individual assets for now
         //**TO DO: change to a more general method of preloading images
@@ -207,8 +207,8 @@ class Freeplay extends Phaser.Scene {
 
         this.input.keyboard
             .on('keydown-P', () => {
-                this.playButton.setTint(0xABABAB);
-                this.pauseButton.setTint(0xABABAB);
+                this.playButton.setTint(0xF47D33);
+                this.pauseButton.setTint(0xF47D33);
             }).on('keyup-P', () => {
                 this.playButton.setTint(0xFFFFFF);
                 this.pauseButton.setTint(0xFFFFFF);
@@ -217,13 +217,13 @@ class Freeplay extends Phaser.Scene {
 
         this.playButton.setInteractive()
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
-                this.playButton.setTint(0xDEDEDE);
+                this.playButton.setTint(0xF9A000);
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OUT, () => {
                 this.playButton.setTint(0xFFFFFF);
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
-                this.playButton.setTint(0xABABAB);
+                this.playButton.setTint(0xF47D33);
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
                 this.playButton.setTint(0xFFFFFF);
@@ -232,21 +232,15 @@ class Freeplay extends Phaser.Scene {
 
         this.pauseButton.setInteractive()
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
-                this.pauseButton.setTint(0xDEDEDE);
+                this.pauseButton.setTint(0xF9A000);
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OUT, () => {
                 this.pauseButton.setTint(0xFFFFFF);
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
-                this.pauseButton.setTint(0xABABAB);
+                this.pauseButton.setTint(0xF47D33);
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
-                this.pauseButton.setTint(0xFFFFFF);
-                this.paused = !this.paused
-            })
-            .on('keydown-P', () => {
-                this.pauseButton.setTint(0x8AFBFF);
-            }).on('keyup-P', () => {
                 this.pauseButton.setTint(0xFFFFFF);
                 this.paused = !this.paused
             });
