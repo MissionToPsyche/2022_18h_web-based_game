@@ -189,7 +189,7 @@ Probe
 class Probe extends Body {
 	constructor (_scene, _id, _mass, _diameter, _frame) {
 		super(_scene, CameraManager.getCenter(), _id, _mass, _diameter, _frame)
-		this.gravityToggle = false; //TO DO: REMOVE WHEN DONE TESTING GRAVITY
+		this.orbitToggle = false; //TO DO: REMOVE WHEN DONE TESTING GRAVITY
 
 		this.x = this.scene.bodies["earth"].x;
 		this.y = this.scene.bodies["earth"].y;
@@ -198,7 +198,7 @@ class Probe extends Body {
     update (f) {
         //toggle for gravity
 		//NOTE: FOR TESTING ONLY.
-		if (!this.gravityToggle) {
+		if (!this.orbitToggle) {
 			return
 		}
 

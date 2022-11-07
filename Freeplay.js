@@ -7,7 +7,6 @@ class Freeplay extends Phaser.Scene {
         this.keyToggle = false //for testing only
         this.paused = false
         this.graphics;
-        this.gravText;
         this.path;
         this.curve;
         this.points;
@@ -22,6 +21,7 @@ class Freeplay extends Phaser.Scene {
         this.load.image('logo', 'img/Psyche_Icon_Color-SVG.svg'); //asset for psyche logo
         this.load.image('play', 'img/icons/play-circle.svg'); //asset for psyche logo
         this.load.image('pause', 'img/icons/pause-circle.svg'); //asset for psyche logo
+        this.load.image('orbit', 'img/icons/orbit.svg');
 
         //staticly loading all the individual assets for now
         //**TO DO: change to a more general method of preloading images
@@ -107,21 +107,19 @@ class Freeplay extends Phaser.Scene {
         CameraManager.setFollowSprite(this.player);
 
         //creating UISprites
-        var logo = this.add.image(50,50,'logo').setScale(0.5);
-        this.gravText = this.add.text(4, 90, '0')
-        this.gravText.setText("Gravity: OFF")
+        var logo = this.add.image(50, 50, 'logo').setScale(0.5);
         this.playIndicator = this.add.image(964, 708, 'play').setScale(0.5)
         this.pauseIndicator = this.add.image(964, 708, 'pause').setScale(0.5)
 
         //adding to UIsprites so main camera ignores them
         CameraManager.addUISprite(logo);
-        CameraManager.addUISprite(this.gravText);
         CameraManager.addUISprite(this.playIndicator);
         CameraManager.addUISprite(this.pauseIndicator);
 
         //creating control keys
         this.cursors = this.input.keyboard.createCursorKeys();
-        this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+
+        this.createOrbitToggle();
         this.pauseKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
     }
 
@@ -157,11 +155,7 @@ class Freeplay extends Phaser.Scene {
             }
         }
 
-        if (this.spaceKey.isDown) {
-            this.bodies["psyche_probe"].gravityToggle = !this.keyToggle ? !this.bodies["psyche_probe"].gravityToggle : this.bodies["psyche_probe"].gravityToggle
-            this.gravText.setText("Gravity: " + (this.bodies["psyche_probe"].gravityToggle ? "ON" : "OFF"))
-            this.keyToggle = true
-        } else if (this.pauseKey.isDown) {
+        if (this.pauseKey.isDown) {
             this.paused = !this.keyToggle ? !this.paused : this.paused
             this.keyToggle = true
         } else {
@@ -208,5 +202,31 @@ class Freeplay extends Phaser.Scene {
             //update body positions
             this.bodies[body].updatePosition(this)
         }
+    }
+    
+    createOrbitToggle() {
+        this.orbitToggle = this.add.image(56, 708, 'orbit').setScale(0.5);
+        CameraManager.addUISprite(this.orbitToggle);
+
+        this.input.keyboard
+            .on('keyup-SPACE', () => {
+                this.bodies["psyche_probe"].orbitToggle = !this.bodies["psyche_probe"].orbitToggle;
+                this.orbitToggle.setTint(this.bodies["psyche_probe"].orbitToggle ? 0xF47D33 : 0xFFFFFF);
+            });
+
+        this.orbitToggle.setInteractive()
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
+                this.orbitToggle.setTint(0xF9A000);
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OUT, () => {
+                this.orbitToggle.setTint(this.bodies["psyche_probe"].orbitToggle ? 0xF47D33 : 0xFFFFFF);
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
+                this.orbitToggle.setTint(0xF47D33);
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
+                this.bodies["psyche_probe"].orbitToggle = !this.bodies["psyche_probe"].orbitToggle;
+                this.orbitToggle.setTint(this.bodies["psyche_probe"].orbitToggle ? 0xF47D33 : 0xFFFFFF);
+            });
     }
 }
