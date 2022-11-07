@@ -26,3 +26,20 @@ function orbitVelocity(satellite, parent, angle) {
 
 	return final;
 }
+
+function lockOrbit(sat) {
+	//calculate intended next position
+	var nextx = sat.x + sat.vel.x;
+	var nexty = sat.y + sat.vel.y;
+
+	//if intended next position deviates from body's orbit radius, 
+	//adjust current velocity so that the next position is within orbit radius
+	var nextPos = new Phaser.Geom.Point(nextx, nexty);
+	var parPos = new Phaser.Geom.Point(sat.parent.x, sat.parent.y);
+	var r = Phaser.Math.Distance.BetweenPoints(nextPos, parPos);
+	if (r != sat.distance) {
+		const correction = new Phaser.Math.Vector2(0, 0).copy(parPos).subtract(nextPos).setLength(r - sat.distance);
+		sat.vel.add(correction);
+	}
+	return 0;
+}

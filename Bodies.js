@@ -17,10 +17,6 @@ class Body extends Phaser.GameObjects.Sprite {
 	}
 
 	updatePosition(scene) {
-		if (this.parent != null) {
-			this.orbit(this.parent)
-		}
-
 		// affect position by calculated velocity
 		this.x += this.vel.x;
 		this.y += this.vel.y;
@@ -88,22 +84,19 @@ class Satellite extends Body {
 		this.scene = _scene;
 		this.distance = _distance;
 		this.path = [];
-		this.angle = _angle;
-		if (!this.angle) {
-			this.angle = 0;
+		this.theta = _angle;
+		if (!this.theta) {
+			this.theta = 0;
 		}
 
 		if (_parent != null) {
 			this.parent = _parent;
-			this.x = this.parent.x;
-			this.y = this.parent.y;
 		}
 
-		this.x = this.x + this.distance * Math.cos(this.angle);
-		this.y = this.y + this.distance * Math.sin(this.angle);
-
-		if (this.parent != null) {
-			this.vel = orbitVelocity(this, this.parent, this.angle)
+		if (typeof(this.parent) != "undefined" && this.parent.x != 0) {
+			this.x = this.parent.x + this.distance * Math.cos(this.theta);
+			this.y = this.parent.y + this.distance * Math.sin(this.theta);
+			this.vel = orbitVelocity(this, this.parent, this.theta); //set initial orbit velocity.
 		}
 	}
 
@@ -114,6 +107,10 @@ class Satellite extends Body {
 
 	updatePosition(scene) {
 		super.updatePosition(scene)
+		if (this.parent != null) {
+			this.orbit(this.parent);
+			lockOrbit(this);
+		}
 
 		// add the current onscreen position into `this.path`
 		this.path.push(new Phaser.Math.Vector2(this.x, this.y));
@@ -138,51 +135,6 @@ class Satellite extends Body {
 }
 
 /*****************************
-Satellite
-- Defines the functionality for a satellite that orbit around a planet
-- subclass of Body
-*****************************/
-class Moon extends Body {
-	constructor (_scene, _id, _mass, _diameter, _parent, _angle, _distance, _frame) {
-		super(_scene, CameraManager.getCenter(), _id, _mass, _diameter, _frame);
-		this.scene = _scene
-		this.parent = _parent;
-		this.distance = _distance;
-		this.path = [];
-		this.theta = _angle;
-		this.deltaTheta = 0.15;
-
-		if (this.parent != null) {
-			this.parent = _parent;
-		}
-		// copy parent's position
-		if (typeof(this.parent.pos) != "undefined" && this.parent.pos.x != 0) {
-			this.x = this.parent.x + this.distance * Math.cos(this.theta);
-			this.y = this.parent.y + this.distance * Math.sin(this.theta);
-		}
-	}
-
-	getPathCurve () {
-		// return points on path as a curve
-		return new Phaser.Curves.Spline(this.path);
-	}
-
-	updatePosition(scene) {
-		if (typeof(this.parent) != "undefined" && this.parent.x != 0) {
-			this.theta += this.deltaTheta;
-			this.x = this.parent.x + this.distance * Math.cos(this.theta);
-			this.y = this.parent.y + this.distance * Math.sin(this.theta);
-		}
-
-		// add the current position into `this.path`
-		this.path.push(new Phaser.Math.Vector2(this.x, this.y));
-		if (this.path.length > Math.min(this.mass * 10, (this.distance * Phaser.Math.PI2)/2)) {
-			this.path.splice(0, 1)
-		}
-	}
-}
-
-/*****************************
 Probe
 - Defines the functionality for a spacecraft
 *****************************/
@@ -193,7 +145,7 @@ class Probe extends Body {
 		// the initial state of gravity system
 		// if the gravify is on at the beginning of the game, the Probe will have a 
 		// initial velocity when starting from the earth
-		this.gravityToggle = true; //TO DO: REMOVE WHEN DONE TESTING GRAVITY
+		this.gravityToggle = false; //TO DO: REMOVE WHEN DONE TESTING GRAVITY
 
 		this.x = this.scene.bodies["earth"].x;
 		this.y = this.scene.bodies["earth"].y;

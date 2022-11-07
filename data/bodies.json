@@ -86,6 +86,27 @@
             }
         },
         {
+            "id": "luna",
+            "name": "Moon",
+            "orbits": "earth",
+            "angle": 3.17,
+            "mass": {
+                "value": 10,
+                "unit": "px",
+                "magnitude": 1
+            },
+            "diameter": {
+                "value": 10,
+                "unit": "px",
+                "magnitude": 1
+            },
+            "orbit_distance": {
+                "value": 20,
+                "unit": "px",
+                "magnitude": 1
+            }
+        },
+        {
             "id": "mars",
             "name": "Mars",
             "orbits": "sol",
@@ -228,29 +249,6 @@
             },
             "orbit_distance": {
                 "value": 290,
-                "unit": "px",
-                "magnitude": 1
-            }
-        }
-    ],
-    "moons": [
-        {
-            "id": "luna",
-            "name": "Moon",
-            "orbits": "earth",
-            "angle": 3.17,
-            "mass": {
-                "value": 10,
-                "unit": "px",
-                "magnitude": 1
-            },
-            "diameter": {
-                "value": 10,
-                "unit": "px",
-                "magnitude": 1
-            },
-            "orbit_distance": {
-                "value": 20,
                 "unit": "px",
                 "magnitude": 1
             }

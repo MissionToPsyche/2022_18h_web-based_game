@@ -59,31 +59,18 @@ class Freeplay extends Phaser.Scene {
         //creating Body objects
         this.json = this.cache.json.get('bodies');
         for (var type in this.json) {
-            if (type != "moons") {
-                for (var body of this.json[type]) {
-                    let id = body['id'];
-                    let mass = body['mass']['value'];
-                    let diameter = body['diameter']['value'];
+            for (var body of this.json[type]) {
+                let id = body['id'];
+                let mass = body['mass']['value'];
+                let diameter = body['diameter']['value'];
 
-                    if(type != "probes"){
-                        let parent = this.bodies[body['orbits']];
-                        let angle = body['angle'];
-                        let orbit_distance = body['orbit_distance']['value'];
-                        this.bodies[id] = new Satellite(this, id, mass, diameter, parent, angle, orbit_distance);
-                    } else {
-                        this.bodies[id] = new Probe(this, id, mass, diameter);
-                    }
-                }
-            } else {
-                // create satellites such as luna
-                for (var body of this.json[type]) {
-                    let id = body['id'];
-                    let mass = body['mass']['value'];
-                    let diameter = body['diameter']['value'];
+                if(type != "probes"){
                     let parent = this.bodies[body['orbits']];
                     let angle = body['angle'];
                     let orbit_distance = body['orbit_distance']['value'];
-                    this.bodies[id] = new Moon(this, id, mass, diameter, parent, angle, orbit_distance);
+                    this.bodies[id] = new Satellite(this, id, mass, diameter, parent, angle, orbit_distance);
+                } else {
+                    this.bodies[id] = new Probe(this, id, mass, diameter);
                 }
             }
         }
@@ -132,7 +119,6 @@ class Freeplay extends Phaser.Scene {
                 this.paused = !this.paused;
             }
         }, this);
-        console.log(Phaser.Input.Keyboard.SPACEBAR)
     }
 
     //this is the scene's main update loop
