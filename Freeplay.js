@@ -53,8 +53,7 @@ class Freeplay extends Phaser.Scene {
 
         //Solar system is 2048x2048
         this.matter.world.setBounds(0, 0, 2048, 2048);
-        // this.cameras.main.setBounds(0, 0, 2048, 2048).setZoom(3).setName('main');
-        // this.cameras.main.centerOn(0, 0);
+
 
         //Minimap
         this.minimap = this.cameras.add(745, 10, 300, 205).setZoom(0.15).setName('mini');
@@ -62,13 +61,10 @@ class Freeplay extends Phaser.Scene {
         this.minimap.scrollX = 900;
         this.minimap.scrollY = 900;
         
-        var logo = this.add.image(50,50,'logo').setScale(0.5);
         var map_border = this.add.image(880,110,'minimap_border').setScale(0.35);
         this.gravText = this.add.text(4, 90, '0')
         this.gravText.setText("Gravity: OFF")
 
-        // //ignore all UI elements on main camera.
-        // this.cameras.main.ignore([ logo, this.gravText, map_border])
         //initializing cameras
         CameraManager.initializeMainCamera(this);
         CameraManager.initializeUICamera(this);
@@ -113,12 +109,10 @@ class Freeplay extends Phaser.Scene {
             CameraManager.addGameSprite(this.bodies[body]);
         }
 
-        // this.player = this.bodies["psyche_probe"].sprite;
-        // console.log(this.player);
-        // this.cameras.main.startFollow(this.player, false);
-        // // Make the main camera ignore the player icon.
-        // this.cameras.main.ignore([this.bodies["psyche_probe_icon"].sprite])
-        CameraManager.addGameSprite(this.graphics); //adding graphics to game sprites so that it doesn't show up in UI.
+        CameraManager.addGameSprite(this.graphics);
+        // Make the main camera ignore the player icon.
+        CameraManager.addUISprite([this.bodies["psyche_probe_icon"]]);
+        //adding graphics to game sprites so that it doesn't show up in UI.
 
         //subscribe probe to all other bodies.
         //NOTE** hard coded to psyche probe for now
@@ -144,6 +138,11 @@ class Freeplay extends Phaser.Scene {
         CameraManager.addUISprite(this.gravText);
         CameraManager.addUISprite(this.playIndicator);
         CameraManager.addUISprite(this.pauseIndicator);
+        CameraManager.addUISprite(map_border);
+
+        // Make the minimap ignore the play and pause indicator
+        this.minimap.ignore(this.playIndicator);
+        this.minimap.ignore(this.pauseIndicator);
 
         //creating control keys
         this.cursors = this.input.keyboard.createCursorKeys();
@@ -174,12 +173,12 @@ class Freeplay extends Phaser.Scene {
                 this.bodies["psyche_probe_icon"].vel.x -= moveUnit;
                 //Either turn the probe left or right depending on its current angle.
                 if(this.angle > -45){
-                    this.bodies["psyche_probe"].sprite.angle -= 5;
-                    this.bodies["psyche_probe_icon"].sprite.angle -= 5;
+                    this.bodies["psyche_probe"].angle -= 5;
+                    this.bodies["psyche_probe_icon"].angle -= 5;
                     this.angle -=5; 
                 } else if(this.angle < -45){
-                    this.bodies["psyche_probe"].sprite.angle += 5;
-                    this.bodies["psyche_probe_icon"].sprite.angle += 5;
+                    this.bodies["psyche_probe"].angle += 5;
+                    this.bodies["psyche_probe_icon"].angle += 5;
                     this.angle +=5; 
                 }         
                 
@@ -195,13 +194,13 @@ class Freeplay extends Phaser.Scene {
                 if(this.angle == -135){
                     this.angle = 225;
                 } else if(this.angle < 135){
-                    this.bodies["psyche_probe"].sprite.angle += 5;
-                    this.bodies["psyche_probe_icon"].sprite.angle += 5;
+                    this.bodies["psyche_probe"].angle += 5;
+                    this.bodies["psyche_probe_icon"].angle += 5;
                     this.angle +=5; 
     
                 } else if(this.angle > 135){
-                    this.bodies["psyche_probe"].sprite.angle -= 5;
-                    this.bodies["psyche_probe_icon"].sprite.angle -= 5;
+                    this.bodies["psyche_probe"].angle -= 5;
+                    this.bodies["psyche_probe_icon"].angle -= 5;
                     this.angle -=5; 
                 }
             }
@@ -212,12 +211,12 @@ class Freeplay extends Phaser.Scene {
     
                 //Either turn the probe left or right depending on its current angle.
                 if(this.angle > 45){
-                    this.bodies["psyche_probe"].sprite.angle -= 5;
-                    this.bodies["psyche_probe_icon"].sprite.angle -= 5;
+                    this.bodies["psyche_probe"].angle -= 5;
+                    this.bodies["psyche_probe_icon"].angle -= 5;
                     this.angle -=5; 
                 } else if(this.angle < 45){
-                    this.bodies["psyche_probe"].sprite.angle += 5;
-                    this.bodies["psyche_probe_icon"].sprite.angle += 5;
+                    this.bodies["psyche_probe"].angle += 5;
+                    this.bodies["psyche_probe_icon"].angle += 5;
                     this.angle +=5; 
                 }  
             }
@@ -232,12 +231,12 @@ class Freeplay extends Phaser.Scene {
                 if(this.angle == 135){
                     this.angle = -225;
                 } else if(this.angle < -135){
-                    this.bodies["psyche_probe"].sprite.angle += 5;
-                    this.bodies["psyche_probe_icon"].sprite.angle += 5;
+                    this.bodies["psyche_probe"].angle += 5;
+                    this.bodies["psyche_probe_icon"].angle += 5;
                     this.angle +=5; 
                 } else if(this.angle > -135){
-                    this.bodies["psyche_probe"].sprite.angle -= 5;
-                    this.bodies["psyche_probe_icon"].sprite.angle -= 5;
+                    this.bodies["psyche_probe"].angle -= 5;
+                    this.bodies["psyche_probe_icon"].angle -= 5;
                     this.angle -=5; 
                 }
             }
@@ -260,22 +259,22 @@ class Freeplay extends Phaser.Scene {
             this.bodies["psyche_probe"].vel.x = 0
             this.bodies["psyche_probe"].x = 649 + 1024
             this.bodies["psyche_probe_icon"].vel.x = 0
-            this.bodies["psyche_probe_icon"].pos.x = 649 + 1024
+            this.bodies["psyche_probe_icon"].x = 649 + 1024
         } if (this.bodies["psyche_probe"].y >= 650 + 1024) {
             this.bodies["psyche_probe"].vel.y = 0
             this.bodies["psyche_probe"].y = 649 + 1024
             this.bodies["psyche_probe_icon"].vel.y = 0
-            this.bodies["psyche_probe_icon"].pos.y = 649 + 1024
+            this.bodies["psyche_probe_icon"].y = 649 + 1024
         } if (this.bodies["psyche_probe"].x <= -650 + 1024) {
             this.bodies["psyche_probe"].vel.x = 0
             this.bodies["psyche_probe"].x = -649 + 1024
             this.bodies["psyche_probe_icon"].vel.x = 0
-            this.bodies["psyche_probe_icon"].pos.x = -649 + 1024
+            this.bodies["psyche_probe_icon"].x = -649 + 1024
         } if (this.bodies["psyche_probe"].y <= -650 + 1024) {
             this.bodies["psyche_probe"].vel.y = 0
             this.bodies["psyche_probe"].y = -649 + 1024
             this.bodies["psyche_probe_icon"].vel.y = 0
-            this.bodies["psyche_probe_icon"].pos.y = -649 + 1024
+            this.bodies["psyche_probe_icon"].y = -649 + 1024
         }
 
         // don't update bodies if paused
