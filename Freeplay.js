@@ -35,7 +35,7 @@ class Freeplay extends Phaser.Scene {
         this.load.image('neptune', "img/icons/neptune.svg");
         this.load.image('pluto', "img/icons/pluto.svg");
         this.load.image('psyche', "img/icons/psyche.svg");
-        this.load.image('psyche_probe', "img/icons/psyche_probe.svg");
+        this.load.image('psyche_probe', "img/icons/probe_with_view.png");
         this.load.image('saturn', "img/icons/saturn.svg");
         this.load.image('sol', "img/icons/sol.svg");
         this.load.image('uranus', "img/icons/uranus.svg");

@@ -266,7 +266,7 @@
                 "magnitude": 1
             },
             "diameter": {
-                "value": 10,
+                "value": 100,
                 "unit": "px",
                 "magnitude": 1
             }
