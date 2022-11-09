@@ -89,8 +89,12 @@ class Freeplay extends Phaser.Scene {
         }
 
         for (const body in this.bodies) {
-            //add each body to the scene
-            this.add.existing(this.bodies[body]);
+            if (body != "psyche_probe") {
+                //add each body to the scene
+                this.add.existing(this.bodies[body]);
+            } else {
+                this.add.existing(this.bodies[body]).setScale(0.15);
+            }
             //add bodies to game sprites so that they don't
             //appear on UI camera
             CameraManager.addGameSprite(this.bodies[body]);
