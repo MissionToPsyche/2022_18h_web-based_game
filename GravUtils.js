@@ -1,18 +1,32 @@
 const G = 6.674
 
-//basic calculation for gravity. b1 and b2 are the two bodies involved.
-//R is the radius between the two
+/**
+ * Basic calculation for gravity
+ * Newton's Law of Universal Gravitation (https://en.wikipedia.org/wiki/Newton%27s_law_of_universal_gravitation)
+ * @param {m1} The first body involved in this calculation
+ * @param {m2} The second body involved in this calculatiom
+ * @param {r} The radius between these two bodies
+ */
 function calcGravity (m1, m2, r) {
-	// this is Newton's Law of Universal Gravitation (https://en.wikipedia.org/wiki/Newton%27s_law_of_universal_gravitation)
 	return (G * (m1 * m2)) / (r * r);
 }
 
-//calculates the gravitational acceleration on a mass based on force
+/**
+ * Calculates the gravitational acceleration on a mass based on force
+ * @param {f} Force vector
+ * @param {m1} The mass to apply force to
+ */
 function gaussLaw (f, m1) {
     var g = new Phaser.Math.Vector2(f.x/m1, f.y/m1);
 	return g;
 }
 
+/**
+ * Calculate the orbit velocity of a satellite around its parent body
+ * @param {satellite} The orbiting satellite
+ * @param {parent} The satellite's parent body
+ * @param {angle} The satellite's current angle
+ */
 function orbitVelocity(satellite, parent, angle) {
 	var p1 = new Phaser.Geom.Point(satellite.x, satellite.y);
 	var p2 = new Phaser.Geom.Point(parent.x, parent.y);
