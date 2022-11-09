@@ -10,7 +10,7 @@ class Body extends Phaser.GameObjects.Sprite {
 		this.vel = new Phaser.Math.Vector2(0, 0)
 		this.r = _diameter / 2
 		this.listeners = []
-		this.listenRadius = 10 + this.r
+		this.listenRadius = 40 + this.r
 
 		this.setDisplaySize(this.r * 2, this.r * 2)
 			.setSize(this.r * 2, this.r *2);
@@ -75,7 +75,7 @@ class Body extends Phaser.GameObjects.Sprite {
 
 /*****************************
 Satellite
-- Defines the functionality for a planet that orbit around the sun
+- Defines the functionality for a body that orbits annother body
 - subclass of Body
 *****************************/
 class Satellite extends Body {
@@ -109,7 +109,7 @@ class Satellite extends Body {
 		super.updatePosition(scene)
 		if (this.parent != null) {
 			this.orbit(this.parent);
-			lockOrbit(this);
+			lockOrbit(this, this.parent);
 		}
 
 		// add the current onscreen position into `this.path`
@@ -146,9 +146,47 @@ class Probe extends Body {
 		// if the gravify is on at the beginning of the game, the Probe will have a 
 		// initial velocity when starting from the earth
 		this.gravityToggle = false; //TO DO: REMOVE WHEN DONE TESTING GRAVITY
+		this.maxOrbit = 60; //TO DO: find better system for determining min/max orbit
+		this.minOrbit = 0;
+		this.foos = 0; //fraction of orbit speed
+		this.orbitCounter = 1000;
+		this.orbitTarget; //the target of the probe's orbit.
+		this.inOrbit = false; //when true, indicates that probe is orbiting a planet
+		this.lockToggle = false; //when true, starts the orbit lock on process
 
 		this.x = this.scene.bodies["earth"].x;
 		this.y = this.scene.bodies["earth"].y;
+	}
+
+	updatePosition (scene) {
+		//checking if orbit lock is enabled
+		if (this.inOrbit) {
+			lockOrbit(this, this.orbitTarget, this.maxOrbit, this.minOrbit);
+
+			//slowly bring probe up to orbit velocity
+			//TO DO: Test this properly. I'm not 100% on if it all works
+			if (this.foos < 1) {
+				var orbitVel = orbitVelocity(this, this.orbitTarget);
+				var ovf = new Phaser.Math.Vector2(orbitVel.x, orbitVel.y).setLength(orbitVel.length()/1000);
+
+				this.vel.add(ovf);
+
+				//calculate current fraction of orbit velocity.
+				//this is so that the probe can gain the velocity necissary
+				//to maintain a proper orbit smoothly rather than all at once.
+				var orbitVel = orbitVelocity(this, this.orbitTarget);
+				this.foos = covindov(this.vel, orbitVel) / orbitVel;
+			}
+
+			//a little thing to bring the orbits to the same value over time
+			if (this.maxOrbit > this.minOrbit) {
+				this.maxOrbit -= 0.01;
+				this.minOrbit += 0.01;
+			} else {
+				this.minOrbit = this.maxOrbit;
+			}
+		}
+		super.updatePosition(scene);
 	}
 
     update (f) {
@@ -160,6 +198,75 @@ class Probe extends Body {
 
         super.update(f);
     }
+
+	startOrbitLock(scene) {
+		//poll all planets and get closest planet within range (determined by max orbit)
+		console.log("Starting Orbit Lock")
+		var parent;
+		var pr = this.maxOrbit
+		var p1;
+		var p2;
+		var r = 0;
+		for (const scenebody in scene.bodies) {
+			var body = scene.bodies[scenebody]
+			if(!scene.cameras.main.worldView.contains(body.x, body.y)) {
+				continue; //if body isn't on screen, don't bother checking.
+			} else if (body == this) {
+				continue; //if body is this probe, don't consider it.
+			} else {
+				console.log(body.id + " On screen!");
+			}
+			p1 = new Phaser.Geom.Point(this.x, this.y);
+			p2 = new Phaser.Geom.Point(body.x, body.y);
+			r = Phaser.Math.Distance.BetweenPoints(p1, p2);
+
+			if ((r - body.r) < pr) {
+				parent = body;
+				pr = r - body.r;
+			}
+		}
+
+		if (parent != null) {
+			console.log("Lock Success!")
+			console.log(parent)
+			//set orbit target and enable orbit lock for second stage
+			this.orbitTarget = parent;
+			this.lockToggle = true;
+		} else {
+			console.log("Lock Fail...")
+		}
+	}
+
+	stopOrbitLock() {
+		this.inOrbit = false;
+		this.lockToggle = false;
+		this.maxOrbit = 50;
+		this.minOrbit = 10;
+		this.orbitCounter = 1000;
+		return;
+	}
+
+	maintainOrbit() {
+		console.log("Maintaining Lock...")
+		if (this.orbitCounter <= 0) {
+			//if timer is up, orbitlock is successful
+			this.inOrbit = true;
+			this.maxOrbit += this.orbitTarget.r;
+			this.minOrbit += this.orbitTarget.r;
+			console.log("Maintaining Lock success!")
+			return;
+		}
+
+		var p1 = new Phaser.Geom.Point(this.x, this.y);
+		var p2 = new Phaser.Geom.Point(this.orbitTarget.x, this.orbitTarget.y);
+		var r = Phaser.Math.Distance.BetweenPoints(p1, p2);
+		if (r > this.maxOrbit) {
+			this.stopOrbitLock();
+			return
+		}
+
+		this.orbitCounter -= 1;
+	}
 
     getPsycheDistance() {
     	let psycheX = this.scene.bodies["psyche"].x;

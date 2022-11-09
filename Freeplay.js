@@ -99,13 +99,16 @@ class Freeplay extends Phaser.Scene {
         //creating UISprites
         var logo = this.add.image(50,50,'logo').setScale(0.5);
         this.gravText = this.add.text(4, 90, '0')
-        this.gravText.setText("Gravity: ON")
+        this.gravText.setText("Gravity: OFF")
+        this.lockText = this.add.text(4, 120, '0')
+        this.lockText.setText("Orbit Lock: OFF")
         this.playIndicator = this.add.image(964, 708, 'play').setScale(0.5)
         this.pauseIndicator = this.add.image(964, 708, 'pause').setScale(0.5)
 
         //adding to UIsprites so main camera ignores them
         CameraManager.addUISprite(logo);
         CameraManager.addUISprite(this.gravText);
+        CameraManager.addUISprite(this.lockText);
         CameraManager.addUISprite(this.playIndicator);
         CameraManager.addUISprite(this.pauseIndicator);
 
@@ -113,6 +116,7 @@ class Freeplay extends Phaser.Scene {
         this.cursors = this.input.keyboard.createCursorKeys();
         this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         this.pauseKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
+        this.lockKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q);
 
         this.input.on("pointerdown", function (pointer){
             if ((pointer.x > 934) && (pointer.x < 994) && (pointer.y > 678) &&(pointer.y < 738)) {
@@ -153,10 +157,23 @@ class Freeplay extends Phaser.Scene {
             }
         }
 
+        // don't update bodies if paused
+        if (this.paused) {
+            return
+        }
+
         if (this.spaceKey.isDown) {
             this.bodies["psyche_probe"].gravityToggle = !this.keyToggle ? !this.bodies["psyche_probe"].gravityToggle : this.bodies["psyche_probe"].gravityToggle
             this.gravText.setText("Gravity: " + (this.bodies["psyche_probe"].gravityToggle ? "ON" : "OFF"))
             this.keyToggle = true
+        } else if (this.lockKey.isDown) {
+            if (this.bodies["psyche_probe"].lockToggle && !this.keyToggle) {
+                this.bodies["psyche_probe"].stopOrbitLock();
+            } else if (!this.keyToggle) {
+                this.bodies["psyche_probe"].startOrbitLock(this);
+            }
+            this.lockText.setText("Orbit Lock: " + (this.bodies["psyche_probe"].lockToggle ? "ON" : "OFF"));
+            this.keyToggle = true;
         } else if (this.pauseKey.isDown) {
             this.paused = !this.keyToggle ? !this.paused : this.paused
             this.keyToggle = true
@@ -180,12 +197,12 @@ class Freeplay extends Phaser.Scene {
             this.bodies["psyche_probe"].y = -649 + 1024
         }
 
-        // don't update bodies if paused
-        if (this.paused) {
-            return
-        }
-
         this.graphics.clear(); //clear previous itteration's graphics
+
+        //for probe's gravity lock functionality:
+        if (this.bodies["psyche_probe"].lockToggle && !this.bodies["psyche_probe"].inOrbit) {
+            this.bodies["psyche_probe"].maintainOrbit();
+        }
 
         for (const body in this.bodies) {
             //apply dynamic gravity
