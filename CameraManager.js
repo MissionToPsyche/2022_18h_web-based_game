@@ -23,8 +23,8 @@ class CameraManager {
 
     /** 
      * Set the bounds of the camera
-     * @param {width} The width of the camera's view
-     * @param {height} The height of the camera's view
+     * @param {number} width - The width of the camera's view
+     * @param {number} height - The height of the camera's view
      */
     static setCameraBounds(width, height) {
         this.cameraWidth = width;
@@ -35,7 +35,7 @@ class CameraManager {
 
     /**
      * Add the ui camera to the scene with its current attributes
-     * @param {scene} The scene to add this camera to
+     * @param {Scene} scene - The scene to add this camera to
      */
     static initializeUICamera(scene) {
         this.uiCamera = scene.cameras.add(0, 0, 
@@ -46,7 +46,7 @@ class CameraManager {
 
     /**
      * Add the main game camera to the scene with its current attributes
-     * @param {scene} The scene to add this camera to
+     * @param {Scene} scene - The scene to add this camera to
      */
     static initializeMainCamera(scene) {
         this.mainCamera = scene.cameras.main
@@ -60,7 +60,7 @@ class CameraManager {
 
     /**
      * Set the zoom of the main camera
-     * @param {zoom} The new zoom value
+     * @param {number} zoom - The new zoom value
      */
     static setCameraZoom(zoom) {
         this.mainZoom = zoom;
@@ -69,7 +69,7 @@ class CameraManager {
 
     /**
      * Add a new sprite to the collection of game sprites and tell the ui camera to ignore it
-     * @param {sprite} The new sprite to add
+     * @param {Sprite} sprite - The new sprite to add
      */
     static addGameSprite(sprite) {
         this.gameSprites.push(sprite);
@@ -78,7 +78,7 @@ class CameraManager {
 
     /**
      * Add a new sprite to the collection of ui sprites and tell the main camera to ignore it
-     * @param {sprite} The new sprite to add
+     * @param {Sprite} sprite -  The new sprite to add
      */
     static addUISprite(sprite) {
         this.uiSprites.push(sprite);
@@ -87,7 +87,7 @@ class CameraManager {
 
     /**
      * Add a new sprite to the collection of game sprites and tell the main camera to follow it
-     * @param {sprite} The new sprite to add
+     * @param {Sprite} sprite - The new sprite to add
      */
     static setFollowSprite(sprite) {
         this.followSprite = sprite;

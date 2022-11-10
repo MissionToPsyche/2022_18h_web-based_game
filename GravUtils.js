@@ -3,9 +3,10 @@ const G = 6.674
 /**
  * Basic calculation for gravity
  * Newton's Law of Universal Gravitation (https://en.wikipedia.org/wiki/Newton%27s_law_of_universal_gravitation)
- * @param {m1} The first body involved in this calculation
- * @param {m2} The second body involved in this calculatiom
- * @param {r} The radius between these two bodies
+ * @param {number} m1 - The mass of the first body involved in this calculation
+ * @param {number} m2 - The mass of the second body involved in this calculatiom
+ * @param {number} r - The radius between these two bodies
+ * @return {number} the gravity to be applied
  */
 function calcGravity (m1, m2, r) {
 	return (G * (m1 * m2)) / (r * r);
@@ -13,8 +14,9 @@ function calcGravity (m1, m2, r) {
 
 /**
  * Calculates the gravitational acceleration on a mass based on force
- * @param {f} Force vector
- * @param {m1} The mass to apply force to
+ * @param {Phaser.Math.Vector2} f - Force vector
+ * @param {number} m1 - The mass to apply force to
+ * @return {Phaser.Math.Vector2} Gauss's law calculated on the input mass and force
  */
 function gaussLaw (f, m1) {
     var g = new Phaser.Math.Vector2(f.x/m1, f.y/m1);
@@ -23,9 +25,10 @@ function gaussLaw (f, m1) {
 
 /**
  * Calculate the orbit velocity of a satellite around its parent body
- * @param {satellite} The orbiting satellite
- * @param {parent} The satellite's parent body
- * @param {angle} The satellite's current angle
+ * @param {Body} satellite - The orbiting satellite
+ * @param {Body} parent - The satellite's parent body
+ * @param {number} angle - The satellite's current angle
+ * @return {Phaser.Math.Vector2} desired orbit velocity for the given satellite around its parent
  */
 function orbitVelocity(satellite, parent, angle) {
 	var p1 = new Phaser.Geom.Point(satellite.x, satellite.y);

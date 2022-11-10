@@ -1,7 +1,4 @@
-/*****************************
-Body
-- Defines the functionality for celestial bodies in the simulation
-*****************************/
+/** Defines the functionality for celestial bodies in the simulation */
 class Body extends Phaser.GameObjects.Sprite {
 	constructor (_scene, _pos, _id, _mass, _diameter, _frame) {
 		super(_scene, _pos.x, _pos.y, _id, _frame);
