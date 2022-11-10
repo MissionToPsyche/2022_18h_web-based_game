@@ -156,6 +156,10 @@ class Freeplay extends Phaser.Scene {
         //**TO DO: Wrap in a custom controler later.
         const moveUnit = 0.01
 
+        // Make the minimap icon have the same location as the player.
+        this.bodies["psyche_probe_icon"].vel.y = this.bodies["psyche_probe"].vel.y;
+        this.bodies["psyche_probe_icon"].vel.x = this.bodies["psyche_probe"].vel.x;
+
         // update pause/play indicator
         if (this.paused) {
             this.playIndicator.setVisible(false)
@@ -170,7 +174,6 @@ class Freeplay extends Phaser.Scene {
             if (this.cursors.left.isDown)
             {
                 this.bodies["psyche_probe"].vel.x -= moveUnit;
-                this.bodies["psyche_probe_icon"].vel.x -= moveUnit;
                 //Either turn the probe left or right depending on its current angle.
                 if(this.angle > -45){
                     this.bodies["psyche_probe"].angle -= 5;
@@ -186,7 +189,6 @@ class Freeplay extends Phaser.Scene {
             else if (this.cursors.right.isDown)
             {
                 this.bodies["psyche_probe"].vel.x += moveUnit;
-                this.bodies["psyche_probe_icon"].vel.x += moveUnit;
     
                 //Either turn the probe left or right depending on its current angle.
                 // Set the value of the probe to 225 if it is currently facing down 
@@ -207,7 +209,6 @@ class Freeplay extends Phaser.Scene {
             if (this.cursors.up.isDown)
             {
                 this.bodies["psyche_probe"].vel.y -= moveUnit;
-                this.bodies["psyche_probe_icon"].vel.y -= moveUnit;
     
                 //Either turn the probe left or right depending on its current angle.
                 if(this.angle > 45){
@@ -223,7 +224,6 @@ class Freeplay extends Phaser.Scene {
             else if (this.cursors.down.isDown)
             {
                 this.bodies["psyche_probe"].vel.y += moveUnit;
-                this.bodies["psyche_probe_icon"].vel.y += moveUnit;
     
                 //Either turn the probe left or right depending on its current angle.
                 // Set the value of the probe to -225 if it is currently facing right 
