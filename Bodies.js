@@ -1,5 +1,5 @@
 /**
- * Body
+ * Class representing a Body
  * Defines the functionality for celestial bodies in the simulation
  * @extends Phaser.GameObjects.Sprite
  */
@@ -90,7 +90,7 @@ class Body extends Phaser.GameObjects.Sprite {
 }
 
 /**
- * Satellite
+ * Class representing a Satellite
  * Defines the functionality for a planet that orbit around the sun
  * @extends Body
  */
@@ -170,7 +170,7 @@ class Satellite extends Body {
 }
 
 /**
- * Moon
+ * Class representing a Moon
  * Defines the functionality for a moon that orbit around a planet
  * @extends Body
  */
@@ -231,7 +231,7 @@ class Moon extends Body {
 }
 
 /**
- * Probe
+ * Class representing a Probe
  * Defines the functionality for a spacecraft
  * @extends Body
  */
