@@ -146,6 +146,7 @@ class Freeplay extends Phaser.Scene {
         this.minimap.ignore(this.playIndicator);
         this.minimap.ignore(this.pauseIndicator);
 
+
         //creating control keys
         this.cursors = this.input.keyboard.createCursorKeys();
         this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
@@ -330,6 +331,8 @@ class Freeplay extends Phaser.Scene {
             if (typeof(this.direction) == "undefined") {
                 this.direction = this.add.image(directionX, directionY, 'direction').setScale(0.2);
                 CameraManager.addUISprite(this.direction);
+                //Make the minimap ignore the icon.
+                this.minimap.ignore(this.direction);
             }
 
             // set the correct position and angle of the arrow to point to psyche
