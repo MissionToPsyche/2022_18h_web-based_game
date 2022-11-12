@@ -16,6 +16,7 @@ class Freeplay extends Phaser.Scene {
         this.graphics;
         this.pauseIndicator;
         this.direction;
+        this.pauseText;
     }
 
     preload () {
@@ -66,6 +67,9 @@ class Freeplay extends Phaser.Scene {
         var map_border = this.add.image(880,110,'minimap_border').setScale(0.35);
         this.gravText = this.add.text(4, 90, '0')
         this.gravText.setText("Gravity: OFF")
+
+        this.pauseText = this.add.text(340, 220, 'Pause');
+        this.pauseText.setFontSize(120);
 
         //initializing cameras
         CameraManager.initializeMainCamera(this);
@@ -172,11 +176,13 @@ class Freeplay extends Phaser.Scene {
 
         // update pause/play indicator
         if (this.paused) {
-            this.playIndicator.setVisible(false)
-            this.pauseIndicator.setVisible(true)
+            this.playIndicator.setVisible(false);
+            this.pauseIndicator.setVisible(true);
+            this.pauseText.setVisible(true);
         } else {
-            this.pauseIndicator.setVisible(false)
-            this.playIndicator.setVisible(true)
+            this.pauseIndicator.setVisible(false);
+            this.playIndicator.setVisible(true);
+            this.pauseText.setVisible(false);
         }
 
         // only move if not paused
