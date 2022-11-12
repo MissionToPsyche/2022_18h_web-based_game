@@ -35,7 +35,7 @@ class Freeplay extends Phaser.Scene {
         this.load.image('neptune', "img/icons/neptune.svg");
         this.load.image('pluto', "img/icons/pluto.svg");
         this.load.image('psyche', "img/icons/psyche.svg");
-        this.load.image('psyche_probe', "img/icons/probe_with_view.png");
+        this.load.image('psyche_probe', "img/icons/psyche_probe.svg");
         this.load.image('saturn', "img/icons/saturn.svg");
         this.load.image('sol', "img/icons/sol.svg");
         this.load.image('uranus', "img/icons/uranus.svg");
@@ -89,12 +89,9 @@ class Freeplay extends Phaser.Scene {
         }
 
         for (const body in this.bodies) {
-            if (body != "psyche_probe") {
-                //add each body to the scene
-                this.add.existing(this.bodies[body]);
-            } else {
-                this.add.existing(this.bodies[body]).setScale(0.15);
-            }
+            //add each body to the scene
+            this.add.existing(this.bodies[body]);
+
             //add bodies to game sprites so that they don't
             //appear on UI camera
             CameraManager.addGameSprite(this.bodies[body]);
@@ -255,5 +252,22 @@ class Freeplay extends Phaser.Scene {
                 this.direction.alpha = 0.8;
             }
         }
+
+        // create probe's view
+        let centerX = this.bodies["psyche_probe"].x;
+        let centerY = this.bodies["psyche_probe"].y;
+        let viewR = 100;
+        this.graphics.fillStyle(0xFFFFFF, 0.5);
+
+        const viewPath = new Phaser.Curves.Path();
+        // start from the position of the probe
+        viewPath.moveTo(centerX, centerY);
+
+        viewPath.lineTo(centerX - viewR * Math.cos(Math.PI / 4), centerY - viewR * Math.sin(Math.PI / 4));
+        viewPath.lineTo(centerX + viewR * Math.cos(Math.PI / 4), centerY - viewR * Math.sin(Math.PI / 4));
+        //viewPath.ellipseTo(viewPath, viewPath, 0, 90, true, 225);
+        viewPath.lineTo(centerX, centerY);
+        viewPath.closePath();
+        this.graphics.fillPoints(viewPath.getPoints());
     }
 }
