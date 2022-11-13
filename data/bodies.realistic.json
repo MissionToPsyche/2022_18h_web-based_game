@@ -5,19 +5,19 @@
             "name": "Sun",
             "orbits": null,
             "mass": {
-                "value": 1.988500,
+                "value": 1988500.0,
                 "unit": "kg",
-                "magnitude": 30
+                "magnitude": 24
             },
             "diameter": {
-                "value": 1.392684,
+                "value": 1391400,
                 "unit": "km",
-                "magnitude": 7
+                "magnitude": 0
             },
             "orbit_distance": {
                 "value": 0,
                 "unit": "km",
-                "magnitude": 0
+                "magnitude": 6
             }
         }
     ],
@@ -28,19 +28,19 @@
             "orbits": "sol",
             "angle": 0.49,
             "mass": {
-                "value": 3.3,
+                "value": 0.330,
                 "unit": "kg",
-                "magnitude": 23
+                "magnitude": 24
             },
             "diameter": {
-                "value": 4.879,
+                "value": 4879,
                 "unit": "km",
-                "magnitude": 4
+                "magnitude": 0
             },
             "orbit_distance": {
-                "value": 5.79,
+                "value": 57.9,
                 "unit": "km",
-                "magnitude": 7
+                "magnitude": 6
             }
         },
         {
@@ -54,14 +54,14 @@
                 "magnitude": 24
             },
             "diameter": {
-                "value": 1.2104,
+                "value": 12104,
                 "unit": "km",
-                "magnitude": 5
+                "magnitude": 0
             },
             "orbit_distance": {
-                "value": 1.082,
+                "value": 108.2,
                 "unit": "km",
-                "magnitude": 8
+                "magnitude": 6
             }
         },
         {
@@ -75,14 +75,14 @@
                 "magnitude": 24
             },
             "diameter": {
-                "value": 1.2756,
+                "value": 12756,
                 "unit": "km",
-                "magnitude": 5
+                "magnitude": 0
             },
             "orbit_distance": {
-                "value": 1.496,
+                "value": 149.6,
                 "unit": "km",
-                "magnitude": 8
+                "magnitude": 6
             }
         },
         {
@@ -91,19 +91,19 @@
             "orbits": "sol",
             "angle": 6.62,
             "mass": {
-                "value": 6.42,
+                "value": 0.642,
                 "unit": "kg",
-                "magnitude": 23
+                "magnitude": 24
             },
             "diameter": {
-                "value": 6.792,
+                "value": 6792,
                 "unit": "km",
-                "magnitude": 4
+                "magnitude": 0
             },
             "orbit_distance": {
-                "value": 2.28,
+                "value": 228.0,
                 "unit": "km",
-                "magnitude": 8
+                "magnitude": 6
             }
         },
         {
@@ -112,19 +112,19 @@
             "orbits": "sol",
             "angle": 1.46,
             "mass": {
-                "value": 1.898,
+                "value": 1898,
                 "unit": "kg",
-                "magnitude": 27
+                "magnitude": 24
             },
             "diameter": {
-                "value": 1.42984,
+                "value": 142984,
                 "unit": "km",
-                "magnitude": 6
+                "magnitude": 0
             },
             "orbit_distance": {
-                "value": 7.785,
+                "value": 778.5,
                 "unit": "km",
-                "magnitude": 8
+                "magnitude": 6
             }
         },
         {
@@ -133,19 +133,19 @@
             "orbits": "sol",
             "angle": 1.52,
             "mass": {
-                "value": 5.68,
+                "value": 568,
                 "unit": "kg",
-                "magnitude": 26
+                "magnitude": 24
             },
             "diameter": {
-                "value": 1.20536,
+                "value": 120536,
                 "unit": "km",
-                "magnitude": 6
+                "magnitude": 0
             },
             "orbit_distance": {
-                "value": 1.432,
+                "value": 1432.0,
                 "unit": "km",
-                "magnitude": 9
+                "magnitude": 6
             }
         },
         {
@@ -154,19 +154,19 @@
             "orbits": "sol",
             "angle": 2.01,
             "mass": {
-                "value": 8.68,
+                "value": 86.8,
                 "unit": "kg",
-                "magnitude": 25
+                "magnitude": 24
             },
             "diameter": {
-                "value": 5.1118,
+                "value": 51118,
                 "unit": "km",
-                "magnitude": 5
+                "magnitude": 0
             },
             "orbit_distance": {
-                "value": 2.867,
+                "value": 2867.0,
                 "unit": "km",
-                "magnitude": 9
+                "magnitude": 6
             }
         },
         {
@@ -175,19 +175,19 @@
             "orbits": "sol",
             "angle": 5.21,
             "mass": {
-                "value": 1.02,
+                "value": 102,
                 "unit": "kg",
-                "magnitude": 26
+                "magnitude": 24
             },
             "diameter": {
-                "value": 4.9528,
+                "value": 49528,
                 "unit": "km",
-                "magnitude": 5
+                "magnitude": 0
             },
             "orbit_distance": {
-                "value": 4.515,
+                "value": 4515.0,
                 "unit": "km",
-                "magnitude": 9
+                "magnitude": 6
             }
         },
         {
@@ -196,19 +196,19 @@
             "orbits": "sol",
             "angle": 3.82,
             "mass": {
-                "value": 1.30,
+                "value": 0.0130,
                 "unit": "kg",
-                "magnitude": 22
+                "magnitude": 24
             },
             "diameter": {
-                "value": 2.376,
+                "value": 2376,
                 "unit": "km",
-                "magnitude": 4
+                "magnitude": 0
             },
             "orbit_distance": {
-                "value": 5.9064,
+                "value": 5906.4,
                 "unit": "km",
-                "magnitude": 9
+                "magnitude": 6
             }
         },
         {
@@ -217,19 +217,19 @@
             "orbits": "sol",
             "angle": 3.17,
             "mass": {
-                "value": 10,
+                "value": 0.00000229,
                 "unit": "kg",
-                "magnitude": 1
+                "magnitude": 24
             },
             "diameter": {
-                "value": 2.26,
+                "value": 226,
                 "unit": "km",
-                "magnitude": 2
+                "magnitude": 0
             },
             "orbit_distance": {
-                "value": 2.90,
+                "value": 436.921,
                 "unit": "km",
-                "magnitude": 2
+                "magnitude": 6
             }
         }
     ],
@@ -240,19 +240,19 @@
             "orbits": "earth",
             "angle": 3.17,
             "mass": {
-                "value": 7.3,
+                "value": 0.073,
                 "unit": "kg",
-                "magnitude": 26
+                "magnitude": 24
             },
             "diameter": {
-                "value": 3.475,
+                "value": 3475,
                 "unit": "km",
-                "magnitude": 4
+                "magnitude": 0
             },
             "orbit_distance": {
-                "value": 3.84,
+                "value": 0.384,
                 "unit": "km",
-                "magnitude": 7
+                "magnitude": 6
             }
         }
     ],
@@ -261,14 +261,14 @@
             "id": "psyche_probe",
             "name": "Psyche",
             "mass": {
-                "value": 5.443108,
+                "value": 0.0000000000000000000005443108,
                 "unit": "kg",
-                "magnitude": 2
+                "magnitude": 24
             },
             "diameter": {
-                "value": 2.476,
+                "value": 0.02476,
                 "unit": "km",
-                "magnitude": 1
+                "magnitude": 0
             }
         }
     ]
