@@ -1,3 +1,8 @@
+const STARS = "stars";
+const SATELLITES = "satellites";
+const MOONS = "moons";
+const PROBES = "probes";
+
 class Freeplay extends Phaser.Scene {
     constructor () {
         super({key:"Freeplay"});
@@ -59,31 +64,28 @@ class Freeplay extends Phaser.Scene {
         //creating Body objects
         this.json = this.cache.json.get('bodies');
         for (var type in this.json) {
-            if (type != "moons") {
-                for (var body of this.json[type]) {
-                    let id = body['id'];
-                    let mass = body['mass']['value'];
-                    let diameter = body['diameter']['value'];
+            for (var body of this.json[type]) {
+                let id = body['id'];
+                let mass = body['mass']['value'] * (10 ** body['mass']['magnitude']);
+                let diameter = body['diameter']['value'] * (10 ** body['diameter']['magnitude']);
 
-                    if(type != "probes"){
-                        let parent = this.bodies[body['orbits']];
-                        let angle = body['angle'];
-                        let orbit_distance = body['orbit_distance']['value'];
-                        this.bodies[id] = new Satellite(this, id, mass, diameter, parent, angle, orbit_distance);
-                    } else {
-                        this.bodies[id] = new Probe(this, id, mass, diameter);
-                    }
-                }
-            } else {
-                // create satellites such as luna
-                for (var body of this.json[type]) {
-                    let id = body['id'];
-                    let mass = body['mass']['value'];
-                    let diameter = body['diameter']['value'];
+                if ([STARS, SATELLITES, MOONS].includes(type)) {
                     let parent = this.bodies[body['orbits']];
                     let angle = body['angle'];
-                    let orbit_distance = body['orbit_distance']['value'];
-                    this.bodies[id] = new Moon(this, id, mass, diameter, parent, angle, orbit_distance);
+                    let orbit_distance = body['orbit_distance']['value'] * (10 ** body['orbit_distance']['magnitude']);
+                    switch (type) {
+                        case STARS:
+                        case SATELLITES:
+                            this.bodies[id] = new Satellite(this, id, mass, diameter, parent, angle, orbit_distance);
+                            break;
+                        case MOONS:
+                            this.bodies[id] = new Moon(this, id, mass, diameter, parent, angle, orbit_distance);
+                            break;
+                        default:
+                            break;
+                    }
+                } else if ([PROBES].includes(type)) {
+                    this.bodies[id] = new Probe(this, id, mass, diameter);
                 }
             }
         }
