@@ -257,17 +257,9 @@ class Freeplay extends Phaser.Scene {
         let centerX = this.bodies["psyche_probe"].x;
         let centerY = this.bodies["psyche_probe"].y;
         let viewR = 100;
-        this.graphics.fillStyle(0xFFFFFF, 0.5);
+        this.graphics.fillStyle(0xFFFFFF, 0.3);
 
-        const viewPath = new Phaser.Curves.Path();
-        // start from the position of the probe
-        viewPath.moveTo(centerX, centerY);
-
-        viewPath.lineTo(centerX - viewR * Math.cos(Math.PI / 4), centerY - viewR * Math.sin(Math.PI / 4));
-        viewPath.lineTo(centerX + viewR * Math.cos(Math.PI / 4), centerY - viewR * Math.sin(Math.PI / 4));
-        //viewPath.ellipseTo(viewPath, viewPath, 0, 90, true, 225);
-        viewPath.lineTo(centerX, centerY);
-        viewPath.closePath();
-        this.graphics.fillPoints(viewPath.getPoints());
+        this.graphics.slice(centerX, centerY, viewR, Phaser.Math.DegToRad(270), Phaser.Math.DegToRad(180), true);
+        this.graphics.fillPath();
     }
 }
