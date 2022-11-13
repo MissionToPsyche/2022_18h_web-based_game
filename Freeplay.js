@@ -22,7 +22,7 @@ class Freeplay extends Phaser.Scene {
     }
 
     preload () {
-        this.load.json('bodies', 'data/bodies.json');
+        this.load.json('bodies', 'data/bodies.realistic.json');
 
         //loading in all image assets
         this.load.image('logo', 'img/Psyche_Icon_Color-SVG.svg'); //asset for psyche logo
@@ -66,8 +66,16 @@ class Freeplay extends Phaser.Scene {
         for (var type in this.json) {
             for (var body of this.json[type]) {
                 let id = body['id'];
-                let mass = body['mass']['value'] * (10 ** body['mass']['magnitude']);
-                let diameter = body['diameter']['value'] * (10 ** body['diameter']['magnitude']);
+
+                // right now these just handle the magnitude calculation,
+                // but we probably need to apply some other scalar to get
+                // playable proportions and distances between bodies.
+
+                let mass_scalar = (10 ** body['mass']['magnitude']);  // / (body['mass']['magnitude'] ** (body['mass']['magnitude'] - 1));
+                let diameter_scalar = (10 ** body['diameter']['magnitude']);  // / (body['diameter']['magnitude'] ** (body['diameter']['magnitude'] - 1));
+
+                let mass = body['mass']['value'] * mass_scalar;
+                let diameter = body['diameter']['value'] * diameter_scalar;
 
                 if ([STARS, SATELLITES, MOONS].includes(type)) {
                     let parent = this.bodies[body['orbits']];
