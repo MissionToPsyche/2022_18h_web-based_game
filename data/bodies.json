@@ -7,17 +7,17 @@
             "mass": {
                 "value": 200,
                 "unit": "px",
-                "magnitude": 1
+                "magnitude": 0
             },
             "diameter": {
                 "value": 100,
                 "unit": "px",
-                "magnitude": 1
+                "magnitude": 0
             },
             "orbit_distance": {
                 "value": 0,
                 "unit": "px",
-                "magnitude": 1
+                "magnitude": 0
             }
         }
     ],
@@ -30,17 +30,17 @@
             "mass": {
                 "value": 30,
                 "unit": "px",
-                "magnitude": 1
+                "magnitude": 0
             },
             "diameter": {
                 "value": 15,
                 "unit": "px",
-                "magnitude": 1
+                "magnitude": 0
             },
             "orbit_distance": {
                 "value": 100,
                 "unit": "px",
-                "magnitude": 1
+                "magnitude": 0
             }
         },
         {
@@ -51,17 +51,17 @@
             "mass": {
                 "value": 50,
                 "unit": "px",
-                "magnitude": 1
+                "magnitude": 0
             },
             "diameter": {
                 "value": 25,
                 "unit": "px",
-                "magnitude": 1
+                "magnitude": 0
             },
             "orbit_distance": {
                 "value": 150,
                 "unit": "px",
-                "magnitude": 1
+                "magnitude": 0
             }
         },
         {
@@ -72,17 +72,17 @@
             "mass": {
                 "value": 60,
                 "unit": "px",
-                "magnitude": 1
+                "magnitude": 0
             },
             "diameter": {
                 "value": 20,
                 "unit": "px",
-                "magnitude": 1
+                "magnitude": 0
             },
             "orbit_distance": {
                 "value": 200,
                 "unit": "px",
-                "magnitude": 1
+                "magnitude": 0
             }
         },
         {
@@ -93,17 +93,17 @@
             "mass": {
                 "value": 60,
                 "unit": "px",
-                "magnitude": 1
+                "magnitude": 0
             },
             "diameter": {
                 "value": 15,
                 "unit": "px",
-                "magnitude": 1
+                "magnitude": 0
             },
             "orbit_distance": {
                 "value": 250,
                 "unit": "px",
-                "magnitude": 1
+                "magnitude": 0
             }
         },
         {
@@ -114,17 +114,17 @@
             "mass": {
                 "value": 2000,
                 "unit": "px",
-                "magnitude": 1
+                "magnitude": 0
             },
             "diameter": {
                 "value": 100,
                 "unit": "px",
-                "magnitude": 1
+                "magnitude": 0
             },
             "orbit_distance": {
                 "value": 350,
                 "unit": "px",
-                "magnitude": 1
+                "magnitude": 0
             }
         },
         {
@@ -135,17 +135,17 @@
             "mass": {
                 "value": 600,
                 "unit": "px",
-                "magnitude": 1
+                "magnitude": 0
             },
             "diameter": {
                 "value": 90,
                 "unit": "px",
-                "magnitude": 1
+                "magnitude": 0
             },
             "orbit_distance": {
                 "value": 475,
                 "unit": "px",
-                "magnitude": 1
+                "magnitude": 0
             }
         },
         {
@@ -156,17 +156,17 @@
             "mass": {
                 "value": 90,
                 "unit": "px",
-                "magnitude": 1
+                "magnitude": 0
             },
             "diameter": {
                 "value": 50,
                 "unit": "px",
-                "magnitude": 1
+                "magnitude": 0
             },
             "orbit_distance": {
                 "value": 550,
                 "unit": "px",
-                "magnitude": 1
+                "magnitude": 0
             }
         },
         {
@@ -177,17 +177,17 @@
             "mass": {
                 "value": 100,
                 "unit": "px",
-                "magnitude": 1
+                "magnitude": 0
             },
             "diameter": {
                 "value": 60,
                 "unit": "px",
-                "magnitude": 1
+                "magnitude": 0
             },
             "orbit_distance": {
                 "value": 600,
                 "unit": "px",
-                "magnitude": 1
+                "magnitude": 0
             }
         },
         {
@@ -198,17 +198,17 @@
             "mass": {
                 "value": 5,
                 "unit": "px",
-                "magnitude": 1
+                "magnitude": 0
             },
             "diameter": {
                 "value": 10,
                 "unit": "px",
-                "magnitude": 1
+                "magnitude": 0
             },
             "orbit_distance": {
                 "value": 650,
                 "unit": "px",
-                "magnitude": 1
+                "magnitude": 0
             }
         },
         {
@@ -219,17 +219,17 @@
             "mass": {
                 "value": 10,
                 "unit": "px",
-                "magnitude": 1
+                "magnitude": 0
             },
             "diameter": {
                 "value": 15,
                 "unit": "px",
-                "magnitude": 1
+                "magnitude": 0
             },
             "orbit_distance": {
                 "value": 290,
                 "unit": "px",
-                "magnitude": 1
+                "magnitude": 0
             }
         }
     ],
@@ -242,17 +242,17 @@
             "mass": {
                 "value": 10,
                 "unit": "px",
-                "magnitude": 1
+                "magnitude": 0
             },
             "diameter": {
                 "value": 10,
                 "unit": "px",
-                "magnitude": 1
+                "magnitude": 0
             },
             "orbit_distance": {
                 "value": 20,
                 "unit": "px",
-                "magnitude": 1
+                "magnitude": 0
             }
         }
     ],
@@ -263,12 +263,12 @@
             "mass": {
                 "value": 0.0000001,
                 "unit": "px",
-                "magnitude": 1
+                "magnitude": 0
             },
             "diameter": {
                 "value": 10,
                 "unit": "px",
-                "magnitude": 1
+                "magnitude": 0
             }
         }
     ]

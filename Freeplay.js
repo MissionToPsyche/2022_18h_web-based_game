@@ -1,3 +1,8 @@
+const STARS = "stars";
+const SATELLITES = "satellites";
+const MOONS = "moons";
+const PROBES = "probes";
+
 class Freeplay extends Phaser.Scene {
     constructor () {
         super({key:"Freeplay"});
@@ -17,7 +22,7 @@ class Freeplay extends Phaser.Scene {
     }
 
     preload () {
-        this.load.json('bodies', 'data/bodies.json');
+        this.load.json('bodies', 'data/bodies.realistic.json');
 
         //loading in all image assets
         this.load.image('logo', 'img/Psyche_Icon_Color-SVG.svg'); //asset for psyche logo
@@ -59,31 +64,36 @@ class Freeplay extends Phaser.Scene {
         //creating Body objects
         this.json = this.cache.json.get('bodies');
         for (var type in this.json) {
-            if (type != "moons") {
-                for (var body of this.json[type]) {
-                    let id = body['id'];
-                    let mass = body['mass']['value'];
-                    let diameter = body['diameter']['value'];
+            for (var body of this.json[type]) {
+                let id = body['id'];
 
-                    if(type != "probes"){
-                        let parent = this.bodies[body['orbits']];
-                        let angle = body['angle'];
-                        let orbit_distance = body['orbit_distance']['value'];
-                        this.bodies[id] = new Satellite(this, id, mass, diameter, parent, angle, orbit_distance);
-                    } else {
-                        this.bodies[id] = new Probe(this, id, mass, diameter);
-                    }
-                }
-            } else {
-                // create satellites such as luna
-                for (var body of this.json[type]) {
-                    let id = body['id'];
-                    let mass = body['mass']['value'];
-                    let diameter = body['diameter']['value'];
+                // right now these just handle the magnitude calculation,
+                // but we probably need to apply some other scalar to get
+                // playable proportions and distances between bodies.
+
+                let mass_scalar = (10 ** body['mass']['magnitude']);  // / (body['mass']['magnitude'] ** (body['mass']['magnitude'] - 1));
+                let diameter_scalar = (10 ** body['diameter']['magnitude']);  // / (body['diameter']['magnitude'] ** (body['diameter']['magnitude'] - 1));
+
+                let mass = body['mass']['value'] * mass_scalar;
+                let diameter = body['diameter']['value'] * diameter_scalar;
+
+                if ([STARS, SATELLITES, MOONS].includes(type)) {
                     let parent = this.bodies[body['orbits']];
                     let angle = body['angle'];
-                    let orbit_distance = body['orbit_distance']['value'];
-                    this.bodies[id] = new Moon(this, id, mass, diameter, parent, angle, orbit_distance);
+                    let orbit_distance = body['orbit_distance']['value'] * (10 ** body['orbit_distance']['magnitude']);
+                    switch (type) {
+                        case STARS:
+                        case SATELLITES:
+                            this.bodies[id] = new Satellite(this, id, mass, diameter, parent, angle, orbit_distance);
+                            break;
+                        case MOONS:
+                            this.bodies[id] = new Moon(this, id, mass, diameter, parent, angle, orbit_distance);
+                            break;
+                        default:
+                            break;
+                    }
+                } else if ([PROBES].includes(type)) {
+                    this.bodies[id] = new Probe(this, id, mass, diameter);
                 }
             }
         }
