@@ -1,4 +1,13 @@
+/**
+ * Class representing the Phaser 'Scene', which defines our game
+ * @extends Phaser.Scene
+ */
 class Freeplay extends Phaser.Scene {
+
+    /**
+     * Represents the scene and all of its variables
+     * @constructor
+     */
     constructor () {
         super({key:"Freeplay"});
         //creating body objects
@@ -16,6 +25,7 @@ class Freeplay extends Phaser.Scene {
         this.direction;
     }
 
+    /** Loads all necessary assets for the scene before the simulation runs */
     preload () {
         this.load.json('bodies', 'data/bodies.json');
 
@@ -42,6 +52,15 @@ class Freeplay extends Phaser.Scene {
         this.load.image('venus', "img/icons/venus.svg");
     }
 
+    /**
+     * Assembles the game within the scene
+     * - Using information from data/bodies.json, Generate all bodies and add them to the scene
+     * - Initialize the menu and game cameras
+     * - Set the player as the probe
+     * - Subscribe the probe to every body in the scene
+     * - Generate UI sprites and add them to the scene
+     * - Create player controls
+     */
     create () {
         this.graphics = this.add.graphics();
 
@@ -64,6 +83,10 @@ class Freeplay extends Phaser.Scene {
                     let id = body['id'];
                     let mass = body['mass']['value'];
                     let diameter = body['diameter']['value'];
+
+                    //objects in group 1 (in this case Satellites) will not collide with each other
+                    let collisionGroup1 = this.matter.world.nextGroup(true);
+                    let collisionGroup2 = this.matter.world.nextGroup();
 
                     if(type != "probes"){
                         let parent = this.bodies[body['orbits']];
@@ -135,7 +158,11 @@ class Freeplay extends Phaser.Scene {
         console.log(Phaser.Input.Keyboard.SPACEBAR)
     }
 
-    //this is the scene's main update loop
+    /** The scene's main update loop
+     * - Disallows the probe from escaping the solar system or going to fast
+     * - Applies dynamic gravity
+     * - Enforces the pause feature, only allowing bodies to move if the game is not paused
+     */
     update () {
         //Probe controls
         //**TO DO: Wrap in a custom controler later.
