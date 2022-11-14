@@ -271,6 +271,17 @@ class Probe extends Body {
 		this.orbitCounter -= 1;
 	}
 
+	getOrbitPath(minOrMax) {
+		var radius = 0;
+		if (minOrMax == 'min'){
+			radius = this.minOrbit;
+		} else if (minOrMax == 'max') {
+			radius = this.maxOrbit;
+		}
+		var orbitPath = new Phaser.Geom.Circle(this.orbitTarget.x, this.orbitTarget.y, radius).getPoints(false, 0.5);
+		return new Phaser.Curves.Spline(orbitPath);
+	}
+
     getPsycheDistance() {
     	let psycheX = this.scene.bodies["psyche"].x;
     	let psycheY = this.scene.bodies["psyche"].y;

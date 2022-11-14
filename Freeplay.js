@@ -202,6 +202,15 @@ class Freeplay extends Phaser.Scene {
         //for probe's gravity lock functionality:
         if (this.bodies["psyche_probe"].lockToggle && !this.bodies["psyche_probe"].inOrbit) {
             this.bodies["psyche_probe"].maintainOrbit();
+        } else if (this.bodies["psyche_probe"].inOrbit){
+            //draw the orbit boundries if probe is locked in an orbit
+            this.graphics.lineStyle(1, 0xff0000, 0.5);
+            this.bodies["psyche_probe"].getOrbitPath('min').draw(this.graphics, 64);
+            this.graphics.fillStyle(0x00ff00, 1);
+
+            this.graphics.lineStyle(1, 0x0000ff, 0.5);
+            this.bodies["psyche_probe"].getOrbitPath('max').draw(this.graphics, 64);
+            this.graphics.fillStyle(0x00ff00, 1);
         }
 
         for (const body in this.bodies) {
