@@ -65,8 +65,6 @@ class Freeplay extends Phaser.Scene {
         this.minimap.scrollY = 900;
         
         var map_border = this.add.image(880,110,'minimap_border').setScale(0.35);
-        this.gravText = this.add.text(4, 90, '0')
-        this.gravText.setText("Gravity: OFF")
 
         this.pauseText = this.add.text(340, 220, 'Pause');
         this.pauseText.setFontSize(120);
