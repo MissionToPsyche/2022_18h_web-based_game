@@ -27,6 +27,9 @@ class Freeplay extends Phaser.Scene {
         this.load.image('play', 'img/icons/play-circle.svg'); //asset for psyche logo
         this.load.image('pause', 'img/icons/pause-circle.svg'); //asset for psyche logo
         this.load.image('direction', 'img/icons/direction.png'); // an arrow
+        this.load.image('direction', 'img/icons/direction.png'); // an arrow
+        this.load.image('exit', 'img/icons/exit.png'); // an exit button
+        this.load.image('restart', 'img/icons/restart.png'); // a restart button
 
         //staticly loading all the individual assets for now
         //**TO DO: change to a more general method of preloading images
@@ -323,6 +326,8 @@ class Freeplay extends Phaser.Scene {
     createPauseButton() {
         this.playButton = this.add.image(964, 708, 'play').setScale(0.5)
         this.pauseButton = this.add.image(964, 708, 'pause').setScale(0.5)
+        this.restartButton = this.add.image(520, 408, 'restart').setScale(0.5)
+        this.exitButton = this.add.image(520, 508, 'exit').setScale(0.5)
 
         this.input.keyboard
             .on('keydown-P', () => {
@@ -333,7 +338,6 @@ class Freeplay extends Phaser.Scene {
                 this.pauseButton.setTint(0xFFFFFF);
                 this.paused = !this.paused
             });
-
 
         this.playButton.setInteractive()
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
@@ -365,24 +369,57 @@ class Freeplay extends Phaser.Scene {
                 this.paused = !this.paused
             });
 
+        this.restartButton.setInteractive()
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
+                this.restartButton.setTint(0xF9A000);
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OUT, () => {
+                this.restartButton.setTint(0xFFFFFF);
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
+                this.restartButton.setTint(0xF47D33);
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
+                this.restartButton.setTint(0xFFFFFF);
+            });
+
+            this.exitButton.setInteractive()
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
+                this.exitButton.setTint(0xF9A000);
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OUT, () => {
+                this.exitButton.setTint(0xFFFFFF);
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
+                this.exitButton.setTint(0xF47D33);
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
+                this.exitButton.setTint(0xFFFFFF);
+            });
+
         CameraManager.addUISprite(this.playButton);
         CameraManager.addUISprite(this.pauseButton);
+        CameraManager.addUISprite(this.exitButton);
+        CameraManager.addUISprite(this.restartButton);
         this.minimap.ignore(this.pauseButton);
         this.minimap.ignore(this.playButton);
-        function actionOnClick () {
-            background.visible =! background.visible;    
-        }
+        this.minimap.ignore(this.exitButton);
+        this.minimap.ignore(this.restartButton);
     }
 
     updatePauseButton() {
         if (this.paused) {
-            this.playButton.setVisible(false)
-            this.pauseButton.setVisible(true)
-            this.pauseText.setVisible(true)
-        } else {
-            this.pauseButton.setVisible(false)
             this.playButton.setVisible(true)
+            this.pauseButton.setVisible(false)
+            this.pauseText.setVisible(true)
+            this.restartButton.setVisible(true)
+            this.exitButton.setVisible(true)
+        } else {
+            this.pauseButton.setVisible(true)
+            this.playButton.setVisible(false)
             this.pauseText.setVisible(false)
+            this.restartButton.setVisible(false)
+            this.exitButton.setVisible(false)
         }
     }
 }
