@@ -8,12 +8,14 @@ class Freeplay extends Phaser.Scene {
         this.paused = false
         this.graphics;
         this.gravText;
+        this.failText;
         this.path;
         this.curve;
         this.points;
         this.graphics;
         this.pauseIndicator;
         this.direction;
+        this.gameOver = false;
     }
 
     preload () {
@@ -130,6 +132,7 @@ class Freeplay extends Phaser.Scene {
         this.cursors = this.input.keyboard.createCursorKeys();
         this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         this.pauseKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
+        this.restartKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
 
         this.input.on("pointerdown", function (pointer){
             if ((pointer.x > 934) && (pointer.x < 994) && (pointer.y > 678) &&(pointer.y < 738)) {
@@ -203,6 +206,22 @@ class Freeplay extends Phaser.Scene {
             return
         }
 
+        // check to see if the probe collided with anything
+        // if there was a collision then trigger the failure state and stop the simulation
+        if (this.bodies["psyche_probe"].collided == true && this.gameOver == false) {
+            this.gameOver = true;
+            this.drawFailureScreen();
+
+        } else if (this.gameOver) {
+            
+            // we will need to tie these to a 'restart' button on the failure screen
+            if (this.restartKey.isDown) {
+                this.gameOver = false;
+                this.scene.restart();
+            }
+            return
+        }
+
         this.graphics.clear(); //clear previous itteration's graphics
 
         for (const body in this.bodies) {
@@ -255,5 +274,15 @@ class Freeplay extends Phaser.Scene {
                 this.direction.alpha = 0.8;
             }
         }
+    }
+
+    drawFailureScreen () {
+        this.failText = this.add.text(400,
+                                      200,
+                                      'Game over! Rress R to restart');
+        this.failText.setOrigin(0.5, 0.5);
+        this.failText.setScale(2);
+
+        CameraManager.addUISprite(this.failText);
     }
 }
