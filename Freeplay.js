@@ -13,6 +13,7 @@ class Freeplay extends Phaser.Scene {
         this.points;
         this.graphics;
         this.pauseIndicator;
+        this.direction;
     }
 
     preload () {
@@ -22,6 +23,7 @@ class Freeplay extends Phaser.Scene {
         this.load.image('logo', 'img/Psyche_Icon_Color-SVG.svg'); //asset for psyche logo
         this.load.image('play', 'img/icons/play-circle.svg'); //asset for psyche logo
         this.load.image('pause', 'img/icons/pause-circle.svg'); //asset for psyche logo
+        this.load.image('direction', 'img/icons/direction.png'); // an arrow
 
         //staticly loading all the individual assets for now
         //**TO DO: change to a more general method of preloading images
@@ -49,7 +51,7 @@ class Freeplay extends Phaser.Scene {
 
         //Solar system is 2048x2048
         this.matter.world.setBounds(0, 0, 2048, 2048);
-        
+
         //initializing cameras
         CameraManager.initializeMainCamera(this);
         CameraManager.initializeUICamera(this);
@@ -114,7 +116,7 @@ class Freeplay extends Phaser.Scene {
         //creating UISprites
         var logo = this.add.image(50,50,'logo').setScale(0.5);
         this.gravText = this.add.text(4, 90, '0')
-        this.gravText.setText("Gravity: OFF")
+        this.gravText.setText("Gravity: ON")
         this.playIndicator = this.add.image(964, 708, 'play').setScale(0.5)
         this.pauseIndicator = this.add.image(964, 708, 'pause').setScale(0.5)
 
@@ -128,6 +130,13 @@ class Freeplay extends Phaser.Scene {
         this.cursors = this.input.keyboard.createCursorKeys();
         this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         this.pauseKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
+
+        this.input.on("pointerdown", function (pointer){
+            if ((pointer.x > 934) && (pointer.x < 994) && (pointer.y > 678) &&(pointer.y < 738)) {
+                this.paused = !this.paused;
+            }
+        }, this);
+        console.log(Phaser.Input.Keyboard.SPACEBAR)
     }
 
     //this is the scene's main update loop
@@ -212,6 +221,39 @@ class Freeplay extends Phaser.Scene {
     
             //update body positions
             this.bodies[body].updatePosition(this)
+
+            // find psyche
+            let distance = this.bodies["psyche_probe"].getPsycheDistance();
+
+            // the distance between pshche probe and the arrow
+            let arrowDistance = 50;
+            let width = 1024;
+            let height = 768;
+            let directionX = width / 2 + this.bodies["psyche_probe"].getPsycheDirectionX() * arrowDistance;
+            let directionY = height / 2 + this.bodies["psyche_probe"].getPsycheDirectionY() * arrowDistance;
+            
+            // calculate the rotation of the arrow image
+            let directionAngle = Math.asin(this.bodies["psyche_probe"].getPsycheDirectionY());
+            if (this.bodies["psyche_probe"].getPsycheDirectionX() < 0) {
+                directionAngle = Math.PI - directionAngle;
+            }
+
+            // add the image of the arrow if it not added
+            if (typeof(this.direction) == "undefined") {
+                this.direction = this.add.image(directionX, directionY, 'direction').setScale(0.2);
+                CameraManager.addUISprite(this.direction);
+            }
+
+            // set the correct position and angle of the arrow to point to psyche
+            this.direction.setPosition(directionX, directionY);
+            this.direction.rotation = directionAngle;
+
+            // decrease opacity when near psyche
+            if (distance < 90) {
+                this.direction.alpha = (distance - 50)/50;
+            } else {
+                this.direction.alpha = 0.8;
+            }
         }
     }
 }
