@@ -150,7 +150,7 @@ class Moon extends Body {
 		this.distance = _distance;
 		this.path = [];
 		this.theta = _angle;
-		this.deltaTheta = 0.30;
+		this.deltaTheta = 0.15;
 
 		if (this.parent != null) {
 			this.parent = _parent;
@@ -187,9 +187,13 @@ Probe
 - Defines the functionality for a spacecraft
 *****************************/
 class Probe extends Body {
+
 	constructor (_scene, _id, _mass, _diameter, _frame) {
 		super(_scene, CameraManager.getCenter(), _id, _mass, _diameter, _frame)
-		this.gravityToggle = false; //TO DO: REMOVE WHEN DONE TESTING GRAVITY
+		// the initial state of gravity system
+		// if the gravify is on at the beginning of the game, the Probe will have a 
+		// initial velocity when starting from the earth
+		this.gravityToggle = true; //TO DO: REMOVE WHEN DONE TESTING GRAVITY
 
 		this.x = this.scene.bodies["earth"].x;
 		this.y = this.scene.bodies["earth"].y;
@@ -204,4 +208,22 @@ class Probe extends Body {
 
         super.update(f);
     }
+
+    getPsycheDistance() {
+    	let psycheX = this.scene.bodies["psyche"].x;
+    	let psycheY = this.scene.bodies["psyche"].y;
+    	return Math.sqrt((this.x - psycheX) * (this.x - psycheX) + (this.y - psycheY) * (this.y - psycheY));
+    }
+
+    getPsycheDirectionX() {
+    	let psycheX = this.scene.bodies["psyche"].x;
+    	return (psycheX - this.x) / this.getPsycheDistance();
+    }
+
+    getPsycheDirectionY() {
+    	let psycheY = this.scene.bodies["psyche"].y;
+    	return (psycheY - this.y) / this.getPsycheDistance();
+    }
+
+
 }
