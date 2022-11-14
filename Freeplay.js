@@ -63,11 +63,11 @@ class Freeplay extends Phaser.Scene {
                 let id = body['id'];
                 let mass = body['mass']['value'];
                 let diameter = body['diameter']['value'];
+                let orbit_distance = body['orbit_distance']['value'];
 
                 if(type != "probes"){
                     let parent = this.bodies[body['orbits']];
                     let angle = body['angle'];
-                    let orbit_distance = body['orbit_distance']['value'];
                     this.bodies[id] = new Satellite(this, id, mass, diameter, parent, angle, orbit_distance);
                 } else {
                     this.bodies[id] = new Probe(this, id, mass, diameter);
@@ -99,9 +99,9 @@ class Freeplay extends Phaser.Scene {
         //creating UISprites
         var logo = this.add.image(50,50,'logo').setScale(0.5);
         this.gravText = this.add.text(4, 90, '0')
-        this.gravText.setText("Gravity: OFF")
+        this.gravText.setText("Gravity: ON")
         this.lockText = this.add.text(4, 120, '0')
-        this.lockText.setText("Orbit Lock: OFF")
+        this.lockText.setText("Orbit Lock: ON")
         this.playIndicator = this.add.image(964, 708, 'play').setScale(0.5)
         this.pauseIndicator = this.add.image(964, 708, 'pause').setScale(0.5)
 

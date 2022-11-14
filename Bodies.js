@@ -145,17 +145,20 @@ class Probe extends Body {
 		// the initial state of gravity system
 		// if the gravify is on at the beginning of the game, the Probe will have a 
 		// initial velocity when starting from the earth
-		this.gravityToggle = false; //TO DO: REMOVE WHEN DONE TESTING GRAVITY
-		this.maxOrbit = 60; //TO DO: find better system for determining min/max orbit
-		this.minOrbit = 0;
-		this.foos = 0; //fraction of orbit speed
-		this.orbitCounter = 1000;
-		this.orbitTarget; //the target of the probe's orbit.
-		this.inOrbit = false; //when true, indicates that probe is orbiting a planet
-		this.lockToggle = false; //when true, starts the orbit lock on process
+		this.gravityToggle = true; //TO DO: REMOVE WHEN DONE TESTING GRAVITY
+		this.maxOrbit = 40; //TO DO: find better system for determining min/max orbit
+		this.minOrbit = 40;
+		this.foos = 1; //fraction of orbit speed
+		this.orbitCounter = 0;
+		this.orbitTarget = this.scene.bodies["earth"]; //the target of the probe's orbit.
+		this.inOrbit = true; //when true, indicates that probe is orbiting a planet
+		this.lockToggle = true; //when true, starts the orbit lock on process
 
-		this.x = this.scene.bodies["earth"].x;
-		this.y = this.scene.bodies["earth"].y;
+		if (typeof(this.parent) != "undefined" && this.parent.x != 0) {
+			this.x = this.parent.x + this.distance * Math.cos(this.theta);
+			this.y = this.parent.y + this.distance * Math.sin(this.theta);
+			this.vel = orbitVelocity(this, this.parent, this.theta); //set initial orbit velocity.
+		}
 	}
 
 	updatePosition (scene) {
