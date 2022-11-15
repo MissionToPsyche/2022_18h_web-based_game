@@ -20,6 +20,7 @@ class CameraManager {
     static uiCamera; //camera representing the game's UI
     static gameSprites = []; //sprites to be shown in main game camera
     static uiSprites = []; //sprites for use in the UI
+    static minimapSprites = []; //sprites for use in the minimap.
 
     /** 
      * Set the bounds of the camera
@@ -97,5 +98,11 @@ class CameraManager {
     /** Get the center coordinates of the camera */
     static getCenter() {
         return new Phaser.Geom.Point(this.cameraWidth/2, this.cameraHeight/2);
+    }
+
+    static addMinimapSprite(sprite){
+        this.minimapSprites.push(sprite)
+        this.uiCamera.ignore(this.minimapSprites);
+        this.mainCamera.ignore(this.minimapSprites);
     }
 }
