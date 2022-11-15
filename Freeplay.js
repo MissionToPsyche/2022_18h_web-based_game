@@ -13,7 +13,6 @@ class Freeplay extends Phaser.Scene {
         this.keyToggle = false //for testing only
         this.paused = false
         this.graphics;
-        this.gravText;
         this.path;
         this.curve;
         this.points;
@@ -29,8 +28,9 @@ class Freeplay extends Phaser.Scene {
         //loading in all image assets
         this.load.image('minimap_border', 'img/icons/minimap-border.png'); //border for minimap
         this.load.image('logo', 'img/Psyche_Icon_Color-SVG.svg'); //asset for psyche logo
-        this.load.image('play', 'img/icons/play-circle.svg'); //asset for psyche logo
-        this.load.image('pause', 'img/icons/pause-circle.svg'); //asset for psyche logo
+        this.load.image('play', 'img/icons/play-circle.svg');
+        this.load.image('pause', 'img/icons/pause-circle.svg');
+        this.load.image('orbit', 'img/icons/orbit.svg');
         this.load.image('direction', 'img/icons/direction.png'); // an arrow
         this.load.image('exit', 'img/icons/exit.png'); // an exit button
         this.load.image('restart', 'img/icons/restart.png'); // a restart button
@@ -151,21 +151,18 @@ class Freeplay extends Phaser.Scene {
 
         //creating UISprites
         var logo = this.add.image(50, 50, 'logo').setScale(0.5);
-        this.gravText = this.add.text(4, 90, '0')
-        this.gravText.setText("Gravity: ON")
-        
         this.icon = this.add.image(50,50,"psyche_probe_icon").setScale(0.5);
+
         //adding to UIsprites so main camera ignores them
+        CameraManager.addUISprite(logo);
         CameraManager.addUISprite(map_border);
         CameraManager.addMinimapSprite(this.icon);
 
-
-
         //creating control keys
         this.cursors = this.input.keyboard.createCursorKeys();
-        this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
         this.createPauseButton();
+        this.createOrbitToggle();
     }
 
     /** The scene's main update loop
@@ -252,14 +249,6 @@ class Freeplay extends Phaser.Scene {
                     this.angle -=5; 
                 }
             }
-        }
-
-        if (this.spaceKey.isDown) {
-            this.bodies["psyche_probe"].gravityToggle = !this.keyToggle ? !this.bodies["psyche_probe"].gravityToggle : this.bodies["psyche_probe"].gravityToggle
-            this.gravText.setText("Gravity: " + (this.bodies["psyche_probe"].gravityToggle ? "ON" : "OFF"))
-            this.keyToggle = true
-        } else {
-            this.keyToggle = false
         }
 
         //prevent psyche from going too far out for now
@@ -437,5 +426,31 @@ class Freeplay extends Phaser.Scene {
             this.restartButton.setVisible(false)
             this.exitButton.setVisible(false)
         }
+    }
+    
+    createOrbitToggle() {
+        this.orbitToggle = this.add.image(56, 708, 'orbit').setScale(0.5);
+        CameraManager.addUISprite(this.orbitToggle);
+
+        this.input.keyboard
+            .on('keyup-SPACE', () => {
+                this.bodies["psyche_probe"].orbitToggle = !this.bodies["psyche_probe"].orbitToggle;
+                this.orbitToggle.setTint(this.bodies["psyche_probe"].orbitToggle ? 0xF47D33 : 0xFFFFFF);
+            });
+
+        this.orbitToggle.setInteractive()
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
+                this.orbitToggle.setTint(0xF9A000);
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OUT, () => {
+                this.orbitToggle.setTint(this.bodies["psyche_probe"].orbitToggle ? 0xF47D33 : 0xFFFFFF);
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
+                this.orbitToggle.setTint(0xF47D33);
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
+                this.bodies["psyche_probe"].orbitToggle = !this.bodies["psyche_probe"].orbitToggle;
+                this.orbitToggle.setTint(this.bodies["psyche_probe"].orbitToggle ? 0xF47D33 : 0xFFFFFF);
+            });
     }
 }
