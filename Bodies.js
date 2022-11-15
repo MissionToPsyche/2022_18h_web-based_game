@@ -262,10 +262,7 @@ class Probe extends Body {
 	 */
 	constructor (_scene, _id, _mass, _diameter, _frame) {
 		super(_scene, CameraManager.getCenter(), _id, _mass, _diameter, _frame)
-		// the initial state of gravity system
-		// if the gravify is on at the beginning of the game, the Probe will have a 
-		// initial velocity when starting from the earth
-		this.gravityToggle = true; //TO DO: REMOVE WHEN DONE TESTING GRAVITY
+		this.orbitToggle = false; //TO DO: REMOVE WHEN DONE TESTING GRAVITY
 
 		//deploy the probe near earth so that it doesn't immediately collide
 		this.x = this.scene.bodies["earth"].x - 35;
@@ -276,7 +273,7 @@ class Probe extends Body {
     update (f) {
         //toggle for gravity
 		//NOTE: FOR TESTING ONLY.
-		if (!this.gravityToggle) {
+		if (!this.orbitToggle) {
 			return
 		}
 
