@@ -81,20 +81,17 @@ class Body extends Phaser.GameObjects.Sprite {
 				listener.update(f);
 			} else if (r <= this.r && this.collided == false) { //detect a collision
 
-				//debug, remove later
+				//debug, this info will be useful later
 				console.log(listener.id + " collided with " + this.id + "!");
 				console.log(listener.id + " horizontal velocity: " + Math.abs(listener.vel.x));
 				console.log(listener.id + " vertical velocity:   " + Math.abs(listener.vel.y));
 
-				//bounce!
+				//cause the probe to bounce
 				//listener.vel.x *= -1;
 				//listener.vel.y *= -1;
 
 				listener.collided = true;
 				this.collided = true;
-
-				//trigger the failstate
-				//todo
 			}
 		}.bind(this));
 	}
