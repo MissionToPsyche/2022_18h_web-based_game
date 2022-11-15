@@ -333,7 +333,17 @@ class Freeplay extends Phaser.Scene {
         let viewR = 100;
         this.graphics.fillStyle(0xFFFFFF, 0.3);
 
-        this.graphics.slice(centerX, centerY, viewR, Phaser.Math.DegToRad(270), Phaser.Math.DegToRad(180), true);
+        let endRotation = this.bodies["psyche_probe"].rotation + Math.PI;
+        if (endRotation > 2 * Math.PI) {
+            endRotation -= (2 * Math.PI);
+        }
+        let startRotation = endRotation + Phaser.Math.DegToRad(90);
+        if (startRotation > 2 * Math.PI) {
+            startRotation -= (2 * Math.PI);
+        }
+
+        let probeView = this.graphics.slice(centerX, centerY, viewR, startRotation, endRotation, true);
+        this.minimap.ignore(probeView);
         this.graphics.fillPath();
     }
 
