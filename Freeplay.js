@@ -1,4 +1,13 @@
+/**
+ * Class representing the Phaser 'Scene', which defines our game
+ * @extends Phaser.Scene
+ */
 class Freeplay extends Phaser.Scene {
+
+    /**
+     * Represents the scene and all of its variables
+     * @constructor
+     */
     constructor () {
         super({key:"Freeplay"});
         //creating body objects
@@ -13,18 +22,18 @@ class Freeplay extends Phaser.Scene {
         this.curve;
         this.points;
         this.graphics;
-        this.pauseIndicator;
         this.direction;
         this.gameOver = false;
     }
 
+    /** Loads all necessary assets for the scene before the simulation runs */
     preload () {
         this.load.json('bodies', 'data/bodies.json');
 
         //loading in all image assets
         this.load.image('logo', 'img/Psyche_Icon_Color-SVG.svg'); //asset for psyche logo
-        this.load.image('play', 'img/icons/play-circle.svg'); //asset for psyche logo
-        this.load.image('pause', 'img/icons/pause-circle.svg'); //asset for psyche logo
+        this.load.image('play', 'img/icons/play-circle.svg');
+        this.load.image('pause', 'img/icons/pause-circle.svg');
         this.load.image('direction', 'img/icons/direction.png'); // an arrow
 
         //staticly loading all the individual assets for now
@@ -44,6 +53,15 @@ class Freeplay extends Phaser.Scene {
         this.load.image('venus', "img/icons/venus.svg");
     }
 
+    /**
+     * Assembles the game within the scene
+     * - Using information from data/bodies.json, Generate all bodies and add them to the scene
+     * - Initialize the menu and game cameras
+     * - Set the player as the probe
+     * - Subscribe the probe to every body in the scene
+     * - Generate UI sprites and add them to the scene
+     * - Create player controls
+     */
     create () {
         this.graphics = this.add.graphics();
 
@@ -116,17 +134,13 @@ class Freeplay extends Phaser.Scene {
         CameraManager.setFollowSprite(this.player);
 
         //creating UISprites
-        var logo = this.add.image(50,50,'logo').setScale(0.5);
+        var logo = this.add.image(50, 50, 'logo').setScale(0.5);
         this.gravText = this.add.text(4, 90, '0')
         this.gravText.setText("Gravity: ON")
-        this.playIndicator = this.add.image(964, 708, 'play').setScale(0.5)
-        this.pauseIndicator = this.add.image(964, 708, 'pause').setScale(0.5)
 
         //adding to UIsprites so main camera ignores them
         CameraManager.addUISprite(logo);
         CameraManager.addUISprite(this.gravText);
-        CameraManager.addUISprite(this.playIndicator);
-        CameraManager.addUISprite(this.pauseIndicator);
 
         //creating control keys
         this.cursors = this.input.keyboard.createCursorKeys();
@@ -134,31 +148,33 @@ class Freeplay extends Phaser.Scene {
         this.pauseKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
         this.restartKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
 
-        this.input.on("pointerdown", function (pointer){
-            if ((pointer.x > 934) && (pointer.x < 994) && (pointer.y > 678) &&(pointer.y < 738)) {
-                this.paused = !this.paused;
-            }
-        }, this);
-        console.log(Phaser.Input.Keyboard.SPACEBAR)
+        this.createPauseButton();
     }
 
-    //this is the scene's main update loop
+    /** The scene's main update loop
+     * - Disallows the probe from escaping the solar system or going to fast
+     * - Applies dynamic gravity
+     * - Enforces the pause feature, only allowing bodies to move if the game is not paused
+     */
     update () {
         //Probe controls
         //**TO DO: Wrap in a custom controler later.
         const moveUnit = 0.01
 
-        // update pause/play indicator
+        this.updatePauseButton();
+
         if (this.paused) {
-            this.playIndicator.setVisible(false)
-            this.pauseIndicator.setVisible(true)
+            this.playButton.setVisible(false)
+            this.pauseButton.setVisible(true)
         } else {
-            this.pauseIndicator.setVisible(false)
-            this.playIndicator.setVisible(true)
+            this.pauseButton.setVisible(false)
+            this.playButton.setVisible(true)
         }
 
         // only move if not paused
-        if (!this.paused) {
+        if (this.paused) {
+            return
+        } else {
             if (this.cursors.left.isDown) {
                 this.bodies["psyche_probe"].vel.x -= moveUnit;
             }
@@ -178,9 +194,6 @@ class Freeplay extends Phaser.Scene {
             this.bodies["psyche_probe"].gravityToggle = !this.keyToggle ? !this.bodies["psyche_probe"].gravityToggle : this.bodies["psyche_probe"].gravityToggle
             this.gravText.setText("Gravity: " + (this.bodies["psyche_probe"].gravityToggle ? "ON" : "OFF"))
             this.keyToggle = true
-        } else if (this.pauseKey.isDown) {
-            this.paused = !this.keyToggle ? !this.paused : this.paused
-            this.keyToggle = true
         } else {
             this.keyToggle = false
         }
@@ -189,8 +202,8 @@ class Freeplay extends Phaser.Scene {
 	    //note: FOR TESTING ONLY, THIS IS A BAD WAY OF DOING THIS
         if (this.bodies["psyche_probe"].x >= 650 + 1024) {
             this.bodies["psyche_probe"].vel.x = 0
-            this.bodies["psyche_probe"].x = 649 + 1024
         } if (this.bodies["psyche_probe"].y >= 650 + 1024) {
+            this.bodies["psyche_probe"].x = 649 + 1024
             this.bodies["psyche_probe"].vel.y = 0
             this.bodies["psyche_probe"].y = 649 + 1024
         } if (this.bodies["psyche_probe"].x <= -650 + 1024) {
@@ -284,5 +297,63 @@ class Freeplay extends Phaser.Scene {
         this.failText.setScale(2);
 
         CameraManager.addUISprite(this.failText);
+    }
+
+    createPauseButton() {
+        this.playButton = this.add.image(964, 708, 'play').setScale(0.5)
+        this.pauseButton = this.add.image(964, 708, 'pause').setScale(0.5)
+
+        this.input.keyboard
+            .on('keydown-P', () => {
+                this.playButton.setTint(0xF47D33);
+                this.pauseButton.setTint(0xF47D33);
+            }).on('keyup-P', () => {
+                this.playButton.setTint(0xFFFFFF);
+                this.pauseButton.setTint(0xFFFFFF);
+                this.paused = !this.paused
+            });
+
+        this.playButton.setInteractive()
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
+                this.playButton.setTint(0xF9A000);
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OUT, () => {
+                this.playButton.setTint(0xFFFFFF);
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
+                this.playButton.setTint(0xF47D33);
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
+                this.playButton.setTint(0xFFFFFF);
+                this.paused = !this.paused
+            })
+
+        this.pauseButton.setInteractive()
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
+                this.pauseButton.setTint(0xF9A000);
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OUT, () => {
+                this.pauseButton.setTint(0xFFFFFF);
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
+                this.pauseButton.setTint(0xF47D33);
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
+                this.pauseButton.setTint(0xFFFFFF);
+                this.paused = !this.paused
+            });
+
+        CameraManager.addUISprite(this.playButton);
+        CameraManager.addUISprite(this.pauseButton);
+    }
+
+    updatePauseButton() {
+        if (this.paused) {
+            this.playButton.setVisible(false)
+            this.pauseButton.setVisible(true)
+        } else {
+            this.pauseButton.setVisible(false)
+            this.playButton.setVisible(true)
+        }
     }
 }
