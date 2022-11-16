@@ -6,14 +6,15 @@ class CameraManager {
     }
 
     //class properties
-    static cameraHeight = 2048;
-    static cameraWidth = 2048;
+    static cameraHeight = 4096;
+    static cameraWidth = 4096;
     static mainZoom = 3; //main camera's zoom level
     static followSprite; //sprite main camera follows
     static mainCamera; //main game camera, containing most of the game's visuals
     static uiCamera; //camera representing the game's UI
     static gameSprites = []; //sprites to be shown in main game camera
     static uiSprites = []; //sprites for use in the UI
+    static cameraChanging = false;
 
     //class methods
     static setCameraBounds(width, height) {
@@ -62,5 +63,23 @@ class CameraManager {
 
     static getCenter() {
         return new Phaser.Geom.Point(this.cameraWidth/2, this.cameraHeight/2);
+    }
+
+    static changeCamTarget(target) {
+        this.cameraChanging = true;
+        this.mainCamera.setLerp(0.01, 0.01);
+        this.setFollowSprite(target);
+    }
+
+    static checkDoneChanging() {
+        var cam = this.mainCamera;
+        if (cam.x == this.followSprite.x && cam.y == this.followSprite.y) {
+            this.cameraChanging == false;
+            this.mainCamera.setLerp(1, 1);
+        }
+    }
+
+    static isCamChanging() {
+        return this.cameraChanging;
     }
 }

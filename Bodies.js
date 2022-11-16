@@ -206,7 +206,7 @@ class Probe extends Body {
 		//poll all planets and get closest planet within range (determined by max orbit)
 		console.log("Starting Orbit Lock")
 		var parent;
-		var pr = this.maxOrbit
+		var pr = this.maxOrbit;
 		var p1;
 		var p2;
 		var r = 0;
@@ -223,7 +223,7 @@ class Probe extends Body {
 			p2 = new Phaser.Geom.Point(body.x, body.y);
 			r = Phaser.Math.Distance.BetweenPoints(p1, p2);
 
-			if ((r - body.r) < pr) {
+			if (r < (pr + body.r)) {
 				parent = body;
 				pr = r - body.r;
 			}
@@ -243,9 +243,10 @@ class Probe extends Body {
 	stopOrbitLock() {
 		this.inOrbit = false;
 		this.lockToggle = false;
-		this.maxOrbit = 50;
-		this.minOrbit = 10;
-		this.orbitCounter = 1000;
+		this.maxOrbit = 80;
+		this.minOrbit = 0;
+		this.orbitCounter = 500;
+		CameraManager.changeCamTarget(this);
 		return;
 	}
 
@@ -256,14 +257,15 @@ class Probe extends Body {
 			this.inOrbit = true;
 			this.maxOrbit += this.orbitTarget.r;
 			this.minOrbit += this.orbitTarget.r;
-			console.log("Maintaining Lock success!")
+			console.log("Maintaining Lock success!");
+			CameraManager.changeCamTarget(this.orbitTarget);
 			return;
 		}
 
 		var p1 = new Phaser.Geom.Point(this.x, this.y);
 		var p2 = new Phaser.Geom.Point(this.orbitTarget.x, this.orbitTarget.y);
 		var r = Phaser.Math.Distance.BetweenPoints(p1, p2);
-		if (r > this.maxOrbit) {
+		if (r > (this.maxOrbit + this.orbitTarget.r)) {
 			this.stopOrbitLock();
 			return
 		}

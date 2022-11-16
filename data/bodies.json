@@ -38,7 +38,7 @@
                 "magnitude": 1
             },
             "orbit_distance": {
-                "value": 100,
+                "value": 200,
                 "unit": "px",
                 "magnitude": 1
             }
@@ -59,7 +59,7 @@
                 "magnitude": 1
             },
             "orbit_distance": {
-                "value": 150,
+                "value": 300,
                 "unit": "px",
                 "magnitude": 1
             }
@@ -80,7 +80,7 @@
                 "magnitude": 1
             },
             "orbit_distance": {
-                "value": 200,
+                "value": 400,
                 "unit": "px",
                 "magnitude": 1
             }
@@ -122,7 +122,7 @@
                 "magnitude": 1
             },
             "orbit_distance": {
-                "value": 250,
+                "value": 500,
                 "unit": "px",
                 "magnitude": 1
             }
@@ -143,7 +143,7 @@
                 "magnitude": 1
             },
             "orbit_distance": {
-                "value": 350,
+                "value": 700,
                 "unit": "px",
                 "magnitude": 1
             }
@@ -164,7 +164,7 @@
                 "magnitude": 1
             },
             "orbit_distance": {
-                "value": 475,
+                "value": 950,
                 "unit": "px",
                 "magnitude": 1
             }
@@ -185,7 +185,7 @@
                 "magnitude": 1
             },
             "orbit_distance": {
-                "value": 550,
+                "value": 1100,
                 "unit": "px",
                 "magnitude": 1
             }
@@ -206,7 +206,7 @@
                 "magnitude": 1
             },
             "orbit_distance": {
-                "value": 600,
+                "value": 1200,
                 "unit": "px",
                 "magnitude": 1
             }
@@ -227,7 +227,7 @@
                 "magnitude": 1
             },
             "orbit_distance": {
-                "value": 650,
+                "value": 1300,
                 "unit": "px",
                 "magnitude": 1
             }
@@ -248,7 +248,7 @@
                 "magnitude": 1
             },
             "orbit_distance": {
-                "value": 290,
+                "value": 580,
                 "unit": "px",
                 "magnitude": 1
             }
@@ -269,7 +269,7 @@
                 "magnitude": 1
             },
             "orbit_distance": {
-                "value": 50,
+                "value": 40,
                 "unit": "px",
                 "magnitude": 1
             }

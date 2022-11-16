@@ -4,8 +4,8 @@ class Freeplay extends Phaser.Scene {
         //creating body objects
         this.bodies = {};
         this.json;
-        this.keyToggle = false //for testing only
-        this.paused = false
+        this.keyToggle = false; //for testing only
+        this.paused = false;
         this.graphics;
         this.gravText;
         this.path;
@@ -94,7 +94,8 @@ class Freeplay extends Phaser.Scene {
         this.bodies["earth"].subscribe(this.bodies["luna"]);
         //setting probe as the player
         this.player = this.bodies["psyche_probe"];
-        CameraManager.setFollowSprite(this.player);
+        this.newCamTarget = this.bodies["earth"];
+        CameraManager.setFollowSprite(this.bodies["earth"]);
 
         //creating UISprites
         var logo = this.add.image(50,50,'logo').setScale(0.5);
@@ -183,21 +184,28 @@ class Freeplay extends Phaser.Scene {
 
         //prevent psyche from going too far out for now
 	    //note: FOR TESTING ONLY, THIS IS A BAD WAY OF DOING THIS
-        if (this.bodies["psyche_probe"].x >= 650 + 1024) {
+        if (this.bodies["psyche_probe"].x >= 1400 + 2048) {
             this.bodies["psyche_probe"].vel.x = 0
-            this.bodies["psyche_probe"].x = 649 + 1024
-        } if (this.bodies["psyche_probe"].y >= 650 + 1024) {
+            this.bodies["psyche_probe"].x = 1399 + 2048
+        } if (this.bodies["psyche_probe"].y >= 1400 + 2048) {
             this.bodies["psyche_probe"].vel.y = 0
-            this.bodies["psyche_probe"].y = 649 + 1024
-        } if (this.bodies["psyche_probe"].x <= -650 + 1024) {
+            this.bodies["psyche_probe"].y = 1399 + 2048
+        } if (this.bodies["psyche_probe"].x <= -1400 + 2048) {
             this.bodies["psyche_probe"].vel.x = 0
-            this.bodies["psyche_probe"].x = -649 + 1024
-        } if (this.bodies["psyche_probe"].y <= -650 + 1024) {
+            this.bodies["psyche_probe"].x = -1399 + 2048
+        } if (this.bodies["psyche_probe"].y <= -1400 + 2048) {
             this.bodies["psyche_probe"].vel.y = 0
-            this.bodies["psyche_probe"].y = -649 + 1024
+            this.bodies["psyche_probe"].y = -1399 + 2048
         }
 
         this.graphics.clear(); //clear previous itteration's graphics
+
+        //if the camera is changing it's follow target,
+        //slowly move to the position of target before targeting it
+        //to prevent sudded camera jerks.
+        if (CameraManager.isCamChanging()) {
+            CameraManager.checkDoneChanging();
+        }
 
         //for probe's gravity lock functionality:
         if (this.bodies["psyche_probe"].lockToggle && !this.bodies["psyche_probe"].inOrbit) {
