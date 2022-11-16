@@ -315,12 +315,12 @@ class Freeplay extends Phaser.Scene {
             }
 
             // add the image of the arrow if it not added
-            if (typeof(this.direction) == "undefined") {
+             if (typeof(this.direction) == "undefined") {
                 this.direction = this.add.image(directionX, directionY, 'direction').setScale(0.2);
                 CameraManager.addUISprite(this.direction);
                 //Make the minimap ignore the icon.
                 this.minimap.ignore(this.direction);
-            }
+             }
 
             // set the correct position and angle of the arrow to point to psyche
             this.direction.setPosition(directionX, directionY);
@@ -343,6 +343,8 @@ class Freeplay extends Phaser.Scene {
         this.playButton = this.add.image(964, 708, 'play').setScale(0.5)
         this.pauseButton = this.add.image(964, 708, 'pause').setScale(0.5)
         this.restartButton = this.add.image(520, 408, 'restart').setScale(0.5)
+        // Made sure the button is on top of everything.
+        this.restartButton.depth = 100;
         this.exitButton = this.add.image(520, 508, 'exit').setScale(0.5)
 
         this.input.keyboard
@@ -397,6 +399,10 @@ class Freeplay extends Phaser.Scene {
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
                 this.restartButton.setTint(0xFFFFFF);
+                this.scene.restart();
+                this.paused = !this.paused
+                // Make the direction icon show up again.
+                this.direction = undefined;
             });
 
             this.exitButton.setInteractive()
