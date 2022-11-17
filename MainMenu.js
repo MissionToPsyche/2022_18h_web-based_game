@@ -25,7 +25,22 @@ class MainMenu extends Phaser.Scene {
     }
 
     createPlayButton() {
-        this.playButton = this.add.image(400, 300, 'play').setScale(2.0);
+        this.playButton = this.add.image(512, 384, 'play');
         CameraManager.addUISprite(this.playButton);
+
+        this.playButton.setInteractive()
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
+                this.playButton.setTint(0xF9A000);
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OUT, () => {
+                this.playButton.setTint(0xFFFFFF);
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
+                this.playButton.setTint(0xF47D33);
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
+                this.playButton.setTint(0xFFFFFF);
+                this.scene.switch('Freeplay');
+            })
     }
 }
