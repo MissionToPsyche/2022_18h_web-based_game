@@ -238,6 +238,7 @@
             "id": "luna",
             "name": "Moon",
             "orbits": "earth",
+            "angle": 3.17,
             "mass": {
                 "value": 10,
                 "unit": "px",
@@ -249,7 +250,7 @@
                 "magnitude": 1
             },
             "orbit_distance": {
-                "value": 10,
+                "value": 20,
                 "unit": "px",
                 "magnitude": 1
             }
