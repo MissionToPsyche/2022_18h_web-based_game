@@ -13,11 +13,13 @@ class Freeplay extends Phaser.Scene {
         this.keyToggle = false //for testing only
         this.paused = false
         this.graphics;
+        this.gravText;
+        this.failText;
         this.path;
         this.curve;
         this.points;
-        this.graphics;
         this.direction;
+        this.gameOver = false;
         this.pauseText;
     }
 
@@ -160,6 +162,9 @@ class Freeplay extends Phaser.Scene {
 
         //creating control keys
         this.cursors = this.input.keyboard.createCursorKeys();
+        this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+        this.pauseKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
+        this.restartKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
 
         this.createPauseButton();
         this.createOrbitToggle();
@@ -268,12 +273,33 @@ class Freeplay extends Phaser.Scene {
             this.bodies["psyche_probe"].y = -649 + 1024
         }
 
+        // don't update bodies if paused
+        if (this.paused) {
+            return
+        }
+
+        // check to see if the probe collided with anything
+        // if there was a collision then trigger the failure state and stop the simulation
+        if (this.bodies["psyche_probe"].collided == true && this.gameOver == false) {
+            this.gameOver = true;
+            this.drawFailureScreen();
+
+        } else if (this.gameOver) {
+            
+            // we will need to tie these to a 'restart' button on the failure screen
+            if (this.restartKey.isDown) {
+                this.gameOver = false;
+                this.scene.restart();
+            }
+            return
+        }
+
         this.graphics.clear(); //clear previous itteration's graphics
 
         for (const body in this.bodies) {
             //apply dynamic gravity
             //NOTE: THIS IS A BAD PLACE TO DO THIS. MOVE THIS TO AN APPROPRIATE PLACE LATER!!
-            this.bodies[body].notify() 
+            this.bodies[body].notify()
 
             //draw paths
             var path = this.bodies[body].path;
@@ -326,6 +352,16 @@ class Freeplay extends Phaser.Scene {
                 // Make the minimap icon have the same location as the player.
                 this.icon.y = this.bodies["psyche_probe"].y;
                 this.icon.x = this.bodies["psyche_probe"].x;
+    }
+
+    drawFailureScreen () {
+        this.failText = this.add.text(400,
+                                      200,
+                                      'Game over! Rress R to restart');
+        this.failText.setOrigin(0.5, 0.5);
+        this.failText.setScale(2);
+
+        CameraManager.addUISprite(this.failText);
     }
 
     createPauseButton() {
