@@ -345,6 +345,11 @@ class Freeplay extends Phaser.Scene {
         let probeView = this.graphics.slice(centerX, centerY, viewR, startRotation, endRotation, true);
         this.minimap.ignore(probeView);
         this.graphics.fillPath();
+
+        // check if psyche is in the view
+        if (this.bodies["psyche_probe"].isInView("psyche", viewR, startRotation, endRotation)) {
+            console.log("psyche in view!");
+        }
     }
 
     createPauseButton() {
