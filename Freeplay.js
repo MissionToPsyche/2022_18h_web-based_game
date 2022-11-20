@@ -3,7 +3,13 @@ const SATELLITES = "satellites";
 const MOONS = "moons";
 const PROBES = "probes";
 
+/**
+ * Class representing the Phaser 'Scene', which defines our game
+ * @extends Phaser.Scene
+ */
 class Freeplay extends Phaser.Scene {
+    //Variable used to contain the angle of the probe.
+    angle = 0;
     constructor () {
         super({key:"Freeplay"});
         //creating body objects
@@ -12,23 +18,27 @@ class Freeplay extends Phaser.Scene {
         this.keyToggle = false //for testing only
         this.paused = false
         this.graphics;
-        this.gravText;
         this.path;
         this.curve;
         this.points;
         this.graphics;
-        this.pauseIndicator;
         this.direction;
+        this.pauseText;
     }
 
+    /** Loads all necessary assets for the scene before the simulation runs */
     preload () {
         this.load.json('bodies', 'data/bodies.realistic.json');
 
         //loading in all image assets
+        this.load.image('minimap_border', 'img/icons/minimap-border.png'); //border for minimap
         this.load.image('logo', 'img/Psyche_Icon_Color-SVG.svg'); //asset for psyche logo
-        this.load.image('play', 'img/icons/play-circle.svg'); //asset for psyche logo
-        this.load.image('pause', 'img/icons/pause-circle.svg'); //asset for psyche logo
+        this.load.image('play', 'img/icons/play-circle.svg');
+        this.load.image('pause', 'img/icons/pause-circle.svg');
+        this.load.image('orbit', 'img/icons/orbit.svg');
         this.load.image('direction', 'img/icons/direction.png'); // an arrow
+        this.load.image('exit', 'img/icons/exit.png'); // an exit button
+        this.load.image('restart', 'img/icons/restart.png'); // a restart button
 
         //staticly loading all the individual assets for now
         //**TO DO: change to a more general method of preloading images
@@ -41,12 +51,22 @@ class Freeplay extends Phaser.Scene {
         this.load.image('pluto', "img/icons/pluto.svg");
         this.load.image('psyche', "img/icons/psyche.svg");
         this.load.image('psyche_probe', "img/icons/psyche_probe.svg");
+        this.load.image('psyche_probe_icon', "img/icons/arrow.png");
         this.load.image('saturn', "img/icons/saturn.svg");
         this.load.image('sol', "img/icons/sol.svg");
         this.load.image('uranus', "img/icons/uranus.svg");
         this.load.image('venus', "img/icons/venus.svg");
     }
 
+    /**
+     * Assembles the game within the scene
+     * - Using information from data/bodies.json, Generate all bodies and add them to the scene
+     * - Initialize the menu and game cameras
+     * - Set the player as the probe
+     * - Subscribe the probe to every body in the scene
+     * - Generate UI sprites and add them to the scene
+     * - Create player controls
+     */
     create () {
         this.graphics = this.add.graphics();
 
@@ -56,6 +76,18 @@ class Freeplay extends Phaser.Scene {
 
         //Solar system is 2048x2048
         this.matter.world.setBounds(0, 0, 2048, 2048);
+
+
+        //Minimap
+        this.minimap = this.cameras.add(745, 10, 300, 205).setZoom(0.15).setName('mini');
+        this.minimap.setBackgroundColor("Black");
+        this.minimap.scrollX = 900;
+        this.minimap.scrollY = 900;
+        
+        var map_border = this.add.image(880,110,'minimap_border').setScale(0.35);
+
+        this.pauseText = this.add.text(340, 220, 'Pause');
+        this.pauseText.setFontSize(120);
 
         //initializing cameras
         CameraManager.initializeMainCamera(this);
@@ -105,7 +137,11 @@ class Freeplay extends Phaser.Scene {
             //appear on UI camera
             CameraManager.addGameSprite(this.bodies[body]);
         }
-        CameraManager.addGameSprite(this.graphics); //adding graphics to game sprites so that it doesn't show up in UI.
+
+        CameraManager.addGameSprite(this.graphics);
+        // Make the main camera ignore the player icon.
+        // CameraManager.addUISprite([this.bodies["psyche_probe_icon"]]);
+        //adding graphics to game sprites so that it doesn't show up in UI.
 
         //subscribe probe to all other bodies.
         //NOTE** hard coded to psyche probe for now
@@ -120,72 +156,105 @@ class Freeplay extends Phaser.Scene {
         CameraManager.setFollowSprite(this.player);
 
         //creating UISprites
-        var logo = this.add.image(50,50,'logo').setScale(0.5);
-        this.gravText = this.add.text(4, 90, '0')
-        this.gravText.setText("Gravity: ON")
-        this.playIndicator = this.add.image(964, 708, 'play').setScale(0.5)
-        this.pauseIndicator = this.add.image(964, 708, 'pause').setScale(0.5)
+        var logo = this.add.image(50, 50, 'logo').setScale(0.5);
+        this.icon = this.add.image(50,50,"psyche_probe_icon").setScale(0.5);
 
         //adding to UIsprites so main camera ignores them
         CameraManager.addUISprite(logo);
-        CameraManager.addUISprite(this.gravText);
-        CameraManager.addUISprite(this.playIndicator);
-        CameraManager.addUISprite(this.pauseIndicator);
+        CameraManager.addUISprite(map_border);
+        CameraManager.addMinimapSprite(this.icon);
 
         //creating control keys
         this.cursors = this.input.keyboard.createCursorKeys();
-        this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-        this.pauseKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
 
-        this.input.on("pointerdown", function (pointer){
-            if ((pointer.x > 934) && (pointer.x < 994) && (pointer.y > 678) &&(pointer.y < 738)) {
-                this.paused = !this.paused;
-            }
-        }, this);
-        console.log(Phaser.Input.Keyboard.SPACEBAR)
+        this.createPauseButton();
+        this.createOrbitToggle();
     }
 
-    //this is the scene's main update loop
+    /** The scene's main update loop
+     * - Disallows the probe from escaping the solar system or going to fast
+     * - Applies dynamic gravity
+     * - Enforces the pause feature, only allowing bodies to move if the game is not paused
+     */
     update () {
         //Probe controls
         //**TO DO: Wrap in a custom controler later.
         const moveUnit = 0.01
 
-        // update pause/play indicator
-        if (this.paused) {
-            this.playIndicator.setVisible(false)
-            this.pauseIndicator.setVisible(true)
-        } else {
-            this.pauseIndicator.setVisible(false)
-            this.playIndicator.setVisible(true)
-        }
+        this.updatePauseButton();
 
         // only move if not paused
-        if (!this.paused) {
+        if (this.paused) {
+            return
+        } else {
             if (this.cursors.left.isDown) {
                 this.bodies["psyche_probe"].vel.x -= moveUnit;
+                //Either turn the probe left or right depending on its current angle.
+                if(this.angle > -45){
+                    this.bodies["psyche_probe"].angle -= 5;
+                    this.icon.angle -= 5;
+                    this.angle -=5; 
+                } else if(this.angle < -45){
+                    this.bodies["psyche_probe"].angle += 5;
+                    this.icon.angle += 5;
+                    this.angle +=5; 
+                }         
+                
             }
-            else if (this.cursors.right.isDown) {
+            else if (this.cursors.right.isDown)
+            {
                 this.bodies["psyche_probe"].vel.x += moveUnit;
+    
+                //Either turn the probe left or right depending on its current angle.
+                // Set the value of the probe to 225 if it is currently facing down 
+                //to make it turn the shortest distance.
+                if(this.angle == -135){
+                    this.angle = 225;
+                } else if(this.angle < 135){
+                    this.bodies["psyche_probe"].angle += 5;
+                    this.icon.angle += 5;
+                    this.angle +=5; 
+    
+                } else if(this.angle > 135){
+                    this.bodies["psyche_probe"].angle -= 5;
+                    this.icon.angle -= 5;
+                    this.angle -=5; 
+                }
             }
-
-            if (this.cursors.up.isDown) {
+            if (this.cursors.up.isDown)
+            {
                 this.bodies["psyche_probe"].vel.y -= moveUnit;
+    
+                //Either turn the probe left or right depending on its current angle.
+                if(this.angle > 45){
+                    this.bodies["psyche_probe"].angle -= 5;
+                    this.icon.angle -= 5;
+                    this.angle -=5; 
+                } else if(this.angle < 45){
+                    this.bodies["psyche_probe"].angle += 5;
+                    this.icon.angle += 5;
+                    this.angle +=5; 
+                }  
             }
-            else if (this.cursors.down.isDown) {
+            else if (this.cursors.down.isDown)
+            {
                 this.bodies["psyche_probe"].vel.y += moveUnit;
+    
+                //Either turn the probe left or right depending on its current angle.
+                // Set the value of the probe to -225 if it is currently facing right 
+                //to make it turn the shortest distance.
+                if(this.angle == 135){
+                    this.angle = -225;
+                } else if(this.angle < -135){
+                    this.bodies["psyche_probe"].angle += 5;
+                    this.icon.angle += 5;
+                    this.angle +=5; 
+                } else if(this.angle > -135){
+                    this.bodies["psyche_probe"].angle -= 5;
+                    this.icon.angle -= 5;
+                    this.angle -=5; 
+                }
             }
-        }
-
-        if (this.spaceKey.isDown) {
-            this.bodies["psyche_probe"].gravityToggle = !this.keyToggle ? !this.bodies["psyche_probe"].gravityToggle : this.bodies["psyche_probe"].gravityToggle
-            this.gravText.setText("Gravity: " + (this.bodies["psyche_probe"].gravityToggle ? "ON" : "OFF"))
-            this.keyToggle = true
-        } else if (this.pauseKey.isDown) {
-            this.paused = !this.keyToggle ? !this.paused : this.paused
-            this.keyToggle = true
-        } else {
-            this.keyToggle = false
         }
 
         //prevent psyche from going too far out for now
@@ -194,6 +263,7 @@ class Freeplay extends Phaser.Scene {
             this.bodies["psyche_probe"].vel.x = 0
             this.bodies["psyche_probe"].x = 649 + 1024
         } if (this.bodies["psyche_probe"].y >= 650 + 1024) {
+            this.bodies["psyche_probe"].x = 649 + 1024
             this.bodies["psyche_probe"].vel.y = 0
             this.bodies["psyche_probe"].y = 649 + 1024
         } if (this.bodies["psyche_probe"].x <= -650 + 1024) {
@@ -202,11 +272,6 @@ class Freeplay extends Phaser.Scene {
         } if (this.bodies["psyche_probe"].y <= -650 + 1024) {
             this.bodies["psyche_probe"].vel.y = 0
             this.bodies["psyche_probe"].y = -649 + 1024
-        }
-
-        // don't update bodies if paused
-        if (this.paused) {
-            return
         }
 
         this.graphics.clear(); //clear previous itteration's graphics
@@ -248,6 +313,8 @@ class Freeplay extends Phaser.Scene {
             if (typeof(this.direction) == "undefined") {
                 this.direction = this.add.image(directionX, directionY, 'direction').setScale(0.2);
                 CameraManager.addUISprite(this.direction);
+                //Make the minimap ignore the icon.
+                this.minimap.ignore(this.direction);
             }
 
             // set the correct position and angle of the arrow to point to psyche
@@ -261,5 +328,135 @@ class Freeplay extends Phaser.Scene {
                 this.direction.alpha = 0.8;
             }
         }
+
+                // Make the minimap icon have the same location as the player.
+                this.icon.y = this.bodies["psyche_probe"].y;
+                this.icon.x = this.bodies["psyche_probe"].x;
+    }
+
+    createPauseButton() {
+        this.playButton = this.add.image(964, 708, 'play').setScale(0.5)
+        this.pauseButton = this.add.image(964, 708, 'pause').setScale(0.5)
+        this.restartButton = this.add.image(520, 408, 'restart').setScale(0.5)
+        this.exitButton = this.add.image(520, 508, 'exit').setScale(0.5)
+
+        this.input.keyboard
+            .on('keydown-P', () => {
+                this.playButton.setTint(0xF47D33);
+                this.pauseButton.setTint(0xF47D33);
+            }).on('keyup-P', () => {
+                this.playButton.setTint(0xFFFFFF);
+                this.pauseButton.setTint(0xFFFFFF);
+                this.paused = !this.paused
+            });
+
+        this.playButton.setInteractive()
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
+                this.playButton.setTint(0xF9A000);
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OUT, () => {
+                this.playButton.setTint(0xFFFFFF);
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
+                this.playButton.setTint(0xF47D33);
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
+                this.playButton.setTint(0xFFFFFF);
+                this.paused = !this.paused
+            })
+
+        this.pauseButton.setInteractive()
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
+                this.pauseButton.setTint(0xF9A000);
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OUT, () => {
+                this.pauseButton.setTint(0xFFFFFF);
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
+                this.pauseButton.setTint(0xF47D33);
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
+                this.pauseButton.setTint(0xFFFFFF);
+                this.paused = !this.paused
+            });
+
+        this.restartButton.setInteractive()
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
+                this.restartButton.setTint(0xF9A000);
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OUT, () => {
+                this.restartButton.setTint(0xFFFFFF);
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
+                this.restartButton.setTint(0xF47D33);
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
+                this.restartButton.setTint(0xFFFFFF);
+            });
+
+            this.exitButton.setInteractive()
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
+                this.exitButton.setTint(0xF9A000);
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OUT, () => {
+                this.exitButton.setTint(0xFFFFFF);
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
+                this.exitButton.setTint(0xF47D33);
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
+                this.exitButton.setTint(0xFFFFFF);
+            });
+
+        CameraManager.addUISprite(this.playButton);
+        CameraManager.addUISprite(this.pauseButton);
+        CameraManager.addUISprite(this.exitButton);
+        CameraManager.addUISprite(this.restartButton);
+        this.minimap.ignore(this.pauseButton);
+        this.minimap.ignore(this.playButton);
+        this.minimap.ignore(this.exitButton);
+        this.minimap.ignore(this.restartButton);
+    }
+
+    updatePauseButton() {
+        if (this.paused) {
+            this.playButton.setVisible(true)
+            this.pauseButton.setVisible(false)
+            this.pauseText.setVisible(true)
+            this.restartButton.setVisible(true)
+            this.exitButton.setVisible(true)
+        } else {
+            this.pauseButton.setVisible(true)
+            this.playButton.setVisible(false)
+            this.pauseText.setVisible(false)
+            this.restartButton.setVisible(false)
+            this.exitButton.setVisible(false)
+        }
+    }
+    
+    createOrbitToggle() {
+        this.orbitToggle = this.add.image(56, 708, 'orbit').setScale(0.5);
+        CameraManager.addUISprite(this.orbitToggle);
+
+        this.input.keyboard
+            .on('keyup-SPACE', () => {
+                this.bodies["psyche_probe"].orbitToggle = !this.bodies["psyche_probe"].orbitToggle;
+                this.orbitToggle.setTint(this.bodies["psyche_probe"].orbitToggle ? 0xF47D33 : 0xFFFFFF);
+            });
+
+        this.orbitToggle.setInteractive()
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
+                this.orbitToggle.setTint(0xF9A000);
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OUT, () => {
+                this.orbitToggle.setTint(this.bodies["psyche_probe"].orbitToggle ? 0xF47D33 : 0xFFFFFF);
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
+                this.orbitToggle.setTint(0xF47D33);
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
+                this.bodies["psyche_probe"].orbitToggle = !this.bodies["psyche_probe"].orbitToggle;
+                this.orbitToggle.setTint(this.bodies["psyche_probe"].orbitToggle ? 0xF47D33 : 0xFFFFFF);
+            });
     }
 }
