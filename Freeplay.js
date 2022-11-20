@@ -45,7 +45,7 @@ class Freeplay extends Phaser.Scene {
         this.load.image('neptune', "img/icons/neptune.svg");
         this.load.image('pluto', "img/icons/pluto.svg");
         this.load.image('psyche', "img/icons/psyche.svg");
-        this.load.image('psyche_probe', "img/icons/psyche_probe.svg");
+        this.load.image('psyche_probe', "img/icons/psyche_probe2.png");
         this.load.image('psyche_probe_icon', "img/icons/arrow.png");
         this.load.image('saturn', "img/icons/saturn.svg");
         this.load.image('sol', "img/icons/sol.svg");
@@ -159,8 +159,6 @@ class Freeplay extends Phaser.Scene {
         CameraManager.addUISprite(map_border);
         CameraManager.addMinimapSprite(this.icon);
 
-
-
         //creating control keys
         this.cursors = this.input.keyboard.createCursorKeys();
         this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
@@ -185,72 +183,79 @@ class Freeplay extends Phaser.Scene {
             return
         } else {
             if (this.cursors.left.isDown) {
-                this.bodies["psyche_probe"].vel.x -= moveUnit;
+                this.bodies["psyche_probe"].angle -= 1;
+                console.log(this.bodies["psyche_probe"].angle);
+
                 //Either turn the probe left or right depending on its current angle.
-                if(this.angle > -45){
-                    this.bodies["psyche_probe"].angle -= 5;
-                    this.icon.angle -= 5;
-                    this.angle -=5; 
-                } else if(this.angle < -45){
-                    this.bodies["psyche_probe"].angle += 5;
-                    this.icon.angle += 5;
-                    this.angle +=5; 
-                }         
+                // if(this.angle > -45){
+                //     this.bodies["psyche_probe"].angle -= 5;
+                //     this.icon.angle -= 5;
+                //     this.angle -=5; 
+                // } else if(this.angle < -45){
+                //     this.bodies["psyche_probe"].angle += 5;
+                //     this.icon.angle += 5;
+                //     this.angle +=5; 
+                // }         
                 
             }
             else if (this.cursors.right.isDown)
             {
-                this.bodies["psyche_probe"].vel.x += moveUnit;
+                this.bodies["psyche_probe"].angle += 1;
+                console.log(this.bodies["psyche_probe"].angle);
     
                 //Either turn the probe left or right depending on its current angle.
                 // Set the value of the probe to 225 if it is currently facing down 
                 //to make it turn the shortest distance.
-                if(this.angle == -135){
-                    this.angle = 225;
-                } else if(this.angle < 135){
-                    this.bodies["psyche_probe"].angle += 5;
-                    this.icon.angle += 5;
-                    this.angle +=5; 
+                // if(this.angle == -135){
+                //     this.angle = 225;
+                // } else if(this.angle < 135){
+                //     this.bodies["psyche_probe"].angle += 5;
+                //     this.icon.angle += 5;
+                //     this.angle +=5; 
     
-                } else if(this.angle > 135){
-                    this.bodies["psyche_probe"].angle -= 5;
-                    this.icon.angle -= 5;
-                    this.angle -=5; 
-                }
+                // } else if(this.angle > 135){
+                //     this.bodies["psyche_probe"].angle -= 5;
+                //     this.icon.angle -= 5;
+                //     this.angle -=5; 
+                // }
             }
             if (this.cursors.up.isDown)
             {
-                this.bodies["psyche_probe"].vel.y -= moveUnit;
+                console.log(this.bodies["psyche_probe"].angle);
+                this.bodies["psyche_probe"].vel.x += Math.cos(this.bodies["psyche_probe"].angle)/10
+                this.bodies["psyche_probe"].vel.y -= Math.sin(this.bodies["psyche_probe"].angle)/10
     
-                //Either turn the probe left or right depending on its current angle.
-                if(this.angle > 45){
-                    this.bodies["psyche_probe"].angle -= 5;
-                    this.icon.angle -= 5;
-                    this.angle -=5; 
-                } else if(this.angle < 45){
-                    this.bodies["psyche_probe"].angle += 5;
-                    this.icon.angle += 5;
-                    this.angle +=5; 
-                }  
+                // //Either turn the probe left or right depending on its current angle.
+                // if(this.angle > 45){
+                //     this.bodies["psyche_probe"].angle -= 5;
+                //     this.icon.angle -= 5;
+                //     this.angle -=5; 
+                // } else if(this.angle < 45){
+                //     this.bodies["psyche_probe"].angle += 5;
+                //     this.icon.angle += 5;
+                //     this.angle +=5; 
+                // }  
             }
             else if (this.cursors.down.isDown)
             {
-                this.bodies["psyche_probe"].vel.y += moveUnit;
+                console.log(this.bodies["psyche_probe"].angle);
+                this.bodies["psyche_probe"].vel.x += Math.sin(this.bodies["psyche_probe"].angle)/10
+                this.bodies["psyche_probe"].vel.y += Math.cos(this.bodies["psyche_probe"].angle)/10
     
                 //Either turn the probe left or right depending on its current angle.
                 // Set the value of the probe to -225 if it is currently facing right 
                 //to make it turn the shortest distance.
-                if(this.angle == 135){
-                    this.angle = -225;
-                } else if(this.angle < -135){
-                    this.bodies["psyche_probe"].angle += 5;
-                    this.icon.angle += 5;
-                    this.angle +=5; 
-                } else if(this.angle > -135){
-                    this.bodies["psyche_probe"].angle -= 5;
-                    this.icon.angle -= 5;
-                    this.angle -=5; 
-                }
+                // if(this.angle == 135){
+                //     this.angle = -225;
+                // } else if(this.angle < -135){
+                //     this.bodies["psyche_probe"].angle += 5;
+                //     this.icon.angle += 5;
+                //     this.angle +=5; 
+                // } else if(this.angle > -135){
+                //     this.bodies["psyche_probe"].angle -= 5;
+                //     this.icon.angle -= 5;
+                //     this.angle -=5; 
+                // }
             }
         }
 
@@ -402,6 +407,7 @@ class Freeplay extends Phaser.Scene {
                 this.scene.restart();
                 this.paused = !this.paused
                 // Make the direction icon show up again.
+                this.angle = 0;
                 this.direction = undefined;
             });
 
