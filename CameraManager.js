@@ -32,7 +32,7 @@ class CameraManager {
     }
 
     static initializeMainCamera(scene) {
-        this.mainCamera = scene.cameras.main
+        this.mainCamera = scene.cameras.main;
         this.mainCamera.setBounds(0, 0, 
             this.cameraWidth, this.cameraHeight);
         this.mainCamera.setZoom(this.mainZoom);
@@ -43,7 +43,21 @@ class CameraManager {
 
     static setCameraZoom(zoom) {
         this.mainZoom = zoom;
-        this.mainCamera.setZoom(zoom);
+        this.mainCamera.zoomTo(zoom);
+    }
+
+    static zoomToSize(size) {
+        //since zoom level is a decimal from 1-0, we
+        //need to find what the fraction of the zoom
+        //is based on the camera's viewport size
+        console.log(this.mainCamera.height + " / " + size);
+        var zoom = this.mainCamera.height / size;
+        console.log(zoom);
+        this.mainCamera.zoomTo(zoom);
+    }
+
+    static returnToSetZoom() {
+        this.mainCamera.zoomTo(this.mainZoom);
     }
 
     static addGameSprite(sprite) {

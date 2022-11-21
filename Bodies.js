@@ -247,6 +247,7 @@ class Probe extends Body {
 		this.minOrbit = 0;
 		this.orbitCounter = 500;
 		CameraManager.changeCamTarget(this);
+		CameraManager.returnToSetZoom();
 		return;
 	}
 
@@ -259,6 +260,9 @@ class Probe extends Body {
 			this.minOrbit += this.orbitTarget.r;
 			console.log("Maintaining Lock success!");
 			CameraManager.changeCamTarget(this.orbitTarget);
+			//change zoom level so that planet and probe are visable
+			var totalSize = (this.maxOrbit * 2 + this.r * 2 ) * 1.1;
+			CameraManager.zoomToSize(totalSize);
 			return;
 		}
 
