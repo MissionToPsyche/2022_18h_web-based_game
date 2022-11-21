@@ -163,6 +163,7 @@ class Freeplay extends Phaser.Scene {
 
         this.createPauseButton();
         this.createOrbitToggle();
+        this.takePhoto();
     }
 
     /** The scene's main update loop
@@ -345,11 +346,6 @@ class Freeplay extends Phaser.Scene {
         let probeView = this.graphics.slice(centerX, centerY, viewR, startRotation, endRotation, true);
         this.minimap.ignore(probeView);
         this.graphics.fillPath();
-
-        // check if psyche is in the view
-        if (this.bodies["psyche_probe"].isInView("psyche", viewR, startRotation, endRotation)) {
-            console.log("psyche in view!");
-        }
     }
 
     createPauseButton() {
@@ -457,7 +453,7 @@ class Freeplay extends Phaser.Scene {
         CameraManager.addUISprite(this.orbitToggle);
 
         this.input.keyboard
-            .on('keyup-SPACE', () => {
+            .on('keyup-SHIFT', () => {
                 this.bodies["psyche_probe"].orbitToggle = !this.bodies["psyche_probe"].orbitToggle;
                 this.orbitToggle.setTint(this.bodies["psyche_probe"].orbitToggle ? 0xF47D33 : 0xFFFFFF);
             });
@@ -475,6 +471,29 @@ class Freeplay extends Phaser.Scene {
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
                 this.bodies["psyche_probe"].orbitToggle = !this.bodies["psyche_probe"].orbitToggle;
                 this.orbitToggle.setTint(this.bodies["psyche_probe"].orbitToggle ? 0xF47D33 : 0xFFFFFF);
+            });
+    }
+
+    takePhoto() {
+        this.input.keyboard
+            .on('keyup-SPACE', () => {
+                // TODO: change paused to other activity
+                this.paused = !this.paused;
+                
+                let viewR = 100;
+                let endRotation = this.bodies["psyche_probe"].rotation + Math.PI;
+                if (endRotation > 2 * Math.PI) {
+                    endRotation -= (2 * Math.PI);
+                }
+                let startRotation = endRotation + Phaser.Math.DegToRad(90);
+                if (startRotation > 2 * Math.PI) {
+                    startRotation -= (2 * Math.PI);
+                }
+
+                // check if pyche is in the view
+                if (this.bodies["psyche_probe"].isInView("psyche", viewR, startRotation, endRotation)) {
+                    console.log("psyche in view!");
+                }
             });
     }
 }
