@@ -179,7 +179,7 @@ class Freeplay extends Phaser.Scene {
 
         this.updatePauseButton();
 
-        // only move if not paused
+        // only move if not paused or in game over
         if (!this.paused) {
             if (this.cursors.left.isDown) {
                 this.bodies["psyche_probe"].vel.x -= moveUnit;
@@ -429,6 +429,7 @@ class Freeplay extends Phaser.Scene {
     }
 
     updatePauseButton() {
+        // if paused and not game over then we can show the pause text and allow the pause/play buttons to update
         if (this.paused && !this.gameOver) {
             this.pauseText.setVisible(true)
             this.playButton.setVisible(true)
@@ -439,6 +440,14 @@ class Freeplay extends Phaser.Scene {
             this.pauseText.setVisible(false)
         }
 
+        // if game over then show the game over text
+        if (this.gameOver) {
+            this.failText.setVisible(true)
+        } else {
+            this.failText.setVisible(false)
+        }
+
+        // if paused or game over then we can show the restart and exit buttons
         if (this.paused || this.gameOver) {
             this.restartButton.setVisible(true)
             this.exitButton.setVisible(true)
@@ -446,12 +455,7 @@ class Freeplay extends Phaser.Scene {
             this.restartButton.setVisible(false)
             this.exitButton.setVisible(false)
         }
-
-        if (this.gameOver) {
-            this.failText.setVisible(true)
-        } else {
-            this.failText.setVisible(false)
-        }
+        
     }
     
     createOrbitToggle() {
