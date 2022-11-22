@@ -45,7 +45,7 @@ class Freeplay extends Phaser.Scene {
         this.load.image('neptune', "img/icons/neptune.svg");
         this.load.image('pluto', "img/icons/pluto.svg");
         this.load.image('psyche', "img/icons/psyche.svg");
-        this.load.image('psyche_probe', "img/icons/psyche_probe2.png");
+        this.load.image('psyche_probe', "img/icons/psyche_probe.svg");
         this.load.image('psyche_probe_icon', "img/icons/arrow.png");
         this.load.image('saturn', "img/icons/saturn.svg");
         this.load.image('sol', "img/icons/sol.svg");
@@ -164,6 +164,7 @@ class Freeplay extends Phaser.Scene {
         this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
         this.createPauseButton();
+
     }
 
     /** The scene's main update loop
@@ -174,7 +175,8 @@ class Freeplay extends Phaser.Scene {
     update () {
         //Probe controls
         //**TO DO: Wrap in a custom controler later.
-        const moveUnit = 0.01
+        const moveUnit = 1;
+        const rotationOffset = -2.4958208303518727;
 
         this.updatePauseButton();
 
@@ -182,9 +184,13 @@ class Freeplay extends Phaser.Scene {
         if (this.paused) {
             return
         } else {
+
+            // this.bodies["psyche_probe"].x = velX;
+            // this.bodies["psyche_probe"].y = velY;
+
             if (this.cursors.left.isDown) {
                 this.bodies["psyche_probe"].angle -= 1;
-                console.log(this.bodies["psyche_probe"].angle);
+
 
                 //Either turn the probe left or right depending on its current angle.
                 // if(this.angle > -45){
@@ -201,7 +207,6 @@ class Freeplay extends Phaser.Scene {
             else if (this.cursors.right.isDown)
             {
                 this.bodies["psyche_probe"].angle += 1;
-                console.log(this.bodies["psyche_probe"].angle);
     
                 //Either turn the probe left or right depending on its current angle.
                 // Set the value of the probe to 225 if it is currently facing down 
@@ -221,9 +226,8 @@ class Freeplay extends Phaser.Scene {
             }
             if (this.cursors.up.isDown)
             {
-                console.log(this.bodies["psyche_probe"].angle);
-                this.bodies["psyche_probe"].vel.x += Math.cos(this.bodies["psyche_probe"].angle)/10
-                this.bodies["psyche_probe"].vel.y -= Math.sin(this.bodies["psyche_probe"].angle)/10
+                this.bodies["psyche_probe"].vel.x = Math.cos(this.bodies["psyche_probe"].rotation + rotationOffset) * moveUnit
+                this.bodies["psyche_probe"].vel.y = Math.sin(this.bodies["psyche_probe"].rotation + rotationOffset) * moveUnit
     
                 // //Either turn the probe left or right depending on its current angle.
                 // if(this.angle > 45){
@@ -238,9 +242,8 @@ class Freeplay extends Phaser.Scene {
             }
             else if (this.cursors.down.isDown)
             {
-                console.log(this.bodies["psyche_probe"].angle);
-                this.bodies["psyche_probe"].vel.x += Math.sin(this.bodies["psyche_probe"].angle)/10
-                this.bodies["psyche_probe"].vel.y += Math.cos(this.bodies["psyche_probe"].angle)/10
+                this.bodies["psyche_probe"].vel.x = Math.cos(this.bodies["psyche_probe"].rotation + rotationOffset) * -moveUnit
+                this.bodies["psyche_probe"].vel.y = Math.sin(this.bodies["psyche_probe"].rotation + rotationOffset) * -moveUnit
     
                 //Either turn the probe left or right depending on its current angle.
                 // Set the value of the probe to -225 if it is currently facing right 
