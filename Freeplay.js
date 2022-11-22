@@ -12,15 +12,13 @@ class Freeplay extends Phaser.Scene {
         this.json;
         this.keyToggle = false //for testing only
         this.paused = false
-        this.graphics;
-        this.gravText;
-        this.failText;
         this.path;
         this.curve;
         this.points;
         this.direction;
         this.gameOver = false;
         this.pauseText;
+        this.failText;
     }
 
     /** Loads all necessary assets for the scene before the simulation runs */
@@ -74,7 +72,6 @@ class Freeplay extends Phaser.Scene {
         //Solar system is 2048x2048
         this.matter.world.setBounds(0, 0, 2048, 2048);
 
-
         //Minimap
         this.minimap = this.cameras.add(745, 10, 300, 205).setZoom(0.15).setName('mini');
         this.minimap.setBackgroundColor("Black");
@@ -83,8 +80,11 @@ class Freeplay extends Phaser.Scene {
         
         var map_border = this.add.image(880,110,'minimap_border').setScale(0.35);
 
-        this.pauseText = this.add.text(340, 220, 'Pause');
-        this.pauseText.setFontSize(120);
+        //Pause menu
+        this.pauseText = this.add.text(525, 300, 'Pause').setOrigin(0.5).setFontSize(120);
+
+        //Game over
+        this.failText = this.add.text(525, 300, 'Game Over!').setOrigin(0.5).setFontSize(120);
 
         //initializing cameras
         CameraManager.initializeMainCamera(this);
@@ -162,9 +162,6 @@ class Freeplay extends Phaser.Scene {
 
         //creating control keys
         this.cursors = this.input.keyboard.createCursorKeys();
-        this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-        this.pauseKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
-        this.restartKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
 
         this.createPauseButton();
         this.createOrbitToggle();
@@ -183,9 +180,7 @@ class Freeplay extends Phaser.Scene {
         this.updatePauseButton();
 
         // only move if not paused
-        if (this.paused) {
-            return
-        } else {
+        if (!this.paused) {
             if (this.cursors.left.isDown) {
                 this.bodies["psyche_probe"].vel.x -= moveUnit;
                 //Either turn the probe left or right depending on its current angle.
@@ -274,7 +269,7 @@ class Freeplay extends Phaser.Scene {
         }
 
         // don't update bodies if paused
-        if (this.paused) {
+        if (this.paused || this.gameOver) {
             return
         }
 
@@ -282,16 +277,8 @@ class Freeplay extends Phaser.Scene {
         // if there was a collision then trigger the failure state and stop the simulation
         if (this.bodies["psyche_probe"].collided == true && this.gameOver == false) {
             this.gameOver = true;
-            this.drawFailureScreen();
-
-        } else if (this.gameOver) {
-            
-            // we will need to tie these to a 'restart' button on the failure screen
-            if (this.restartKey.isDown) {
-                this.gameOver = false;
-                this.scene.restart();
-            }
-            return
+            CameraManager.addUISprite(this.failText);
+            this.minimap.ignore(this.failText);
         }
 
         this.graphics.clear(); //clear previous itteration's graphics
@@ -354,16 +341,6 @@ class Freeplay extends Phaser.Scene {
                 this.icon.x = this.bodies["psyche_probe"].x;
     }
 
-    drawFailureScreen () {
-        this.failText = this.add.text(400,
-                                      200,
-                                      'Game over! Rress R to restart');
-        this.failText.setOrigin(0.5, 0.5);
-        this.failText.setScale(2);
-
-        CameraManager.addUISprite(this.failText);
-    }
-
     createPauseButton() {
         this.playButton = this.add.image(964, 708, 'play').setScale(0.5)
         this.pauseButton = this.add.image(964, 708, 'pause').setScale(0.5)
@@ -422,6 +399,9 @@ class Freeplay extends Phaser.Scene {
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
                 this.restartButton.setTint(0xFFFFFF);
+                this.scene.restart();
+                this.paused = false;
+                this.gameOver = false;
             });
 
             this.exitButton.setInteractive()
@@ -449,18 +429,28 @@ class Freeplay extends Phaser.Scene {
     }
 
     updatePauseButton() {
-        if (this.paused) {
+        if (this.paused && !this.gameOver) {
+            this.pauseText.setVisible(true)
             this.playButton.setVisible(true)
             this.pauseButton.setVisible(false)
-            this.pauseText.setVisible(true)
-            this.restartButton.setVisible(true)
-            this.exitButton.setVisible(true)
         } else {
             this.pauseButton.setVisible(true)
             this.playButton.setVisible(false)
             this.pauseText.setVisible(false)
+        }
+
+        if (this.paused || this.gameOver) {
+            this.restartButton.setVisible(true)
+            this.exitButton.setVisible(true)
+        } else {
             this.restartButton.setVisible(false)
             this.exitButton.setVisible(false)
+        }
+
+        if (this.gameOver) {
+            this.failText.setVisible(true)
+        } else {
+            this.failText.setVisible(false)
         }
     }
     
