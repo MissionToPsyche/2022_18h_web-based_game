@@ -79,6 +79,7 @@ class Freeplay extends Phaser.Scene {
         this.minimap.scrollX = 900;
         this.minimap.scrollY = 900;
         
+        
         var map_border = this.add.image(880,110,'minimap_border').setScale(0.35);
 
         this.pauseText = this.add.text(340, 220, 'Pause');
@@ -153,6 +154,7 @@ class Freeplay extends Phaser.Scene {
         var logo = this.add.image(50, 50, 'logo').setScale(0.5);
         this.gravText = this.add.text(4, 90, '0')
         this.gravText.setText("Gravity: ON")
+
         
         this.icon = this.add.image(50,50,"psyche_probe_icon").setScale(0.5);
         //adding to UIsprites so main camera ignores them
@@ -164,6 +166,8 @@ class Freeplay extends Phaser.Scene {
         this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
         this.createPauseButton();
+
+
 
     }
 
@@ -351,9 +355,18 @@ class Freeplay extends Phaser.Scene {
         this.playButton = this.add.image(964, 708, 'play').setScale(0.5)
         this.pauseButton = this.add.image(964, 708, 'pause').setScale(0.5)
         this.restartButton = this.add.image(520, 408, 'restart').setScale(0.5)
-        // Made sure the button is on top of everything.
-        this.restartButton.depth = 100;
         this.exitButton = this.add.image(520, 508, 'exit').setScale(0.5)
+        // Made sure the buttons and label is on top of everything.
+        this.restartButton.depth = 100;
+        this.playButton.depth = 100;
+        this.pauseButton.depth = 100;
+        this.exitButton.depth = 100;
+        this.pauseText.depth = 100;
+
+        // To darken screen
+        const color1 = new Phaser.Display.Color(0, 0, 0);
+        this.shadow = this.add.rectangle(0, 0,2048, 2048, color1.color);
+        this.shadow.setAlpha(0.5);
 
         this.input.keyboard
             .on('keydown-P', () => {
@@ -436,6 +449,7 @@ class Freeplay extends Phaser.Scene {
         this.minimap.ignore(this.playButton);
         this.minimap.ignore(this.exitButton);
         this.minimap.ignore(this.restartButton);
+        this.minimap.ignore(this.shadow);
     }
 
     updatePauseButton() {
@@ -445,12 +459,14 @@ class Freeplay extends Phaser.Scene {
             this.pauseText.setVisible(true)
             this.restartButton.setVisible(true)
             this.exitButton.setVisible(true)
+            this.shadow.setVisible(true)
         } else {
             this.pauseButton.setVisible(true)
             this.playButton.setVisible(false)
             this.pauseText.setVisible(false)
             this.restartButton.setVisible(false)
             this.exitButton.setVisible(false)
+            this.shadow.setVisible(false)
         }
     }
 }
