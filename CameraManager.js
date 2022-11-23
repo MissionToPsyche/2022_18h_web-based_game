@@ -6,8 +6,8 @@ class CameraManager {
     }
 
     //class properties
-    static cameraHeight = 4096;
-    static cameraWidth = 4096;
+    static cameraHeight = 12288;
+    static cameraWidth = 12288;
     static mainZoom = 3; //main camera's zoom level
     static followSprite; //sprite main camera follows
     static mainCamera; //main game camera, containing most of the game's visuals

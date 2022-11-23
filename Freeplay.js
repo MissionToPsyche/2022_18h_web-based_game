@@ -49,8 +49,8 @@ class Freeplay extends Phaser.Scene {
 
         this.curve = new Phaser.Curves.Spline(this.points);
 
-        //Solar system is 2048x2048
-        this.matter.world.setBounds(0, 0, 2048, 2048);
+        //Solar system is 6144x6144
+        this.matter.world.setBounds(0, 0, 12288, 12288);
 
         //initializing cameras
         CameraManager.initializeMainCamera(this);
@@ -182,21 +182,23 @@ class Freeplay extends Phaser.Scene {
             this.keyToggle = false
         }
 
+        /*
         //prevent psyche from going too far out for now
 	    //note: FOR TESTING ONLY, THIS IS A BAD WAY OF DOING THIS
-        if (this.bodies["psyche_probe"].x >= 1400 + 2048) {
+        if (this.bodies["psyche_probe"].x >= 5400 + 12288) {
             this.bodies["psyche_probe"].vel.x = 0
-            this.bodies["psyche_probe"].x = 1399 + 2048
-        } if (this.bodies["psyche_probe"].y >= 1400 + 2048) {
+            this.bodies["psyche_probe"].x = 5399 + 12288
+        } if (this.bodies["psyche_probe"].y >= 5400 + 12288) {
             this.bodies["psyche_probe"].vel.y = 0
-            this.bodies["psyche_probe"].y = 1399 + 2048
-        } if (this.bodies["psyche_probe"].x <= -1400 + 2048) {
+            this.bodies["psyche_probe"].y = 5399 + 12288
+        } if (this.bodies["psyche_probe"].x <= -5400 + 12288) {
             this.bodies["psyche_probe"].vel.x = 0
-            this.bodies["psyche_probe"].x = -1399 + 2048
-        } if (this.bodies["psyche_probe"].y <= -1400 + 2048) {
+            this.bodies["psyche_probe"].x = -5399 + 12288
+        } if (this.bodies["psyche_probe"].y <= -5400 + 12288) {
             this.bodies["psyche_probe"].vel.y = 0
-            this.bodies["psyche_probe"].y = -1399 + 2048
+            this.bodies["psyche_probe"].y = -5399 + 12288
         }
+        */
 
         this.graphics.clear(); //clear previous itteration's graphics
 

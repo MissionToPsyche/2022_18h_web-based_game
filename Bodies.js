@@ -10,7 +10,7 @@ class Body extends Phaser.GameObjects.Sprite {
 		this.vel = new Phaser.Math.Vector2(0, 0)
 		this.r = _diameter / 2
 		this.listeners = []
-		this.listenRadius = 40 + this.r
+		this.listenRadius = this.r + this.r * 5;
 
 		this.setDisplaySize(this.r * 2, this.r * 2)
 			.setSize(this.r * 2, this.r *2);
@@ -243,7 +243,7 @@ class Probe extends Body {
 	stopOrbitLock() {
 		this.inOrbit = false;
 		this.lockToggle = false;
-		this.maxOrbit = 80;
+		this.maxOrbit = 200;
 		this.minOrbit = 0;
 		this.orbitCounter = 500;
 		CameraManager.changeCamTarget(this);
@@ -256,8 +256,8 @@ class Probe extends Body {
 		if (this.orbitCounter <= 0) {
 			//if timer is up, orbitlock is successful
 			this.inOrbit = true;
-			this.maxOrbit += this.orbitTarget.r;
-			this.minOrbit += this.orbitTarget.r;
+			this.maxOrbit = this.orbitTarget.r + this.orbitTarget.r * 2;
+			this.minOrbit = this.orbitTarget.r;
 			console.log("Maintaining Lock success!");
 			CameraManager.changeCamTarget(this.orbitTarget);
 			//change zoom level so that planet and probe are visable
