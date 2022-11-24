@@ -19,6 +19,8 @@ class Freeplay extends Phaser.Scene {
         this.graphics;
         this.direction;
         this.pauseText;
+        this.takingPhoto = false;
+        this.foundPsycheText; // should replace to photo of psyche
     }
 
     /** Loads all necessary assets for the scene before the simulation runs */
@@ -177,9 +179,10 @@ class Freeplay extends Phaser.Scene {
         const moveUnit = 0.01
 
         this.updatePauseButton();
+        this.updateTakePhoto();
 
-        // only move if not paused
-        if (this.paused) {
+        // only move if not paused and not taking photo
+        if (this.paused || this.takingPhoto) {
             return
         } else {
             if (this.cursors.left.isDown) {
@@ -447,6 +450,12 @@ class Freeplay extends Phaser.Scene {
             this.exitButton.setVisible(false)
         }
     }
+
+    updateTakePhoto() {
+        if (!this.takingPhoto) {
+            this.foundPsycheText.setVisible(false);
+        }
+    }
     
     createOrbitToggle() {
         this.orbitToggle = this.add.image(56, 708, 'orbit').setScale(0.5);
@@ -475,11 +484,13 @@ class Freeplay extends Phaser.Scene {
     }
 
     takePhoto() {
+        this.foundPsycheText = this.add.text(100, 300, 'You found Psyche!');
+        this.foundPsycheText.setFontSize(80);
+        //this.minimap.ignore(this.foundPsycheText);
         this.input.keyboard
             .on('keyup-SPACE', () => {
-                // TODO: change paused to other activity
-                this.paused = !this.paused;
-                
+                this.takingPhoto = !this.takingPhoto;
+
                 let viewR = 100;
                 let endRotation = this.bodies["psyche_probe"].rotation + Math.PI;
                 if (endRotation > 2 * Math.PI) {
@@ -492,6 +503,7 @@ class Freeplay extends Phaser.Scene {
 
                 // check if pyche is in the view
                 if (this.bodies["psyche_probe"].isInView("psyche", viewR, startRotation, endRotation)) {
+                    this.foundPsycheText.setVisible(true);
                     console.log("psyche in view!");
                 }
             });
