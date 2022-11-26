@@ -3,8 +3,6 @@
  * @extends Phaser.Scene
  */
 class Freeplay extends Phaser.Scene {
-    //Variable used to contain the angle of the probe.
-    angle = 0;
     constructor () {
         super({key:"Freeplay"});
         //creating body objects
@@ -134,8 +132,6 @@ class Freeplay extends Phaser.Scene {
         }
 
         CameraManager.addGameSprite(this.graphics);
-        // Make the main camera ignore the player icon.
-        // CameraManager.addUISprite([this.bodies["psyche_probe_icon"]]);
         //adding graphics to game sprites so that it doesn't show up in UI.
 
         //subscribe probe to all other bodies.
@@ -189,80 +185,23 @@ class Freeplay extends Phaser.Scene {
             return
         } else {
 
-            // this.bodies["psyche_probe"].x = velX;
-            // this.bodies["psyche_probe"].y = velY;
-
             if (this.cursors.left.isDown) {
-                this.bodies["psyche_probe"].angle -= 1;
-
-
-                //Either turn the probe left or right depending on its current angle.
-                // if(this.angle > -45){
-                //     this.bodies["psyche_probe"].angle -= 5;
-                //     this.icon.angle -= 5;
-                //     this.angle -=5; 
-                // } else if(this.angle < -45){
-                //     this.bodies["psyche_probe"].angle += 5;
-                //     this.icon.angle += 5;
-                //     this.angle +=5; 
-                // }         
-                
+                this.bodies["psyche_probe"].angle -= 1;             
             }
             else if (this.cursors.right.isDown)
             {
                 this.bodies["psyche_probe"].angle += 1;
-    
-                //Either turn the probe left or right depending on its current angle.
-                // Set the value of the probe to 225 if it is currently facing down 
-                //to make it turn the shortest distance.
-                // if(this.angle == -135){
-                //     this.angle = 225;
-                // } else if(this.angle < 135){
-                //     this.bodies["psyche_probe"].angle += 5;
-                //     this.icon.angle += 5;
-                //     this.angle +=5; 
-    
-                // } else if(this.angle > 135){
-                //     this.bodies["psyche_probe"].angle -= 5;
-                //     this.icon.angle -= 5;
-                //     this.angle -=5; 
-                // }
             }
             if (this.cursors.up.isDown)
             {
                 this.bodies["psyche_probe"].vel.x = Math.cos(this.bodies["psyche_probe"].rotation + rotationOffset) * moveUnit
                 this.bodies["psyche_probe"].vel.y = Math.sin(this.bodies["psyche_probe"].rotation + rotationOffset) * moveUnit
     
-                // //Either turn the probe left or right depending on its current angle.
-                // if(this.angle > 45){
-                //     this.bodies["psyche_probe"].angle -= 5;
-                //     this.icon.angle -= 5;
-                //     this.angle -=5; 
-                // } else if(this.angle < 45){
-                //     this.bodies["psyche_probe"].angle += 5;
-                //     this.icon.angle += 5;
-                //     this.angle +=5; 
-                // }  
             }
             else if (this.cursors.down.isDown)
             {
                 this.bodies["psyche_probe"].vel.x = Math.cos(this.bodies["psyche_probe"].rotation + rotationOffset) * -moveUnit
                 this.bodies["psyche_probe"].vel.y = Math.sin(this.bodies["psyche_probe"].rotation + rotationOffset) * -moveUnit
-    
-                //Either turn the probe left or right depending on its current angle.
-                // Set the value of the probe to -225 if it is currently facing right 
-                //to make it turn the shortest distance.
-                // if(this.angle == 135){
-                //     this.angle = -225;
-                // } else if(this.angle < -135){
-                //     this.bodies["psyche_probe"].angle += 5;
-                //     this.icon.angle += 5;
-                //     this.angle +=5; 
-                // } else if(this.angle > -135){
-                //     this.bodies["psyche_probe"].angle -= 5;
-                //     this.icon.angle -= 5;
-                //     this.angle -=5; 
-                // }
             }
         }
 
@@ -349,6 +288,8 @@ class Freeplay extends Phaser.Scene {
                 // Make the minimap icon have the same location as the player.
                 this.icon.y = this.bodies["psyche_probe"].y;
                 this.icon.x = this.bodies["psyche_probe"].x;
+                // Make the minimap icon have the same angle as the player.
+                this.icon.angle = this.bodies["psyche_probe"].angle;
     }
 
     createPauseButton() {
