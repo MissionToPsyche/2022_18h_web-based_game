@@ -63,6 +63,10 @@ class CameraManager {
         this.mainCamera.ignore(this.minimapSprites);
     }
 
+     /**
+     * Add the minimap camera to the scene with its current attributes
+     * @param {Scene} scene - The scene to add this camera to
+     */
     static initializeMiniCamera(scene) {
         this.miniCamera = scene.cameras.add(745, 10, 300, 205)
             .setZoom(0.018)
@@ -83,6 +87,11 @@ class CameraManager {
         this.mainCamera.zoomTo(zoom);
     }
 
+    /**
+     * sets the camera zoom based on the camera's view size in pixels
+     * Does not change the camera's set zoom value
+     * @param {number} size - value of the camera's size along the shortest axis
+     */
     static zoomToSize(size) {
         //since zoom level is a decimal from 1-0, we
         //need to find what the fraction of the zoom
@@ -93,6 +102,9 @@ class CameraManager {
         this.mainCamera.zoomTo(zoom);
     }
 
+    /**
+     * returns the main camera to it's set zoom value.
+     */
     static returnToSetZoom() {
         this.mainCamera.zoomTo(this.mainZoom);
     }
@@ -108,7 +120,7 @@ class CameraManager {
     }
 
     /**
-     * Add a new sprite to the collection of ui sprites and tell the main camera to ignore it
+     * Add a new sprite to the collection of ui sprites and tell the other cameras to ignore it
      * @param {Sprite} sprite -  The new sprite to add
      */
     static addUISprite(sprite) {
@@ -118,7 +130,7 @@ class CameraManager {
     }
 
     /**
-     * Add a new sprite to the collection of game sprites and tell the main camera to follow it
+     * Add a new sprite to the collection of game sprites and tell the other cameras to follow it
      * @param {Sprite} sprite - The new sprite to add
      */
     static setFollowSprite(sprite) {
@@ -131,24 +143,41 @@ class CameraManager {
         return new Phaser.Geom.Point(this.cameraWidth/2, this.cameraHeight/2);
     }
 
+    /**
+     * Changes the focus target of the game camera and puts
+     * the camera into a changing target state, making the camera
+     * pan to it's new target.
+     * @param {Phaser.GameObject} target - The new target of the camera
+     */
     static changeCamTarget(target) {
         this.cameraChanging = true;
         this.mainCamera.setLerp(0.01, 0.01);
         this.setFollowSprite(target);
     }
 
+    /**
+     * Checks to see if the camera has caught up to its new target.
+     * If it has, the camera exits the changing state.
+     */
     static checkDoneChanging() {
         var cam = this.mainCamera;
         if (cam.x == this.followSprite.x && cam.y == this.followSprite.y) {
-            this.cameraChanging == false;
+            this.cameraChanging = false;
             this.mainCamera.setLerp(1, 1);
         }
     }
 
+    /**
+     * Checks to see if the camera is in the changing state.
+     */
     static isCamChanging() {
         return this.cameraChanging;
     }
 
+    /**
+     * Add a new sprite to the collection of minimap sprites and tell the other cameras to ignore it
+     * @param {Sprite} sprite -  The new sprite to add
+     */
     static addMinimapSprite(sprite){
         this.minimapSprites.push(sprite)
         this.uiCamera.ignore(this.minimapSprites);

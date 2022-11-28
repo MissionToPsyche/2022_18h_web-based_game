@@ -16,7 +16,7 @@ function calcGravity (m1, m2, r) {
  * Calculates the gravitational acceleration on a mass based on force
  * @param {Phaser.Math.Vector2} f - Force vector
  * @param {number} m1 - The mass to apply force to
- * @return {Phaser.Math.Vector2} Gauss's law calculated on the input mass and force
+ * @return {Phaser.Math.Vector2} The resulting accelleration vector
  */
 function gaussLaw (f, m1) {
     var g = new Phaser.Math.Vector2(f.x/m1, f.y/m1);
@@ -49,7 +49,15 @@ function orbitVelocity(satellite, parent, angle) {
 	return final;
 }
 
-//max min optional
+/**
+ * Function that locks the orbit of a Satellite to
+ * A parent Body. If max and min are included, the
+ * orbit is kept within a range between the two.
+ * @param {Satellite} sat - The Satellite who's orbit is being locked
+ * @param {Body} parent - the target of the orbit.
+ * @param {number} [max=sat.distance] - the maximum distance from the parent for the orbit
+ * @param {number} [min=sat.distance] - the minimum distance from the parent for the orbit
+ */
 function lockOrbit(sat, parent, max, min) {
 	//calculate intended next position
 	var nextx = sat.x + sat.vel.x;
@@ -67,6 +75,7 @@ function lockOrbit(sat, parent, max, min) {
 		min = sat.distance;
 	}
 
+	//some basic trig to keep the sattilite within the orbit without killing its velocity.
 	if (r > max) {
 		const correction = new Phaser.Math.Vector2(0, 0).copy(parPos).subtract(nextPos).setLength(r - max);
 		sat.vel.add(correction);
@@ -77,12 +86,10 @@ function lockOrbit(sat, parent, max, min) {
 	return 0;
 }
 
-/*
- * A funciton that derives the componate of
- * a vector in the direction of annother vector
- * v1 = the vector whos componate vector you'd like to derive
- * v2 = the vector that gives the direction you'd like to derive from v1
- * returns the length/magnitude of the componate of v1 in the direction of v2
+/** A funciton that derives the componate of a vector in the direction of annother vector
+  * @param {Phaser.Math.Vector2} v1 - the vector whos componate vector you'd like to derive
+  * @param {Phaser.Math.Vector2} v1 - the vector that gives the direction you'd like to derive from v1
+  * @return {number} the length/magnitude of the componate of v1 in the direction of v2
  */
 function covindov(v1, v2) {
 	return v1.dot(v2)/v2.length();

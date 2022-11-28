@@ -19,6 +19,7 @@ class Freeplay extends Phaser.Scene {
         this.minigraphics;
         this.direction;
         this.pauseText;
+        this.playerBounds;
     }
 
     /** Loads all necessary assets for the scene before the simulation runs */
@@ -72,6 +73,7 @@ class Freeplay extends Phaser.Scene {
 
         //Solar system is 6144x6144
         this.matter.world.setBounds(0, 0, 20480, 20480);
+        this.playerBounds = 20480;
 
         //initializing cameras
         CameraManager.initializeMainCamera(this);
@@ -361,12 +363,16 @@ class Freeplay extends Phaser.Scene {
         }
     }
 
+    /** Creates the image objects and associated events for the 
+     *  game's pause button 
+     */
     createPauseButton() {
         this.playButton = this.add.image(964, 708, 'play').setScale(0.5)
         this.pauseButton = this.add.image(964, 708, 'pause').setScale(0.5)
         this.restartButton = this.add.image(520, 408, 'restart').setScale(0.5)
         this.exitButton = this.add.image(520, 508, 'exit').setScale(0.5)
 
+        //create keyboard events. Mostly just sets the tint of the button.
         this.input.keyboard
             .on('keydown-P', () => {
                 this.playButton.setTint(0xF47D33);
@@ -374,9 +380,10 @@ class Freeplay extends Phaser.Scene {
             }).on('keyup-P', () => {
                 this.playButton.setTint(0xFFFFFF);
                 this.pauseButton.setTint(0xFFFFFF);
-                this.paused = !this.paused
+                this.paused = !this.paused //this is the real important one.
             });
 
+        //create events for the play button
         this.playButton.setInteractive()
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
                 this.playButton.setTint(0xF9A000);
@@ -390,8 +397,9 @@ class Freeplay extends Phaser.Scene {
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
                 this.playButton.setTint(0xFFFFFF);
                 this.paused = !this.paused
-            })
+            });
 
+        //create events for the pause button
         this.pauseButton.setInteractive()
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
                 this.pauseButton.setTint(0xF9A000);
@@ -407,6 +415,7 @@ class Freeplay extends Phaser.Scene {
                 this.paused = !this.paused
             });
 
+        //create events for the restart button
         this.restartButton.setInteractive()
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
                 this.restartButton.setTint(0xF9A000);
@@ -421,7 +430,8 @@ class Freeplay extends Phaser.Scene {
                 this.restartButton.setTint(0xFFFFFF);
             });
 
-            this.exitButton.setInteractive()
+        //create events for the exit button.
+        this.exitButton.setInteractive()
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
                 this.exitButton.setTint(0xF9A000);
             })
@@ -435,6 +445,7 @@ class Freeplay extends Phaser.Scene {
                 this.exitButton.setTint(0xFFFFFF);
             });
 
+        //add all the images to the UI camera.
         CameraManager.addUISprite(this.playButton);
         CameraManager.addUISprite(this.pauseButton);
         CameraManager.addUISprite(this.exitButton);
@@ -445,6 +456,9 @@ class Freeplay extends Phaser.Scene {
         CameraManager.addMinimapSprite(this.restartButton);
     }
 
+    /** Updates the state of the on-screen pause button
+     *  based on the current state of Freeplay.paused.
+     */
     updatePauseButton() {
         if (this.paused) {
             this.playButton.setVisible(true)
@@ -461,6 +475,9 @@ class Freeplay extends Phaser.Scene {
         }
     }
     
+    /** Creates the button, key, and associated events
+     *  For the orbit lock functionality.
+     */
     createOrbitToggle() {
         this.orbitButton = this.add.image(56, 708, 'orbit').setScale(0.5);
         this.orbitButton.setTint(0xF47D33);

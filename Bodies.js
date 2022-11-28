@@ -46,8 +46,11 @@ class Body extends Phaser.GameObjects.Sprite {
 		CameraManager.addMinimapSprite(this.minimap_icon);
 	}
 
-	/** Cause this body to orbit its parent if one exists and affect position by calculated velocity */
-	updatePosition(scene) {
+	/**
+	 * Updates the position of the body by the body's
+	 * velocity.
+	 */
+	updatePosition() {
 		// affect position by calculated velocity
 		this.x += this.vel.x;
 		this.y += this.vel.y;
@@ -56,19 +59,29 @@ class Body extends Phaser.GameObjects.Sprite {
 		this.minimap_icon.y = this.y;
 	}
 
-	/** calculate velocity based off of force applied */
+	/** 
+	 * Applies the accelleration from a given force
+	 * to the body's velocity.
+	 * @param {Phaser.Math.Vector2} f - The applied force
+	 */
 	force(f) {
 		this.vel.add(gaussLaw(f, this.mass));
 	}
 
-	//begining of implementation of observer pattern to notify probes when close enough to annother body
+	//---begining of implementation of observer pattern to notify probes when close enough to annother body---
 
-	/** add body to array of bodies that may be affected by dynamic gravity */
+	/**
+	 * add body array of listeners for the dynamic gravity system.
+	 * @param {Body} listener - The Body to be added to listeners
+	 */
 	subscribe(listener) {
 		this.listeners.push(listener)
 	}
 
-	/** remove body from array of bodies that may be affected by dynamic gravity */
+	/**
+	 * remove body from array of listeners for the dynamic gravity system.
+	 * @param {Body} listener - The listening Body to be removed
+	 */
 	unsubscribe(listener) {
 		//yes, this is how you remove a specific array item in js. Yes, it's overly complicated.
 		this.listeners = this.listeners.filter(body => body.id != listener.id)
@@ -100,10 +113,14 @@ class Body extends Phaser.GameObjects.Sprite {
 		}.bind(this));
 	}
 
-	/** apply force from body subscribed to */
+	/** 
+	 * Applies the accelleration to the body from the force exerted on it
+	 * by one of the body's listeners.
+	 * @param {Phaser.Math.Vector2} f - The applied force
+	 */
 	update(f) {
 		//NOTE** Might want to merge this function with this.force(f) at some point
-		this.vel.add(gaussLaw(f, this.mass).scale(0.1)); //TEMP divide by 2 'cause gravity too stronk
+		this.vel.add(gaussLaw(f, this.mass).scale(0.1)); //TEMP scale 'cause gravity too stronk
 	}
 }
 
@@ -156,8 +173,8 @@ class Satellite extends Body {
 	}
 
 	/** Add the current onscreen position into `this.path` */
-	updatePosition(scene) {
-		super.updatePosition(scene)
+	updatePosition() {
+		super.updatePosition()
 		if (this.parent != null) {
 			this.orbit(this.parent);
 			lockOrbit(this, this.parent);
@@ -172,6 +189,7 @@ class Satellite extends Body {
 	/**
 	 * Use Newton's law of Universal Gravitation to apply force to this Satellite and cause it to orbit
 	 * its parent
+	 * @param {Body} parent - the body for the satellite to orbit.
 	 */
 	orbit(parent) {
 		var p1 = new Phaser.Geom.Point(this.x, this.y);
@@ -229,7 +247,12 @@ class Probe extends Body {
 		}
 	}
 
-	updatePosition (scene) {
+	/**
+	 * Updates the position of the body by the body's
+	 * velocity. Also adjusts the position of the probe
+	 * Based on the probe's orbit lock if applicatble.
+	 */
+	updatePosition () {
 		//checking if orbit lock is enabled
 		if (this.inOrbit) {
 			lockOrbit(this, this.orbitTarget, this.maxOrbit, this.minOrbit);
@@ -257,11 +280,15 @@ class Probe extends Body {
 				this.minOrbit = this.maxOrbit;
 			}
 		}
-		super.updatePosition(scene);
+		super.updatePosition();
 	}
 
-	/** Update the position of this probe */
-    update (f) {
+	/** 
+	 * Applies the accelleration to the body from the force exerted on it
+	 * by one of the probe's listeners.
+	 * @param {Phaser.Math.Vector2} f - The applied force
+	 */
+	 update (f) {
         //toggle for gravity
 		//NOTE: FOR TESTING ONLY.
 		if (!this.gravityToggle) {
@@ -271,6 +298,12 @@ class Probe extends Body {
         super.update(f);
     }
 
+	/**
+	 * Starts the process of the probe locking onto a body.
+	 * The probe polls all bodies in the given scene and chooses
+	 * the closest one in range, then enters the maintaining state.
+	 * @param {Phaser.Scene} scene - the scene the probe searches bodies in.
+	 */
 	startOrbitLock(scene) {
 		//poll all planets and get closest planet within range (determined by max orbit)
 		console.log("Starting Orbit Lock")
@@ -309,6 +342,10 @@ class Probe extends Body {
 		}
 	}
 
+	/**
+	 * Ends or cancels the probe's orbit lock, returning
+	 * the probe to a non-orbit state.
+	 */
 	stopOrbitLock() {
 		this.inOrbit = false;
 		this.orbitToggle = false;
@@ -320,6 +357,14 @@ class Probe extends Body {
 		return;
 	}
 
+	/**
+	 * While the probe is in the between state of
+	 * finding a lock target but not having completed
+	 * the lock, checks ensure that the probe is still
+	 * close enough to the target for it to lock on.
+	 * If the probe maintains distance for long enough,
+	 * the probe enters its locked on state.
+	 */
 	maintainOrbit() {
 		console.log("Maintaining Lock...")
 		if (this.orbitCounter <= 0) {
@@ -346,6 +391,12 @@ class Probe extends Body {
 		this.orbitCounter -= 1;
 	}
 
+	/**
+	 * Creates a circular path with a radius of the probe's min or max orbit around
+	 * it's orbit lock target.
+	 * @param {string} minOrMax - string determining if the path represents the min or max orbit.
+	 * @returns {Phaser.Curves.Spline} the resulting curve from the path.
+	 */
 	getOrbitPath(minOrMax) {
 		var radius = 0;
 		if (minOrMax == 'min'){
