@@ -21,6 +21,7 @@ class Freeplay extends Phaser.Scene {
         this.pauseText;
         this.takingPhoto = false;
         this.foundPsycheText; // should replace to photo of psyche
+        this.quitPhotoPageButton;
     }
 
     /** Loads all necessary assets for the scene before the simulation runs */
@@ -453,7 +454,10 @@ class Freeplay extends Phaser.Scene {
 
     updateTakePhoto() {
         if (!this.takingPhoto) {
-            this.foundPsycheText.setVisible(false);
+            this.foundPsycheText.setVisible(false);  
+             this.quitPhotoPageButton.setVisible(false);
+        } else {
+            this.quitPhotoPageButton.setVisible(true);
         }
     }
     
@@ -486,7 +490,7 @@ class Freeplay extends Phaser.Scene {
     takePhoto() {
         this.foundPsycheText = this.add.text(100, 300, 'You found Psyche!');
         this.foundPsycheText.setFontSize(80);
-        //this.minimap.ignore(this.foundPsycheText);
+        this.minimap.ignore(this.foundPsycheText);
         this.input.keyboard
             .on('keyup-SPACE', () => {
                 this.takingPhoto = !this.takingPhoto;
@@ -507,5 +511,20 @@ class Freeplay extends Phaser.Scene {
                     console.log("psyche in view!");
                 }
             });
+
+        this.quitPhotoPageButton = this.add.text(300, 400, 'Back to game')
+            .setFontSize(50)
+            .setStyle({
+                color: '#111',
+                backgroundColor: '#fff',
+            })
+            .setPadding(10)
+            .setInteractive({useHandCursor: true })
+            .on('pointerdown', () => {
+                this.takingPhoto = !this.takingPhoto;
+                this.quitPhotoPageButton.setVisible(false);
+            })
+            .setVisible(false);
+        this.minimap.ignore(this.quitPhotoPageButton);
     }
 }
