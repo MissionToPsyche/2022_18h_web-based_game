@@ -386,6 +386,7 @@ class Freeplay extends Phaser.Scene {
         CameraManager.addUISprite(this.pauseButton);
         CameraManager.addUISprite(this.exitButton);
         CameraManager.addUISprite(this.restartButton);
+        CameraManager.addUISprite(this.shadow);
         this.minimap.ignore(this.pauseButton);
         this.minimap.ignore(this.playButton);
         this.minimap.ignore(this.exitButton);
