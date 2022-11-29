@@ -363,9 +363,12 @@ class Freeplay extends Phaser.Scene {
                 this.playButton.setTint(0xF47D33);
                 this.pauseButton.setTint(0xF47D33);
             }).on('keyup-P', () => {
-                this.playButton.setTint(0xFFFFFF);
-                this.pauseButton.setTint(0xFFFFFF);
-                this.paused = !this.paused
+                // disable pause when in the taking photo page
+                if (!this.takingPhoto) {
+                    this.playButton.setTint(0xFFFFFF);
+                    this.pauseButton.setTint(0xFFFFFF);
+                    this.paused = !this.paused;
+                }
             });
 
         this.playButton.setInteractive()
@@ -379,8 +382,11 @@ class Freeplay extends Phaser.Scene {
                 this.playButton.setTint(0xF47D33);
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
-                this.playButton.setTint(0xFFFFFF);
-                this.paused = !this.paused
+                // disable pause when in the taking photo page
+                if (!this.takingPhoto) {
+                    this.playButton.setTint(0xFFFFFF);
+                    this.paused = !this.paused;
+                }
             })
 
         this.pauseButton.setInteractive()
@@ -394,8 +400,11 @@ class Freeplay extends Phaser.Scene {
                 this.pauseButton.setTint(0xF47D33);
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
-                this.pauseButton.setTint(0xFFFFFF);
-                this.paused = !this.paused
+                // disable pause when in the taking photo page
+                if (!this.takingPhoto) {
+                    this.pauseButton.setTint(0xFFFFFF);
+                    this.paused = !this.paused;
+                }
             });
 
         this.restartButton.setInteractive()
@@ -523,6 +532,7 @@ class Freeplay extends Phaser.Scene {
             .on('pointerdown', () => {
                 this.takingPhoto = !this.takingPhoto;
                 this.quitPhotoPageButton.setVisible(false);
+                
             })
             .setVisible(false);
         this.minimap.ignore(this.quitPhotoPageButton);
