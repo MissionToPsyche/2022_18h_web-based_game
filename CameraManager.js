@@ -96,9 +96,7 @@ class CameraManager {
         //since zoom level is a decimal from 1-0, we
         //need to find what the fraction of the zoom
         //is based on the camera's viewport size
-        console.log(this.mainCamera.height + " / " + size);
         var zoom = this.mainCamera.height / size;
-        console.log(zoom);
         this.mainCamera.zoomTo(zoom);
     }
 
@@ -151,7 +149,7 @@ class CameraManager {
      */
     static changeCamTarget(target) {
         this.cameraChanging = true;
-        this.mainCamera.setLerp(0.01, 0.01);
+        this.mainCamera.setLerp(0.000001, 0.000001);
         this.setFollowSprite(target);
     }
 

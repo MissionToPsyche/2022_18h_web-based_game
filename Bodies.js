@@ -228,13 +228,19 @@ class Probe extends Body {
 		// if the gravify is on at the beginning of the game, the Probe will have a 
 		// initial velocity when starting from the earth
 		this.gravityToggle = true; //TO DO: REMOVE WHEN DONE TESTING GRAVITY
-		this.maxOrbit = 40; //TO DO: find better system for determining min/max orbit
-		this.minOrbit = 40;
-		this.foos = 1; //fraction of orbit speed
-		this.orbitCounter = 0;
-		this.orbitTarget = this.scene.bodies["earth"]; //the target of the probe's orbit.
 		this.inOrbit = true; //when true, indicates that probe is orbiting a planet
 		this.orbitToggle = true; //when true, starts the orbit lock on process
+
+		this.foos = 1; //fraction of orbit speed
+		this.orbitChangeCounter = 0;
+		this.orbitCounter = 0;
+
+		this.maxOrbit = 40; //TO DO: find better system for determining min/max orbit
+		this.minOrbit = 40;
+		this.currentOrbit = 40;
+		this.newOrbit = 40;
+		
+		this.orbitTarget = this.scene.bodies["earth"]; //the target of the probe's orbit.
 
 		//overload minimap display size
 		this.minimap_icon.setDisplaySize(this.r * 200, this.r * 200)
@@ -245,6 +251,10 @@ class Probe extends Body {
 			this.y = this.parent.y + this.distance * Math.sin(this.theta);
 			this.vel = orbitVelocity(this, this.parent, this.theta); //set initial orbit velocity.
 		}
+
+		//set camera zoom for initial state
+		var totalSize = (this.currentOrbit * 2 + this.r * 2 ) * 1.1;
+		CameraManager.zoomToSize(totalSize);
 	}
 
 	/**
@@ -255,7 +265,7 @@ class Probe extends Body {
 	updatePosition () {
 		//checking if orbit lock is enabled
 		if (this.inOrbit) {
-			lockOrbit(this, this.orbitTarget, this.maxOrbit, this.minOrbit);
+			lockOrbit(this, this.orbitTarget, this.currentOrbit);
 
 			//slowly bring probe up to orbit velocity
 			//TO DO: Test this properly. I'm not 100% on if it all works
@@ -272,12 +282,13 @@ class Probe extends Body {
 				this.foos = covindov(this.vel, orbitVel) / orbitVel;
 			}
 
-			//a little thing to bring the orbits to the same value over time
-			if (this.maxOrbit > this.minOrbit) {
-				this.maxOrbit -= 0.01;
-				this.minOrbit += 0.01;
-			} else {
-				this.minOrbit = this.maxOrbit;
+			//if orbit was changed, slowly bring the current orbit to the new orbit
+			if (this.orbitChangeCounter > 0) {
+				//get the difference between the two orbits:
+				var diff = this.newOrbit - this.currentOrbit;
+				//add portion of diff to current orbit.
+			    this.currentOrbit += diff/this.orbitChangeCounter;
+				this.orbitChangeCounter -= 1;
 			}
 		}
 		super.updatePosition();
@@ -308,7 +319,7 @@ class Probe extends Body {
 		//poll all planets and get closest planet within range (determined by max orbit)
 		console.log("Starting Orbit Lock")
 		var parent;
-		var pr = this.maxOrbit;
+		var pr = 2000;
 		var p1;
 		var p2;
 		var r = 0;
@@ -349,8 +360,6 @@ class Probe extends Body {
 	stopOrbitLock() {
 		this.inOrbit = false;
 		this.orbitToggle = false;
-		this.maxOrbit = 200;
-		this.minOrbit = 0;
 		this.orbitCounter = 500;
 		CameraManager.changeCamTarget(this);
 		CameraManager.returnToSetZoom();
@@ -365,44 +374,76 @@ class Probe extends Body {
 	 * If the probe maintains distance for long enough,
 	 * the probe enters its locked on state.
 	 */
-	maintainOrbit() {
+	maintainOrbit(scene) {
 		console.log("Maintaining Lock...")
-		if (this.orbitCounter <= 0) {
-			//if timer is up, orbitlock is successful
-			this.inOrbit = true;
-			this.maxOrbit = this.orbitTarget.r + this.orbitTarget.r * 2;
-			this.minOrbit = this.orbitTarget.r;
-			console.log("Maintaining Lock success!");
-			CameraManager.changeCamTarget(this.orbitTarget);
-			//change zoom level so that planet and probe are visable
-			var totalSize = (this.maxOrbit * 2 + this.r * 2 ) * 1.1;
-			CameraManager.zoomToSize(totalSize);
-			return;
-		}
-
 		var p1 = new Phaser.Geom.Point(this.x, this.y);
 		var p2 = new Phaser.Geom.Point(this.orbitTarget.x, this.orbitTarget.y);
 		var r = Phaser.Math.Distance.BetweenPoints(p1, p2);
-		if (r > (this.maxOrbit + this.orbitTarget.r)) {
+		if (this.orbitCounter <= 0) {
+			//if timer is up, orbitlock is successful
+			this.inOrbit = true;
+			this.currentOrbit = this.orbitTarget.r + r;
+			CameraManager.changeCamTarget(this.orbitTarget);
+			this.setOrbitRadius (this.orbitTarget.r);
+			console.log("Maintaining Lock success!");
+			return;
+		} else if (!scene.cameras.main.worldView.contains(this.orbitTarget.x, this.orbitTarget.y)) {
+			//if orbit target isn't on screen, break lock
 			this.stopOrbitLock();
-			return
+			return;
 		}
-
 		this.orbitCounter -= 1;
+	}
+
+	/**
+	 * Sets a new orbit radius for the probe to travel
+	 * @param {number} radius - the new orbit radius
+	 * @param {number} [duration=1000] - how long it should take to change the radius
+	 */
+	setOrbitRadius(radius, duration) {
+		if (!duration) {
+			duration = 150;
+		} else {
+			duration /= 6.66;
+		}
+		this.newOrbit = this.orbitTarget.r + radius;
+		if (this.newOrbit < this.orbitTarget.r) {
+			this.newOrbit = this.orbitTarget.r;
+		}
+		this.orbitChangeCounter = duration;
+		//change zoom level so that planet and probe are visable
+		var totalSize = (this.newOrbit * 2 + this.r * 2 ) * 1.1;
+		CameraManager.zoomToSize(totalSize);
+	}
+
+	/**
+	 * Adds given value to the radius of the current orbit
+	 * @param {number} add number to add to current orbit
+	 */
+	addToOrbit(add) {
+		this.setOrbitRadius(this.currentOrbit + add - this.orbitTarget.r);
+	}
+
+	/**
+	 * Checks whether or not the probe is changing it's orbit
+	 * @returns {boolean} the status of the changing orbit
+	 */
+	isOrbitChanging() {
+		return this.orbitChangeCounter > 0;
 	}
 
 	/**
 	 * Creates a circular path with a radius of the probe's min or max orbit around
 	 * it's orbit lock target.
-	 * @param {string} minOrMax - string determining if the path represents the min or max orbit.
+	 * @param {string} newOrCur - string determining if the path represents the new or current orbit.
 	 * @returns {Phaser.Curves.Spline} the resulting curve from the path.
 	 */
-	getOrbitPath(minOrMax) {
+	getOrbitPath(newOrCur) {
 		var radius = 0;
-		if (minOrMax == 'min'){
-			radius = this.minOrbit;
-		} else if (minOrMax == 'max') {
-			radius = this.maxOrbit;
+		if (newOrCur == 'new'){
+			radius = this.newOrbit;
+		} else if (newOrCur == 'cur') {
+			radius = this.currentOrbit;
 		}
 		var orbitPath = new Phaser.Geom.Circle(this.orbitTarget.x, this.orbitTarget.y, radius).getPoints(false, 0.5);
 		return new Phaser.Curves.Spline(orbitPath);

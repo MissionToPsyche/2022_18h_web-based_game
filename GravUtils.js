@@ -55,10 +55,9 @@ function orbitVelocity(satellite, parent, angle) {
  * orbit is kept within a range between the two.
  * @param {Satellite} sat - The Satellite who's orbit is being locked
  * @param {Body} parent - the target of the orbit.
- * @param {number} [max=sat.distance] - the maximum distance from the parent for the orbit
- * @param {number} [min=sat.distance] - the minimum distance from the parent for the orbit
+ * @param {number} [radius=sat.distance] - the radius of the orbit
  */
-function lockOrbit(sat, parent, max, min) {
+function lockOrbit(sat, parent, radius) {
 	//calculate intended next position
 	var nextx = sat.x + sat.vel.x;
 	var nexty = sat.y + sat.vel.y;
@@ -69,18 +68,13 @@ function lockOrbit(sat, parent, max, min) {
 	var parPos = new Phaser.Geom.Point(parent.x, parent.y);
 	var r = Phaser.Math.Distance.BetweenPoints(nextPos, parPos);
 
-	if (!max) {
-		max = sat.distance;
-	} if (!min) {
-		min = sat.distance;
+	if (!radius) {
+		radius = sat.distance;
 	}
 
 	//some basic trig to keep the sattilite within the orbit without killing its velocity.
-	if (r > max) {
-		const correction = new Phaser.Math.Vector2(0, 0).copy(parPos).subtract(nextPos).setLength(r - max);
-		sat.vel.add(correction);
-	} else if (r < min) {
-		const correction = new Phaser.Math.Vector2(0, 0).copy(parPos).subtract(nextPos).setLength(r - min);
+	if (r != radius) {
+		const correction = new Phaser.Math.Vector2(0, 0).copy(parPos).subtract(nextPos).setLength(r - radius);
 		sat.vel.add(correction);
 	}
 	return 0;

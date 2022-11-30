@@ -169,6 +169,21 @@ class Freeplay extends Phaser.Scene {
         // only move if not paused
         if (this.paused) {
             return
+        } else if (this.bodies["psyche_probe"].inOrbit) {
+            //if in an orbit use controls to chance orbit distance
+            if (this.cursors.up.isDown && !this.bodies["psyche_probe"].isOrbitChanging()) {
+                this.bodies["psyche_probe"].addToOrbit(10);
+            } else if (this.cursors.down.isDown && !this.bodies["psyche_probe"].isOrbitChanging()) {
+                this.bodies["psyche_probe"].addToOrbit(-10);
+            } else if (this.cursors.left.isDown) {
+                this.bodies["psyche_probe"].angle -= 5;
+                this.bodies["psyche_probe"].minimap_icon.angle -= 5;
+                this.angle -=5; 
+            } else if (this.cursors.right.isDown) {
+                this.bodies["psyche_probe"].angle += 5;
+                this.bodies["psyche_probe"].minimap_icon.angle += 5;
+                this.angle +=5; 
+            }
         } else {
             if (this.cursors.left.isDown) {
                 this.bodies["psyche_probe"].vel.x -= moveUnit;
@@ -293,15 +308,15 @@ class Freeplay extends Phaser.Scene {
 
         //for probe's gravity lock functionality:
         if (this.bodies["psyche_probe"].orbitToggle && !this.bodies["psyche_probe"].inOrbit) {
-            this.bodies["psyche_probe"].maintainOrbit();
+            this.bodies["psyche_probe"].maintainOrbit(this);
         } else if (this.bodies["psyche_probe"].inOrbit){
             //draw the orbit boundries if probe is locked in an orbit
             this.graphics.lineStyle(1, 0xff0000, 0.5);
-            this.bodies["psyche_probe"].getOrbitPath('min').draw(this.graphics, 64);
+            this.bodies["psyche_probe"].getOrbitPath('new').draw(this.graphics, 64);
             this.graphics.fillStyle(0x00ff00, 1);
 
             this.graphics.lineStyle(1, 0x0000ff, 0.5);
-            this.bodies["psyche_probe"].getOrbitPath('max').draw(this.graphics, 64);
+            this.bodies["psyche_probe"].getOrbitPath('cur').draw(this.graphics, 64);
             this.graphics.fillStyle(0x00ff00, 1);
         }
 
