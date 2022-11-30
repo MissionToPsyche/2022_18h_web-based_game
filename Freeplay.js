@@ -443,6 +443,10 @@ class Freeplay extends Phaser.Scene {
         // if game over then show the game over text
         if (this.gameOver) {
             this.failText.setVisible(true)
+
+            this.pauseButton.setTint(0x7f7f7f);
+            this.playButton.setTint(0x7f7f7f);
+            this.orbitToggle.setTint(0x7f7f7f);
         } else {
             this.failText.setVisible(false)
         }
@@ -479,8 +483,10 @@ class Freeplay extends Phaser.Scene {
                 this.orbitToggle.setTint(0xF47D33);
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
-                this.bodies["psyche_probe"].orbitToggle = !this.bodies["psyche_probe"].orbitToggle;
-                this.orbitToggle.setTint(this.bodies["psyche_probe"].orbitToggle ? 0xF47D33 : 0xFFFFFF);
+                if(!this.gameOver) {
+                    this.bodies["psyche_probe"].orbitToggle = !this.bodies["psyche_probe"].orbitToggle;
+                    this.orbitToggle.setTint(this.bodies["psyche_probe"].orbitToggle ? 0xF47D33 : 0xFFFFFF);
+                }
             });
     }
 }
