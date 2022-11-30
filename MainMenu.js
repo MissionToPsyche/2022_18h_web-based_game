@@ -6,9 +6,9 @@ class MainMenu extends Phaser.Scene {
     preload() {
         this.load.image('logo', 'img/Psyche_Icon_Color-SVG.svg'); //asset for psyche logo
         this.load.image('play', 'img/icons/play-circle.svg');
-        this.load.image('journey', 'img/journey.png');
-        this.load.image('to', 'img/to.png');
-        this.load.image('psyche', 'img/psyche.png');
+        this.load.image('title_journey', 'img/journey.png');
+        this.load.image('title_to', 'img/to.png');
+        this.load.image('title_psyche', 'img/psyche.png');
     }
 
     create() {
@@ -29,9 +29,9 @@ class MainMenu extends Phaser.Scene {
     }
 
     createTitle() {
-        var journey = this.add.image(512, 24, 'journey').setScale(0.0);
-        var to = this.add.image(512, 24, 'to').setScale(0.0);
-        var psyche = this.add.image(515, 24, 'psyche').setScale(0.0);
+        var journey = this.add.image(512, 24, 'title_journey').setScale(0.0);
+        var to = this.add.image(512, 24, 'title_to').setScale(0.0);
+        var psyche = this.add.image(515, 24, 'title_psyche').setScale(0.0);
         CameraManager.addUISprite(journey);
         CameraManager.addUISprite(to);
         CameraManager.addUISprite(psyche);
