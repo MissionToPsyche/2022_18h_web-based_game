@@ -502,22 +502,25 @@ class Freeplay extends Phaser.Scene {
         this.minimap.ignore(this.foundPsycheText);
         this.input.keyboard
             .on('keyup-SPACE', () => {
-                this.takingPhoto = !this.takingPhoto;
+                // disable spacebar take photo when paused
+                if (!this.paused) {
+                    this.takingPhoto = !this.takingPhoto;
 
-                let viewR = 100;
-                let endRotation = this.bodies["psyche_probe"].rotation + Math.PI;
-                if (endRotation > 2 * Math.PI) {
-                    endRotation -= (2 * Math.PI);
-                }
-                let startRotation = endRotation + Phaser.Math.DegToRad(90);
-                if (startRotation > 2 * Math.PI) {
-                    startRotation -= (2 * Math.PI);
-                }
+                    let viewR = 100;
+                    let endRotation = this.bodies["psyche_probe"].rotation + Math.PI;
+                    if (endRotation > 2 * Math.PI) {
+                        endRotation -= (2 * Math.PI);
+                    }
+                    let startRotation = endRotation + Phaser.Math.DegToRad(90);
+                    if (startRotation > 2 * Math.PI) {
+                        startRotation -= (2 * Math.PI);
+                    }
 
-                // check if pyche is in the view
-                if (this.bodies["psyche_probe"].isInView("psyche", viewR, startRotation, endRotation)) {
-                    this.foundPsycheText.setVisible(true);
-                    console.log("psyche in view!");
+                    // check if pyche is in the view
+                    if (this.bodies["psyche_probe"].isInView("psyche", viewR, startRotation, endRotation)) {
+                        this.foundPsycheText.setVisible(true);
+                        console.log("psyche in view!");
+                    }
                 }
             });
 
