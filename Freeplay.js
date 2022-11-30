@@ -275,7 +275,7 @@ class Freeplay extends Phaser.Scene {
 
         // check to see if the probe collided with anything
         // if there was a collision then trigger the failure state and stop the simulation
-        if (this.bodies["psyche_probe"].collided == true && this.gameOver == false) {
+        if (this.bodies["psyche_probe"].collided && !this.gameOver) {
             this.gameOver = true;
             CameraManager.addUISprite(this.failText);
             this.minimap.ignore(this.failText);
@@ -402,6 +402,8 @@ class Freeplay extends Phaser.Scene {
                 this.scene.restart();
                 this.paused = false;
                 this.gameOver = false;
+                // set direction to undefined so the pyche pointer can be re-added on restart
+                this.direction = (function () { return; })();
             });
 
             this.exitButton.setInteractive()
