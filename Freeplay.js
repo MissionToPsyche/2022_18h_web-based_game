@@ -379,6 +379,9 @@ class Freeplay extends Phaser.Scene {
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
                 this.exitButton.setTint(0xFFFFFF);
+                this.scene.start('MainMenu');
+                this.paused = false;
+                this.gameOver = false;
             });
 
         CameraManager.addUISprite(this.playButton);
