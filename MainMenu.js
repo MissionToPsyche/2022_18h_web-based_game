@@ -6,6 +6,9 @@ class MainMenu extends Phaser.Scene {
     preload() {
         this.load.image('logo', 'img/Psyche_Icon_Color-SVG.svg'); //asset for psyche logo
         this.load.image('play', 'img/icons/play-circle.svg');
+        this.load.image('title_journey', 'img/journey.png');
+        this.load.image('title_to', 'img/to.png');
+        this.load.image('title_psyche', 'img/psyche.png');
     }
 
     create() {
@@ -17,15 +20,53 @@ class MainMenu extends Phaser.Scene {
         var logo = this.add.image(50, 50, 'logo').setScale(0.5);
         CameraManager.addUISprite(logo);
 
+        this.createTitle();
         this.createPlayButton();
     }
 
     update() {
+        // nothing happens here :)
+    }
 
+    createTitle() {
+        var journey = this.add.image(512, 24, 'title_journey').setScale(0.0);
+        var to = this.add.image(512, 24, 'title_to').setScale(0.0);
+        var psyche = this.add.image(515, 24, 'title_psyche').setScale(0.0);
+        CameraManager.addUISprite(journey);
+        CameraManager.addUISprite(to);
+        CameraManager.addUISprite(psyche);
+
+        const delay = 500;
+        this.tweens.add({
+            targets: journey,
+            scale: 1,
+            y: 82,
+            delay: delay,
+            duration: 350,
+            ease: "Sine.easeIn"
+        });
+
+        this.tweens.add({
+            targets: to,
+            scale: 1,
+            y: 168,
+            delay: delay + 350,
+            duration: 400,
+            ease: "Sine.easeIn"
+        });
+
+        this.tweens.add({
+            targets: psyche,
+            scale: 1,
+            y: 272,
+            delay: delay + 750,
+            duration: 450,
+            ease: "Sine.easeIn"
+        });
     }
 
     createPlayButton() {
-        this.playButton = this.add.image(512, 384, 'play');
+        this.playButton = this.add.image(512, 464, 'play');
         CameraManager.addUISprite(this.playButton);
 
         this.playButton.setInteractive()
