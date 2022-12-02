@@ -394,6 +394,7 @@ class Freeplay extends Phaser.Scene {
         this.minimap.ignore(this.exitButton);
         this.minimap.ignore(this.restartButton);
         this.minimap.ignore(this.shadow);
+        this.minimap.ignore(this.pauseText);
     }
 
     updatePauseButton() {
