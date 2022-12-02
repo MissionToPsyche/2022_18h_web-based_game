@@ -22,6 +22,7 @@ class Freeplay extends Phaser.Scene {
         this.takingPhoto = false;
         this.foundPsycheText; // should replace to photo of psyche
         this.quitPhotoPageButton;
+        this.psychePhoto1;
     }
 
     /** Loads all necessary assets for the scene before the simulation runs */
@@ -54,6 +55,9 @@ class Freeplay extends Phaser.Scene {
         this.load.image('sol', "img/icons/sol.svg");
         this.load.image('uranus', "img/icons/uranus.svg");
         this.load.image('venus', "img/icons/venus.svg");
+
+        // load the photo of psyche
+        this.load.image('psychePhoto1', "img/photos/psyche1.png");
     }
 
     /**
@@ -312,6 +316,8 @@ class Freeplay extends Phaser.Scene {
             if (typeof(this.direction) == "undefined") {
                 this.direction = this.add.image(directionX, directionY, 'direction').setScale(0.2);
                 CameraManager.addUISprite(this.direction);
+                // make the direction indicator not on top of other page such as pause menu
+                this.direction.depth = -1;
                 //Make the minimap ignore the icon.
                 this.minimap.ignore(this.direction);
             }
@@ -465,6 +471,7 @@ class Freeplay extends Phaser.Scene {
         if (!this.takingPhoto) {
             this.foundPsycheText.setVisible(false);  
              this.quitPhotoPageButton.setVisible(false);
+             this.psychePhoto1.setVisible(false);
         } else {
             this.quitPhotoPageButton.setVisible(true);
         }
@@ -497,7 +504,11 @@ class Freeplay extends Phaser.Scene {
     }
 
     takePhoto() {
-        this.foundPsycheText = this.add.text(100, 300, 'You found Psyche!');
+        this.psychePhoto1 = this.add.image(500, 400, 'psychePhoto1').setScale(0.8);
+        this.psychePhoto1.setVisible(false);
+        this.minimap.ignore(this.psychePhoto1);
+
+        this.foundPsycheText = this.add.text(100, 100, 'You found Psyche!');
         this.foundPsycheText.setFontSize(80);
         this.minimap.ignore(this.foundPsycheText);
         this.input.keyboard
@@ -519,12 +530,16 @@ class Freeplay extends Phaser.Scene {
                     // check if pyche is in the view
                     if (this.bodies["psyche_probe"].isInView("psyche", viewR, startRotation, endRotation)) {
                         this.foundPsycheText.setVisible(true);
+                        this.psychePhoto1.setVisible(true);
+                        this.quitPhotoPageButton.setPosition(300, 650);
                         console.log("psyche in view!");
+                    } else {
+                        this.quitPhotoPageButton.setPosition(300, 400);
                     }
                 }
             });
 
-        this.quitPhotoPageButton = this.add.text(300, 400, 'Back to game')
+        this.quitPhotoPageButton = this.add.text(300, 650, 'Back to game')
             .setFontSize(50)
             .setStyle({
                 color: '#111',
