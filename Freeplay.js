@@ -3,8 +3,6 @@
  * @extends Phaser.Scene
  */
 class Freeplay extends Phaser.Scene {
-    //Variable used to contain the angle of the probe.
-    angle = 0;
     constructor () {
         super({key:"Freeplay"});
         //creating body objects
@@ -78,6 +76,7 @@ class Freeplay extends Phaser.Scene {
         this.minimap.scrollX = 900;
         this.minimap.scrollY = 900;
         
+        
         var map_border = this.add.image(880,110,'minimap_border').setScale(0.35);
 
         //Pause menu
@@ -135,8 +134,6 @@ class Freeplay extends Phaser.Scene {
         }
 
         CameraManager.addGameSprite(this.graphics);
-        // Make the main camera ignore the player icon.
-        // CameraManager.addUISprite([this.bodies["psyche_probe_icon"]]);
         //adding graphics to game sprites so that it doesn't show up in UI.
 
         //subscribe probe to all other bodies.
@@ -175,79 +172,30 @@ class Freeplay extends Phaser.Scene {
     update () {
         //Probe controls
         //**TO DO: Wrap in a custom controler later.
-        const moveUnit = 0.01
+        const moveUnit = 1;
+        const rotationOffset = -2.4958208303518727;
 
         this.updatePauseButton();
 
         // only move if not paused or in game over
         if (!this.paused) {
             if (this.cursors.left.isDown) {
-                this.bodies["psyche_probe"].vel.x -= moveUnit;
-                //Either turn the probe left or right depending on its current angle.
-                if(this.angle > -45){
-                    this.bodies["psyche_probe"].angle -= 5;
-                    this.icon.angle -= 5;
-                    this.angle -=5; 
-                } else if(this.angle < -45){
-                    this.bodies["psyche_probe"].angle += 5;
-                    this.icon.angle += 5;
-                    this.angle +=5; 
-                }         
-                
+                this.bodies["psyche_probe"].angle -= 1;             
             }
             else if (this.cursors.right.isDown)
             {
-                this.bodies["psyche_probe"].vel.x += moveUnit;
-    
-                //Either turn the probe left or right depending on its current angle.
-                // Set the value of the probe to 225 if it is currently facing down 
-                //to make it turn the shortest distance.
-                if(this.angle == -135){
-                    this.angle = 225;
-                } else if(this.angle < 135){
-                    this.bodies["psyche_probe"].angle += 5;
-                    this.icon.angle += 5;
-                    this.angle +=5; 
-    
-                } else if(this.angle > 135){
-                    this.bodies["psyche_probe"].angle -= 5;
-                    this.icon.angle -= 5;
-                    this.angle -=5; 
-                }
+                this.bodies["psyche_probe"].angle += 1;
             }
             if (this.cursors.up.isDown)
             {
-                this.bodies["psyche_probe"].vel.y -= moveUnit;
+                this.bodies["psyche_probe"].vel.x = Math.cos(this.bodies["psyche_probe"].rotation + rotationOffset) * moveUnit
+                this.bodies["psyche_probe"].vel.y = Math.sin(this.bodies["psyche_probe"].rotation + rotationOffset) * moveUnit
     
-                //Either turn the probe left or right depending on its current angle.
-                if(this.angle > 45){
-                    this.bodies["psyche_probe"].angle -= 5;
-                    this.icon.angle -= 5;
-                    this.angle -=5; 
-                } else if(this.angle < 45){
-                    this.bodies["psyche_probe"].angle += 5;
-                    this.icon.angle += 5;
-                    this.angle +=5; 
-                }  
             }
             else if (this.cursors.down.isDown)
             {
-                this.bodies["psyche_probe"].vel.y += moveUnit;
-    
-                //Either turn the probe left or right depending on its current angle.
-                // Set the value of the probe to -225 if it is currently facing right 
-                //to make it turn the shortest distance.
-                if(this.angle == 135){
-                    this.angle = -225;
-                } else if(this.angle < -135){
-                    this.bodies["psyche_probe"].angle += 5;
-                    this.icon.angle += 5;
-                    this.angle +=5; 
-                } else if(this.angle > -135){
-                    this.bodies["psyche_probe"].angle -= 5;
-                    this.icon.angle -= 5;
-                    this.angle -=5; 
-                }
+                this.bodies["psyche_probe"].vel.x = Math.cos(this.bodies["psyche_probe"].rotation + rotationOffset) * -moveUnit
+                this.bodies["psyche_probe"].vel.y = Math.sin(this.bodies["psyche_probe"].rotation + rotationOffset) * -moveUnit
             }
         }
 
@@ -317,12 +265,12 @@ class Freeplay extends Phaser.Scene {
             }
 
             // add the image of the arrow if it not added
-            if (typeof(this.direction) == "undefined") {
+             if (typeof(this.direction) == "undefined") {
                 this.direction = this.add.image(directionX, directionY, 'direction').setScale(0.2);
                 CameraManager.addUISprite(this.direction);
                 //Make the minimap ignore the icon.
                 this.minimap.ignore(this.direction);
-            }
+             }
 
             // set the correct position and angle of the arrow to point to psyche
             this.direction.setPosition(directionX, directionY);
@@ -339,6 +287,8 @@ class Freeplay extends Phaser.Scene {
                 // Make the minimap icon have the same location as the player.
                 this.icon.y = this.bodies["psyche_probe"].y;
                 this.icon.x = this.bodies["psyche_probe"].x;
+                // Make the minimap icon have the same angle as the player.
+                this.icon.angle = this.bodies["psyche_probe"].angle;
     }
 
     createPauseButton() {
@@ -346,6 +296,17 @@ class Freeplay extends Phaser.Scene {
         this.pauseButton = this.add.image(964, 708, 'pause').setScale(0.5)
         this.restartButton = this.add.image(520, 408, 'restart').setScale(0.5)
         this.exitButton = this.add.image(520, 508, 'exit').setScale(0.5)
+        // Made sure the buttons and label is on top of everything.
+        this.restartButton.depth = 100;
+        this.playButton.depth = 100;
+        this.pauseButton.depth = 100;
+        this.exitButton.depth = 100;
+        this.pauseText.depth = 100;
+
+        // To darken screen
+        const color1 = new Phaser.Display.Color(0, 0, 0);
+        this.shadow = this.add.rectangle(0, 0,2048, 2048, color1.color);
+        this.shadow.setAlpha(0.5);
 
         this.input.keyboard
             .on('keydown-P', () => {
@@ -400,10 +361,10 @@ class Freeplay extends Phaser.Scene {
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
                 this.restartButton.setTint(0xFFFFFF);
                 this.scene.restart();
-                this.paused = false;
+                this.paused = false
                 this.gameOver = false;
-                // set direction to undefined so the pyche pointer can be re-added on restart
-                this.direction = (function () { return; })();
+                // Make the direction icon show up again.
+                this.direction = undefined;
             });
 
             this.exitButton.setInteractive()
@@ -418,16 +379,22 @@ class Freeplay extends Phaser.Scene {
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
                 this.exitButton.setTint(0xFFFFFF);
+                this.scene.start('MainMenu');
+                this.paused = false;
+                this.gameOver = false;
             });
 
         CameraManager.addUISprite(this.playButton);
         CameraManager.addUISprite(this.pauseButton);
         CameraManager.addUISprite(this.exitButton);
         CameraManager.addUISprite(this.restartButton);
+        CameraManager.addUISprite(this.shadow);
         this.minimap.ignore(this.pauseButton);
         this.minimap.ignore(this.playButton);
         this.minimap.ignore(this.exitButton);
         this.minimap.ignore(this.restartButton);
+        this.minimap.ignore(this.shadow);
+        this.minimap.ignore(this.pauseText);
     }
 
     updatePauseButton() {
@@ -436,6 +403,9 @@ class Freeplay extends Phaser.Scene {
             this.pauseText.setVisible(true)
             this.playButton.setVisible(true)
             this.pauseButton.setVisible(false)
+            this.restartButton.setVisible(true)
+            this.exitButton.setVisible(true)
+            this.shadow.setVisible(true)
         } else {
             this.pauseButton.setVisible(true)
             this.playButton.setVisible(false)
@@ -457,9 +427,11 @@ class Freeplay extends Phaser.Scene {
         if (this.paused || this.gameOver) {
             this.restartButton.setVisible(true)
             this.exitButton.setVisible(true)
+            this.shadow.setVisible(false)
         } else {
             this.restartButton.setVisible(false)
             this.exitButton.setVisible(false)
+            this.shadow.setVisible(false)
         }
         
     }
