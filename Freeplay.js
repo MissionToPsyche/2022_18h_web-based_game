@@ -528,7 +528,7 @@ class Freeplay extends Phaser.Scene {
         this.input.keyboard
             .on('keyup-SPACE', () => {
                 // disable spacebar take photo when paused
-                if (!this.paused) {
+                if ((!this.paused) && (!this.gameOver)) {
                     this.takingPhoto = !this.takingPhoto;
 
                     let viewR = 100;
