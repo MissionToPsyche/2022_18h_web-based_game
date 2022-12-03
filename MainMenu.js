@@ -9,6 +9,7 @@ class MainMenu extends Phaser.Scene {
         this.load.image('title_journey', 'img/journey.png');
         this.load.image('title_to', 'img/to.png');
         this.load.image('title_psyche', 'img/psyche.png');
+        this.load.image('control', 'img/icons/control.png'); 
     }
 
     create() {
@@ -67,7 +68,9 @@ class MainMenu extends Phaser.Scene {
 
     createPlayButton() {
         this.playButton = this.add.image(512, 464, 'play');
+        this.controlButton = this.add.image(520,618, 'control').setScale(0.5);
         CameraManager.addUISprite(this.playButton);
+        CameraManager.addUISprite(this.controlButton);
 
         this.playButton.setInteractive()
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
@@ -82,6 +85,20 @@ class MainMenu extends Phaser.Scene {
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
                 this.playButton.setTint(0xFFFFFF);
                 this.scene.start('Freeplay');
+            })
+
+        this.controlButton.setInteractive()
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
+                this.controlButton.setTint(0xF9A000);
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OUT, () => {
+                this.controlButton.setTint(0xFFFFFF);
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
+                this.controlButton.setTint(0xF47D33);
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
+                this.controlButton.setTint(0xFFFFFF);
             })
     }
 }
