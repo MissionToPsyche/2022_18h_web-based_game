@@ -16,6 +16,12 @@ class Freeplay extends Phaser.Scene {
         this.direction;
         this.gameOver = false;
         this.pauseText;
+
+        this.takingPhoto = false;
+        this.foundPsycheText; // should replace to photo of psyche
+        this.quitPhotoPageButton;
+        this.psychePhoto1;
+
         this.failText;
     }
 
@@ -49,6 +55,9 @@ class Freeplay extends Phaser.Scene {
         this.load.image('sol', "img/icons/sol.svg");
         this.load.image('uranus', "img/icons/uranus.svg");
         this.load.image('venus', "img/icons/venus.svg");
+
+        // load the photo of psyche
+        this.load.image('psychePhoto1', "img/photos/psyche1.png");
     }
 
     /**
@@ -162,6 +171,7 @@ class Freeplay extends Phaser.Scene {
 
         this.createPauseButton();
         this.createOrbitToggle();
+        this.takePhoto();
     }
 
     /** The scene's main update loop
@@ -176,9 +186,12 @@ class Freeplay extends Phaser.Scene {
         const rotationOffset = -2.4958208303518727;
 
         this.updatePauseButton();
+        this.updateTakePhoto();
 
-        // only move if not paused or in game over
-        if (!this.paused) {
+        // only move if not paused and not taking photo
+        if (this.paused || this.takingPhoto) {
+            return
+        } else {
             if (this.cursors.left.isDown) {
                 this.bodies["psyche_probe"].angle -= 1;             
             }
@@ -268,6 +281,8 @@ class Freeplay extends Phaser.Scene {
              if (typeof(this.direction) == "undefined") {
                 this.direction = this.add.image(directionX, directionY, 'direction').setScale(0.2);
                 CameraManager.addUISprite(this.direction);
+                // make the direction indicator not on top of other page such as pause menu
+                this.direction.depth = -1;
                 //Make the minimap ignore the icon.
                 this.minimap.ignore(this.direction);
              }
@@ -284,11 +299,30 @@ class Freeplay extends Phaser.Scene {
             }
         }
 
-                // Make the minimap icon have the same location as the player.
-                this.icon.y = this.bodies["psyche_probe"].y;
-                this.icon.x = this.bodies["psyche_probe"].x;
-                // Make the minimap icon have the same angle as the player.
-                this.icon.angle = this.bodies["psyche_probe"].angle;
+        // Make the minimap icon have the same location as the player.
+        this.icon.y = this.bodies["psyche_probe"].y;
+        this.icon.x = this.bodies["psyche_probe"].x;
+        // Make the minimap icon have the same angle as the player.
+        this.icon.angle = this.bodies["psyche_probe"].angle;
+
+        // create probe's view
+        let centerX = this.bodies["psyche_probe"].x;
+        let centerY = this.bodies["psyche_probe"].y;
+        let viewR = 100;
+        this.graphics.fillStyle(0xFFFFFF, 0.3);
+
+        let endRotation = this.bodies["psyche_probe"].rotation + Math.PI;
+        if (endRotation > 2 * Math.PI) {
+            endRotation -= (2 * Math.PI);
+        }
+        let startRotation = endRotation + Phaser.Math.DegToRad(90);
+        if (startRotation > 2 * Math.PI) {
+            startRotation -= (2 * Math.PI);
+        }
+
+        let probeView = this.graphics.slice(centerX, centerY, viewR, startRotation, endRotation, true);
+        this.minimap.ignore(probeView);
+        this.graphics.fillPath();
     }
 
     createPauseButton() {
@@ -313,9 +347,12 @@ class Freeplay extends Phaser.Scene {
                 this.playButton.setTint(0xF47D33);
                 this.pauseButton.setTint(0xF47D33);
             }).on('keyup-P', () => {
-                this.playButton.setTint(0xFFFFFF);
-                this.pauseButton.setTint(0xFFFFFF);
-                this.paused = !this.paused
+                // disable pause when in the taking photo page
+                if (!this.takingPhoto) {
+                    this.playButton.setTint(0xFFFFFF);
+                    this.pauseButton.setTint(0xFFFFFF);
+                    this.paused = !this.paused;
+                }
             });
 
         this.playButton.setInteractive()
@@ -329,8 +366,11 @@ class Freeplay extends Phaser.Scene {
                 this.playButton.setTint(0xF47D33);
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
-                this.playButton.setTint(0xFFFFFF);
-                this.paused = !this.paused
+                // disable pause when in the taking photo page
+                if (!this.takingPhoto) {
+                    this.playButton.setTint(0xFFFFFF);
+                    this.paused = !this.paused;
+                }
             })
 
         this.pauseButton.setInteractive()
@@ -344,8 +384,11 @@ class Freeplay extends Phaser.Scene {
                 this.pauseButton.setTint(0xF47D33);
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
-                this.pauseButton.setTint(0xFFFFFF);
-                this.paused = !this.paused
+                // disable pause when in the taking photo page
+                if (!this.takingPhoto) {
+                    this.pauseButton.setTint(0xFFFFFF);
+                    this.paused = !this.paused;
+                }
             });
 
         this.restartButton.setInteractive()
@@ -435,13 +478,23 @@ class Freeplay extends Phaser.Scene {
         }
         
     }
+
+    updateTakePhoto() {
+        if (!this.takingPhoto) {
+            this.foundPsycheText.setVisible(false);  
+             this.quitPhotoPageButton.setVisible(false);
+             this.psychePhoto1.setVisible(false);
+        } else {
+            this.quitPhotoPageButton.setVisible(true);
+        }
+    }
     
     createOrbitToggle() {
         this.orbitToggle = this.add.image(56, 708, 'orbit').setScale(0.5);
         CameraManager.addUISprite(this.orbitToggle);
 
         this.input.keyboard
-            .on('keyup-SPACE', () => {
+            .on('keyup-SHIFT', () => {
                 this.bodies["psyche_probe"].orbitToggle = !this.bodies["psyche_probe"].orbitToggle;
                 this.orbitToggle.setTint(this.bodies["psyche_probe"].orbitToggle ? 0xF47D33 : 0xFFFFFF);
             });
@@ -462,5 +515,58 @@ class Freeplay extends Phaser.Scene {
                     this.orbitToggle.setTint(this.bodies["psyche_probe"].orbitToggle ? 0xF47D33 : 0xFFFFFF);
                 }
             });
+    }
+
+    takePhoto() {
+        this.psychePhoto1 = this.add.image(500, 400, 'psychePhoto1').setScale(0.8);
+        this.psychePhoto1.setVisible(false);
+        this.minimap.ignore(this.psychePhoto1);
+
+        this.foundPsycheText = this.add.text(100, 100, 'You found Psyche!');
+        this.foundPsycheText.setFontSize(80);
+        this.minimap.ignore(this.foundPsycheText);
+        this.input.keyboard
+            .on('keyup-SPACE', () => {
+                // disable spacebar take photo when paused
+                if ((!this.paused) && (!this.gameOver)) {
+                    this.takingPhoto = !this.takingPhoto;
+
+                    let viewR = 100;
+                    let endRotation = this.bodies["psyche_probe"].rotation + Math.PI;
+                    if (endRotation > 2 * Math.PI) {
+                        endRotation -= (2 * Math.PI);
+                    }
+                    let startRotation = endRotation + Phaser.Math.DegToRad(90);
+                    if (startRotation > 2 * Math.PI) {
+                        startRotation -= (2 * Math.PI);
+                    }
+
+                    // check if pyche is in the view
+                    if (this.bodies["psyche_probe"].isInView("psyche", viewR, startRotation, endRotation)) {
+                        this.foundPsycheText.setVisible(true);
+                        this.psychePhoto1.setVisible(true);
+                        this.quitPhotoPageButton.setPosition(300, 650);
+                        console.log("psyche in view!");
+                    } else {
+                        this.quitPhotoPageButton.setPosition(300, 400);
+                    }
+                }
+            });
+
+        this.quitPhotoPageButton = this.add.text(300, 650, 'Back to game')
+            .setFontSize(50)
+            .setStyle({
+                color: '#111',
+                backgroundColor: '#fff',
+            })
+            .setPadding(10)
+            .setInteractive({useHandCursor: true })
+            .on('pointerdown', () => {
+                this.takingPhoto = !this.takingPhoto;
+                this.quitPhotoPageButton.setVisible(false);
+                
+            })
+            .setVisible(false);
+        this.minimap.ignore(this.quitPhotoPageButton);
     }
 }

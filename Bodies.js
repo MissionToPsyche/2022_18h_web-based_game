@@ -308,5 +308,41 @@ class Probe extends Body {
     	return (psycheY - this.y) / this.getPsycheDistance();
     }
 
+    /**
+     * Check if a body is in the view of the probe.
+     * @param {string} the index of the body
+     * @param {number} radius of the view
+     * @param {number} start rotation of the view in radius
+     * @param {number} end rotation of the view in radius
+     * @return {boolean}
+     */
+    isInView(idx, r, startRotation, endRotation) {
+    	let targetX = this.scene.bodies[idx].x;
+    	let targetY = this.scene.bodies[idx].y;
+    	let distance = Math.sqrt((this.x - targetX) * (this.x - targetX) + (this.y - targetY) * (this.y - targetY));
+    	
+    	// check if target body is too far
+    	if (distance > r) {
+    		return false;
+    	}
+
+    	// get the angle of the target body
+    	let targetCos = (targetX - this.x) / distance;
+    	let targetSin = (targetY - this.y) / distance;
+    	let angle = Math.acos(targetCos);
+    	if (targetSin < 0) {
+    		angle = Math.PI * 2 - angle;
+    	}
+
+    	// check if angle is in the startRotation end Rotation range
+    	if (endRotation < (Math.PI * 3 / 2)) {
+    		// startRotation endRotation range is [endRotation, startRotation]
+    		return (angle >= endRotation) && (angle <= startRotation);
+    	} else {
+    		// range is [endRotation, 2pi] union [0, startRotation]
+    		return (angle >= endRotation) || (angle <= startRotation);
+    	}
+    }
+
 
 }
