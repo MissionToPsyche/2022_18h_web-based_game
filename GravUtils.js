@@ -36,9 +36,8 @@ function orbitVelocity(satellite, parent, angle) {
 	var r = Phaser.Math.Distance.BetweenPoints(p1, p2);
 	var v = Math.sqrt((G * parent.mass) / r);
 
-	if(angle != null){
-		Math.atan2(p2.y - p1.y, p2.x - p1.x);
-	}
+	//if angle undifined, calculate the angle
+	angle = angle === null ? angle : Math.atan2(p2.y - p1.y, p2.x - p1.x);
 
 	var final = new Phaser.Math.Vector2(r * Math.cos(angle), r * Math.sin(angle));
 

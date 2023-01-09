@@ -75,7 +75,6 @@ class CameraManager {
             .setBounds(0, 0, this.cameraWidth, this.cameraHeight, true)
             .ignore(this.uiSprites)
             .ignore(this.gameSprites);
-        console.log(this.miniCamera.scrollX);
     }
 
     /**

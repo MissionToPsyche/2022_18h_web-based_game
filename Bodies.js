@@ -36,7 +36,6 @@ class Body extends Phaser.GameObjects.Sprite {
 			.setSize(this.r * 2, this.r *2);
 		this.minimap_icon.setDisplaySize(md, md)
 			.setSize(md, md);
-		console.log(this.minimap_icon);
 
 		//add the body and the minimap sprite to the scene:
 		_scene.add.existing(this);
@@ -239,18 +238,13 @@ class Probe extends Body {
 		this.minOrbit = 40;
 		this.currentOrbit = 40;
 		this.newOrbit = 40;
+		this.theta = 0;
 		
 		this.orbitTarget = this.scene.bodies["earth"]; //the target of the probe's orbit.
 
 		//overload minimap display size
 		this.minimap_icon.setDisplaySize(this.r * 200, this.r * 200)
 			.setSize(this.r * 200, this.r * 200);
-
-		if (typeof(this.parent) != "undefined" && this.parent.x != 0) {
-			this.x = this.parent.x + this.distance * Math.cos(this.theta);
-			this.y = this.parent.y + this.distance * Math.sin(this.theta);
-			this.vel = orbitVelocity(this, this.parent, this.theta); //set initial orbit velocity.
-		}
 
 		//set camera zoom for initial state
 		var totalSize = (this.currentOrbit * 2 + this.r * 2 ) * 1.1;
@@ -269,17 +263,17 @@ class Probe extends Body {
 
 			//slowly bring probe up to orbit velocity
 			//TO DO: Test this properly. I'm not 100% on if it all works
+
+			//calculate current fraction of orbit velocity.
+			//this is so that the probe can gain the velocity necissary
+			//to maintain a proper orbit smoothly rather than all at once.
+			var orbitVel = orbitVelocity(this, this.orbitTarget);
+			this.foos = covindov(this.vel, orbitVel) / orbitVel.length();
 			if (this.foos < 1) {
-				var orbitVel = orbitVelocity(this, this.orbitTarget);
-				var ovf = new Phaser.Math.Vector2(orbitVel.x, orbitVel.y).setLength(orbitVel.length()/1000);
+				var ovf = new Phaser.Math.Vector2(orbitVel.x, orbitVel.y).setLength(orbitVel.length()/500);
 
 				this.vel.add(ovf);
-
-				//calculate current fraction of orbit velocity.
-				//this is so that the probe can gain the velocity necissary
-				//to maintain a proper orbit smoothly rather than all at once.
-				var orbitVel = orbitVelocity(this, this.orbitTarget);
-				this.foos = covindov(this.vel, orbitVel) / orbitVel;
+				//console.log(ovf.x + ", " + ovf.y);
 			}
 
 			//if orbit was changed, slowly bring the current orbit to the new orbit
