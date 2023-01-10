@@ -546,8 +546,14 @@ class Freeplay extends Phaser.Scene {
                         this.foundPsycheText.setVisible(true);
                         this.psychePhoto1.setVisible(true);
                         this.quitPhotoPageButton.setPosition(300, 650);
-                        console.log("psyche in view!");
+                        // console.log("psyche in view!");
                     } else {
+                        // check which body is in the view
+                        for (var body in this.bodies) {
+                            if (this.bodies["psyche_probe"].isInView(body, viewR, startRotation, endRotation)) {
+                                console.log(body + " in view");
+                            }
+                        }
                         this.quitPhotoPageButton.setPosition(300, 400);
                     }
                 }
