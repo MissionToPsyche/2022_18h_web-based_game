@@ -179,12 +179,7 @@ class Freeplay extends Phaser.Scene {
      * - Applies dynamic gravity
      * - Enforces the pause feature, only allowing bodies to move if the game is not paused
      */
-    update () {
-        //Probe controls
-        //**TO DO: Wrap in a custom controler later.
-        const moveUnit = 1;
-        const rotationOffset = -2.4958208303518727;
-
+    update() {
         this.updatePauseButton();
         this.updateTakePhoto();
 
@@ -192,28 +187,11 @@ class Freeplay extends Phaser.Scene {
         if (this.paused || this.takingPhoto) {
             return
         } else {
-            if (this.cursors.left.isDown) {
-                this.bodies["psyche_probe"].angle -= 1;             
-            }
-            else if (this.cursors.right.isDown)
-            {
-                this.bodies["psyche_probe"].angle += 1;
-            }
-            if (this.cursors.up.isDown)
-            {
-                this.bodies["psyche_probe"].vel.x = Math.cos(this.bodies["psyche_probe"].rotation + rotationOffset) * moveUnit
-                this.bodies["psyche_probe"].vel.y = Math.sin(this.bodies["psyche_probe"].rotation + rotationOffset) * moveUnit
-    
-            }
-            else if (this.cursors.down.isDown)
-            {
-                this.bodies["psyche_probe"].vel.x = Math.cos(this.bodies["psyche_probe"].rotation + rotationOffset) * -moveUnit
-                this.bodies["psyche_probe"].vel.y = Math.sin(this.bodies["psyche_probe"].rotation + rotationOffset) * -moveUnit
-            }
+            this.updateProbeMovement()
         }
 
         //prevent psyche from going too far out for now
-	    //note: FOR TESTING ONLY, THIS IS A BAD WAY OF DOING THIS
+        //note: FOR TESTING ONLY, THIS IS A BAD WAY OF DOING THIS
         if (this.bodies["psyche_probe"].x >= 650 + 1024) {
             this.bodies["psyche_probe"].vel.x = 0
             this.bodies["psyche_probe"].x = 649 + 1024
@@ -260,69 +238,10 @@ class Freeplay extends Phaser.Scene {
     
             //update body positions
             this.bodies[body].updatePosition(this)
-
-            // find psyche
-            let distance = this.bodies["psyche_probe"].getPsycheDistance();
-
-            // the distance between pshche probe and the arrow
-            let arrowDistance = 50;
-            let width = 1024;
-            let height = 768;
-            let directionX = width / 2 + this.bodies["psyche_probe"].getPsycheDirectionX() * arrowDistance;
-            let directionY = height / 2 + this.bodies["psyche_probe"].getPsycheDirectionY() * arrowDistance;
-            
-            // calculate the rotation of the arrow image
-            let directionAngle = Math.asin(this.bodies["psyche_probe"].getPsycheDirectionY());
-            if (this.bodies["psyche_probe"].getPsycheDirectionX() < 0) {
-                directionAngle = Math.PI - directionAngle;
-            }
-
-            // add the image of the arrow if it not added
-             if (typeof(this.direction) == "undefined") {
-                this.direction = this.add.image(directionX, directionY, 'direction').setScale(0.2);
-                CameraManager.addUISprite(this.direction);
-                // make the direction indicator not on top of other page such as pause menu
-                this.direction.depth = -1;
-                //Make the minimap ignore the icon.
-                this.minimap.ignore(this.direction);
-             }
-
-            // set the correct position and angle of the arrow to point to psyche
-            this.direction.setPosition(directionX, directionY);
-            this.direction.rotation = directionAngle;
-
-            // decrease opacity when near psyche
-            if (distance < 90) {
-                this.direction.alpha = (distance - 50)/50;
-            } else {
-                this.direction.alpha = 0.8;
-            }
         }
 
-        // Make the minimap icon have the same location as the player.
-        this.icon.y = this.bodies["psyche_probe"].y;
-        this.icon.x = this.bodies["psyche_probe"].x;
-        // Make the minimap icon have the same angle as the player.
-        this.icon.angle = this.bodies["psyche_probe"].angle;
-
-        // create probe's view
-        let centerX = this.bodies["psyche_probe"].x;
-        let centerY = this.bodies["psyche_probe"].y;
-        let viewR = 100;
-        this.graphics.fillStyle(0xFFFFFF, 0.3);
-
-        let endRotation = this.bodies["psyche_probe"].rotation + Math.PI;
-        if (endRotation > 2 * Math.PI) {
-            endRotation -= (2 * Math.PI);
-        }
-        let startRotation = endRotation + Phaser.Math.DegToRad(90);
-        if (startRotation > 2 * Math.PI) {
-            startRotation -= (2 * Math.PI);
-        }
-
-        let probeView = this.graphics.slice(centerX, centerY, viewR, startRotation, endRotation, true);
-        this.minimap.ignore(probeView);
-        this.graphics.fillPath();
+        this.updateProbeIndicator()
+        this.updateProbeIcons()
     }
 
     createPauseButton() {
@@ -568,5 +487,94 @@ class Freeplay extends Phaser.Scene {
             })
             .setVisible(false);
         this.minimap.ignore(this.quitPhotoPageButton);
+    }
+
+    updateProbeMovement() {
+        //Probe controls
+        //**TO DO: Wrap in a custom controler later.
+        const moveUnit = 1;
+        const rotationOffset = -2.4958208303518727;
+
+        if (this.cursors.left.isDown) {
+            this.bodies["psyche_probe"].angle -= 1;
+        }
+        else if (this.cursors.right.isDown) {
+            this.bodies["psyche_probe"].angle += 1;
+        }
+        if (this.cursors.up.isDown) {
+            this.bodies["psyche_probe"].vel.x = Math.cos(this.bodies["psyche_probe"].rotation + rotationOffset) * moveUnit
+            this.bodies["psyche_probe"].vel.y = Math.sin(this.bodies["psyche_probe"].rotation + rotationOffset) * moveUnit
+
+        }
+        else if (this.cursors.down.isDown) {
+            this.bodies["psyche_probe"].vel.x = Math.cos(this.bodies["psyche_probe"].rotation + rotationOffset) * -moveUnit
+            this.bodies["psyche_probe"].vel.y = Math.sin(this.bodies["psyche_probe"].rotation + rotationOffset) * -moveUnit
+        }
+    }
+
+    updateProbeIndicator() {
+        // find psyche
+        let distance = this.bodies["psyche_probe"].getPsycheDistance();
+
+        // the distance between pshche probe and the arrow
+        let arrowDistance = 50;
+        let width = 1024;
+        let height = 768;
+        let directionX = width / 2 + this.bodies["psyche_probe"].getPsycheDirectionX() * arrowDistance;
+        let directionY = height / 2 + this.bodies["psyche_probe"].getPsycheDirectionY() * arrowDistance;
+
+        // calculate the rotation of the arrow image
+        let directionAngle = Math.asin(this.bodies["psyche_probe"].getPsycheDirectionY());
+        if (this.bodies["psyche_probe"].getPsycheDirectionX() < 0) {
+            directionAngle = Math.PI - directionAngle;
+        }
+
+        // add the image of the arrow if it not added
+        if (typeof (this.direction) == "undefined") {
+            this.direction = this.add.image(directionX, directionY, 'direction').setScale(0.2);
+            CameraManager.addUISprite(this.direction);
+            // make the direction indicator not on top of other page such as pause menu
+            this.direction.depth = -1;
+            //Make the minimap ignore the icon.
+            this.minimap.ignore(this.direction);
+        }
+
+        // set the correct position and angle of the arrow to point to psyche
+        this.direction.setPosition(directionX, directionY);
+        this.direction.rotation = directionAngle;
+
+        // decrease opacity when near psyche
+        if (distance < 90) {
+            this.direction.alpha = (distance - 50) / 50;
+        } else {
+            this.direction.alpha = 0.8;
+        }
+    }
+
+    updateProbeIcons() {
+        // Make the minimap icon have the same location as the player.
+        this.icon.y = this.bodies["psyche_probe"].y;
+        this.icon.x = this.bodies["psyche_probe"].x;
+        // Make the minimap icon have the same angle as the player.
+        this.icon.angle = this.bodies["psyche_probe"].angle;
+
+        // create probe's view
+        let centerX = this.bodies["psyche_probe"].x;
+        let centerY = this.bodies["psyche_probe"].y;
+        let viewR = 100;
+        this.graphics.fillStyle(0xFFFFFF, 0.3);
+
+        let endRotation = this.bodies["psyche_probe"].rotation + Math.PI;
+        if (endRotation > 2 * Math.PI) {
+            endRotation -= (2 * Math.PI);
+        }
+        let startRotation = endRotation + Phaser.Math.DegToRad(90);
+        if (startRotation > 2 * Math.PI) {
+            startRotation -= (2 * Math.PI);
+        }
+
+        let probeView = this.graphics.slice(centerX, centerY, viewR, startRotation, endRotation, true);
+        this.minimap.ignore(probeView);
+        this.graphics.fillPath();
     }
 }
