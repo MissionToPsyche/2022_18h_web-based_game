@@ -29,8 +29,10 @@ class Body extends Phaser.GameObjects.Sprite {
 		this.r = _diameter / 2
 		this.listeners = []
 		this.listenRadius = this.r + this.r * 5;
+		//this.listenRadius = 10 + this.r
 
 		var md = Math.pow(this.r, 1 / 2) * 75;
+		this.collided = false;
 
 		this.setDisplaySize(this.r * 2, this.r * 2)
 			.setSize(this.r * 2, this.r *2);
@@ -108,6 +110,19 @@ class Body extends Phaser.GameObjects.Sprite {
 				f.setLength(calcGravity(listener.mass, this.mass, r));
 				//inform the listener of the force.
 				listener.update(f);
+			} else if (r <= this.r && this.collided == false) { //detect a collision
+
+				//debug, this info will be useful later
+				console.log(listener.id + " collided with " + this.id + "!");
+				console.log(listener.id + " horizontal velocity: " + Math.abs(listener.vel.x));
+				console.log(listener.id + " vertical velocity:   " + Math.abs(listener.vel.y));
+
+				//cause the probe to bounce
+				//listener.vel.x *= -1;
+				//listener.vel.y *= -1;
+
+				listener.collided = true;
+				this.collided = true;
 			}
 		}.bind(this));
 	}
@@ -229,6 +244,7 @@ class Probe extends Body {
 		this.gravityToggle = true; //TO DO: REMOVE WHEN DONE TESTING GRAVITY
 		this.inOrbit = true; //when true, indicates that probe is orbiting a planet
 		this.orbitToggle = true; //when true, starts the orbit lock on process
+		this.rotation = 0;
 
 		this.foos = 1; //fraction of orbit speed
 		this.orbitChangeCounter = 0;
@@ -238,7 +254,6 @@ class Probe extends Body {
 		this.minOrbit = 40;
 		this.currentOrbit = 40;
 		this.newOrbit = 40;
-		this.theta = 0;
 		
 		this.orbitTarget = this.scene.bodies["earth"]; //the target of the probe's orbit.
 
@@ -249,6 +264,10 @@ class Probe extends Body {
 		//set camera zoom for initial state
 		var totalSize = (this.currentOrbit * 2 + this.r * 2 ) * 1.1;
 		CameraManager.zoomToSize(totalSize);
+
+		//deploy the probe near earth so that it doesn't immediately collide
+		this.x = this.scene.bodies["earth"].x - 35;
+		this.y = this.scene.bodies["earth"].y;
 	}
 
 	/**
@@ -284,6 +303,8 @@ class Probe extends Body {
 			    this.currentOrbit += diff/this.orbitChangeCounter;
 				this.orbitChangeCounter -= 1;
 			}
+
+			
 		}
 		super.updatePosition();
 	}
@@ -469,6 +490,42 @@ class Probe extends Body {
     getPsycheDirectionY() {
     	let psycheY = this.scene.bodies["psyche"].y;
     	return (psycheY - this.y) / this.getPsycheDistance();
+    }
+
+    /**
+     * Check if a body is in the view of the probe.
+     * @param {string} the index of the body
+     * @param {number} radius of the view
+     * @param {number} start rotation of the view in radius
+     * @param {number} end rotation of the view in radius
+     * @return {boolean}
+     */
+    isInView(idx, r, startRotation, endRotation) {
+    	let targetX = this.scene.bodies[idx].x;
+    	let targetY = this.scene.bodies[idx].y;
+    	let distance = Math.sqrt((this.x - targetX) * (this.x - targetX) + (this.y - targetY) * (this.y - targetY));
+    	
+    	// check if target body is too far
+    	if (distance > r) {
+    		return false;
+    	}
+
+    	// get the angle of the target body
+    	let targetCos = (targetX - this.x) / distance;
+    	let targetSin = (targetY - this.y) / distance;
+    	let angle = Math.acos(targetCos);
+    	if (targetSin < 0) {
+    		angle = Math.PI * 2 - angle;
+    	}
+
+    	// check if angle is in the startRotation end Rotation range
+    	if (endRotation < (Math.PI * 3 / 2)) {
+    		// startRotation endRotation range is [endRotation, startRotation]
+    		return (angle >= endRotation) && (angle <= startRotation);
+    	} else {
+    		// range is [endRotation, 2pi] union [0, startRotation]
+    		return (angle >= endRotation) || (angle <= startRotation);
+    	}
     }
 
 

@@ -180,4 +180,19 @@ class CameraManager {
         this.uiCamera.ignore(this.minimapSprites);
         this.mainCamera.ignore(this.minimapSprites);
     }
+
+    static toggleCamera(camString) {
+        switch (camString) {
+            case 'main':
+                this.mainCamera.setVisible(!this.mainCamera.visible);
+                break;
+            case 'UI':
+                this.uiCamera.setVisible(!this.mainCamera.visible);
+                break;
+            case 'mini':
+                this.miniCamera.setVisible(!this.mainCamera.visible);
+                break;
+            default:
+        }
+    }
 }
