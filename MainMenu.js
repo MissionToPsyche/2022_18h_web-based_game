@@ -23,10 +23,10 @@ class MainMenu extends Phaser.Scene {
 
         this.createTitle();
         this.createPlayButton();
+        this.createControlButton();
     }
 
     update() {
-        // nothing happens here :)
     }
 
     createTitle() {
@@ -68,9 +68,7 @@ class MainMenu extends Phaser.Scene {
 
     createPlayButton() {
         this.playButton = this.add.image(512, 464, 'play');
-        this.controlButton = this.add.image(520,618, 'control').setScale(0.5);
         CameraManager.addUISprite(this.playButton);
-        CameraManager.addUISprite(this.controlButton);
 
         this.playButton.setInteractive()
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
@@ -86,6 +84,17 @@ class MainMenu extends Phaser.Scene {
                 this.playButton.setTint(0xFFFFFF);
                 this.scene.start('Freeplay');
             })
+    }
+
+    createControlButton() {
+        this.controlButton = this.add.image(520,618, 'control').setScale(0.5);
+        CameraManager.addUISprite(this.controlButton);
+
+        // To darken screen
+        const color1 = new Phaser.Display.Color(0, 0, 0);
+        this.shadow = this.add.rectangle(0, 0,2048, 2048, color1.color);
+        this.shadow.setAlpha(0.5);
+        this.shadow.setVisible(false);
 
         this.controlButton.setInteractive()
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
@@ -99,6 +108,16 @@ class MainMenu extends Phaser.Scene {
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
                 this.controlButton.setTint(0xFFFFFF);
+                this.shadow.setVisible(true);
+                this.createControlMenu();
             })
+    }
+
+    createControlMenu() {
+        //Control menu
+        this.controlText = this.add.text(525, 150, 'CONTROLS').setOrigin(0.5).setFontSize(120);
+        CameraManager.addUISprite(this.controlText);
+        this.playButton.disableInteractive();
+        this.controlButton.disableInteractive();
     }
 }

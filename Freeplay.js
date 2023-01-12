@@ -410,6 +410,7 @@ class Freeplay extends Phaser.Scene {
             this.pauseButton.setVisible(true)
             this.playButton.setVisible(false)
             this.pauseText.setVisible(false)
+            this.shadow.setVisible(false)
         }
 
         // if game over then show the game over text
@@ -427,7 +428,7 @@ class Freeplay extends Phaser.Scene {
         if (this.paused || this.gameOver) {
             this.restartButton.setVisible(true)
             this.exitButton.setVisible(true)
-            this.shadow.setVisible(false)
+            this.shadow.setVisible(true)
         } else {
             this.restartButton.setVisible(false)
             this.exitButton.setVisible(false)
