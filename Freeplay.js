@@ -183,38 +183,16 @@ class Freeplay extends Phaser.Scene {
         this.updatePauseButton();
         this.updateTakePhoto();
 
-        // only move if not paused and not taking photo
-        if (this.paused || this.takingPhoto) {
+        // only move if not paused, not taking photo, and not game over
+        if (this.paused || this.takingPhoto || this.gameOver) {
             return
         } else {
             this.updateProbeMovement()
         }
 
-        //prevent psyche from going too far out for now
-        //note: FOR TESTING ONLY, THIS IS A BAD WAY OF DOING THIS
-        if (this.bodies["psyche_probe"].x >= 650 + 1024) {
-            this.bodies["psyche_probe"].vel.x = 0
-            this.bodies["psyche_probe"].x = 649 + 1024
-        } if (this.bodies["psyche_probe"].y >= 650 + 1024) {
-            this.bodies["psyche_probe"].x = 649 + 1024
-            this.bodies["psyche_probe"].vel.y = 0
-            this.bodies["psyche_probe"].y = 649 + 1024
-        } if (this.bodies["psyche_probe"].x <= -650 + 1024) {
-            this.bodies["psyche_probe"].vel.x = 0
-            this.bodies["psyche_probe"].x = -649 + 1024
-        } if (this.bodies["psyche_probe"].y <= -650 + 1024) {
-            this.bodies["psyche_probe"].vel.y = 0
-            this.bodies["psyche_probe"].y = -649 + 1024
-        }
-
-        // don't update bodies if paused
-        if (this.paused || this.gameOver) {
-            return
-        }
-
         // check to see if the probe collided with anything
         // if there was a collision then trigger the failure state and stop the simulation
-        if (this.bodies["psyche_probe"].collided && !this.gameOver) {
+        if (this.bodies["psyche_probe"].collided) {
             this.gameOver = true;
             CameraManager.addUISprite(this.failText);
             this.minimap.ignore(this.failText);
@@ -360,42 +338,30 @@ class Freeplay extends Phaser.Scene {
     }
 
     updatePauseButton() {
-        // if paused and not game over then we can show the pause text and allow the pause/play buttons to update
         if (this.paused && !this.gameOver) {
-            this.pauseText.setVisible(true)
-            this.playButton.setVisible(true)
-            this.pauseButton.setVisible(false)
-            this.restartButton.setVisible(true)
-            this.exitButton.setVisible(true)
-            this.shadow.setVisible(true)
-        } else {
-            this.pauseButton.setVisible(true)
-            this.playButton.setVisible(false)
-            this.pauseText.setVisible(false)
-        }
-
-        // if game over then show the game over text
-        if (this.gameOver) {
-            this.failText.setVisible(true)
-
+            this.pauseText.setVisible(true);
+            this.playButton.setVisible(true);
+            this.pauseButton.setVisible(false);
+            this.restartButton.setVisible(true);
+            this.exitButton.setVisible(true);
+            this.shadow.setVisible(true);
+        } else if (this.gameOver) {
+            this.failText.setVisible(true);
             this.pauseButton.setTint(0x7f7f7f);
             this.playButton.setTint(0x7f7f7f);
             this.orbitToggle.setTint(0x7f7f7f);
+            this.restartButton.setVisible(true);
+            this.exitButton.setVisible(true);
+            this.shadow.setVisible(false);
         } else {
-            this.failText.setVisible(false)
+            this.pauseText.setVisible(false);
+            this.playButton.setVisible(false);
+            this.pauseButton.setVisible(true);
+            this.failText.setVisible(false);
+            this.restartButton.setVisible(false);
+            this.exitButton.setVisible(false);
+            this.shadow.setVisible(false);
         }
-
-        // if paused or game over then we can show the restart and exit buttons
-        if (this.paused || this.gameOver) {
-            this.restartButton.setVisible(true)
-            this.exitButton.setVisible(true)
-            this.shadow.setVisible(false)
-        } else {
-            this.restartButton.setVisible(false)
-            this.exitButton.setVisible(false)
-            this.shadow.setVisible(false)
-        }
-        
     }
 
     updateTakePhoto() {
