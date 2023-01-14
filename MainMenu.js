@@ -1,8 +1,13 @@
+/**
+ * Class representing the Phaser 'Scene', which defines our main menu
+ * @extends Phaser.Scene
+ */
 class MainMenu extends Phaser.Scene {
     constructor() {
         super({ key: "MainMenu" });
     }
 
+    /** Loads all necessary assets for the scene before the simulation runs */
     preload() {
         this.load.image('logo', 'img/Psyche_Icon_Color-SVG.svg'); //asset for psyche logo
         this.load.image('play', 'img/icons/play-circle.svg');
@@ -11,6 +16,12 @@ class MainMenu extends Phaser.Scene {
         this.load.image('title_psyche', 'img/psyche.png');
     }
 
+    /**
+     * Assembles the main menu within the scene
+     * - Initialize the menu and game cameras
+     * - Apply the game's logo to the scene and set its scale
+     * - Calls helpers to add the title and play button
+     */
     create() {
         this.graphics = this.add.graphics();
 
@@ -24,10 +35,16 @@ class MainMenu extends Phaser.Scene {
         this.createPlayButton();
     }
 
+    /**
+     * The scene's main update loop
+     */
     update() {
         // nothing happens here :)
     }
 
+    /**
+     * Helper responsible for creating a dynamic game title that can be added to the scene
+     */
     createTitle() {
         var journey = this.add.image(512, 24, 'title_journey').setScale(0.0);
         var to = this.add.image(512, 24, 'title_to').setScale(0.0);
@@ -65,6 +82,10 @@ class MainMenu extends Phaser.Scene {
         });
     }
 
+    /**
+     * Helper responsible for adding a play button to the scene that will allow the player
+     * to begin the game
+     */
     createPlayButton() {
         this.playButton = this.add.image(512, 464, 'play');
         CameraManager.addUISprite(this.playButton);

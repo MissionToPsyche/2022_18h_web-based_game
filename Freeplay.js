@@ -1,5 +1,5 @@
 /**
- * Class representing the Phaser 'Scene', which defines our game
+ * Class representing a Phaser 'Scene', which defines our game
  * @extends Phaser.Scene
  */
 class Freeplay extends Phaser.Scene {
