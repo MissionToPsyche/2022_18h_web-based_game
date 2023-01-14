@@ -548,10 +548,13 @@ class Freeplay extends Phaser.Scene {
                         this.quitPhotoPageButton.setPosition(300, 650);
                         // console.log("psyche in view!");
                     } else {
-                        // check which body is in the view
+                        // check which body is in the view and choose the nearest one
+                        let currentDistance = 1000; // random big number
                         for (var body in this.bodies) {
                             if (this.bodies["psyche_probe"].isInView(body, viewR, startRotation, endRotation)) {
-                                console.log(body + " in view");
+                                // this body is in probe's view, keep the distance
+                                let thisBodyDistance = this.bodies["psyche_probe"].getDistance(body);
+                                console.log(body + " in view, distance = " + thisBodyDistance);
                             }
                         }
                         this.quitPhotoPageButton.setPosition(300, 400);
