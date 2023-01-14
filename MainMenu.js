@@ -10,6 +10,7 @@ class MainMenu extends Phaser.Scene {
         this.load.image('title_to', 'img/to.png');
         this.load.image('title_psyche', 'img/psyche.png');
         this.load.image('control', 'img/icons/control.png'); 
+        this.load.image('exit', 'img/icons/exit.png'); // an exit button
     }
 
     create() {
@@ -93,7 +94,7 @@ class MainMenu extends Phaser.Scene {
         // To darken screen
         const color1 = new Phaser.Display.Color(0, 0, 0);
         this.shadow = this.add.rectangle(0, 0,2048, 2048, color1.color);
-        this.shadow.setAlpha(0.5);
+        this.shadow.setAlpha(0.85);
         this.shadow.setVisible(false);
 
         this.controlButton.setInteractive()
@@ -116,8 +117,30 @@ class MainMenu extends Phaser.Scene {
     createControlMenu() {
         //Control menu
         this.controlText = this.add.text(525, 150, 'CONTROLS').setOrigin(0.5).setFontSize(120);
-        CameraManager.addUISprite(this.controlText);
+        this.exitButton = this.add.image(520, 618, 'exit').setScale(0.5);
         this.playButton.disableInteractive();
         this.controlButton.disableInteractive();
+
+        CameraManager.addUISprite(this.controlText);
+        CameraManager.addUISprite(this.exitButton);
+
+        this.exitButton.setInteractive()
+        .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
+            this.exitButton.setTint(0xF9A000);
+        })
+        .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OUT, () => {
+            this.exitButton.setTint(0xFFFFFF);
+        })
+        .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
+            this.exitButton.setTint(0xF47D33);
+        })
+        .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
+            this.exitButton.setTint(0xFFFFFF);
+            this.shadow.setVisible(false);
+            this.exitButton.setVisible(false);
+            this.controlText.setVisible(false);
+            this.createPlayButton();
+            this.createControlButton();
+        });
     }
 }
