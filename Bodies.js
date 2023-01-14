@@ -281,6 +281,22 @@ class Probe extends Body {
     }
 
     /**
+     * Get the distance from the probe to a body
+     * @param {string} the id of the body
+     * @return {number} the distance between the probe and a body
+     */
+    getDistance(bodyId) {
+    	if (typeof(this.scene.bodies[bodyId].x) == undefined) {
+    		return -1;
+    	} else {
+    		let bodyX = this.scene.bodies[bodyId].x;
+    		let bodyY = this.scene.bodies[bodyId].y;
+    		return Math.sqrt((this.x - bodyX) * (this.x - bodyX) + (this.y - bodyY) * (this.y - bodyY));
+    	}
+
+    }
+
+    /**
      * Get the distance from this probe to psyche
      * @return {number} The distance between this probe and psyche
      */
