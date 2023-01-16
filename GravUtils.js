@@ -1,4 +1,4 @@
-const G = 6.674
+const G = 0.6674
 
 /**
  * Basic calculation for gravity

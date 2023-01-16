@@ -25,6 +25,8 @@ class Freeplay extends Phaser.Scene {
         this.psychePhoto1;
 
         this.failText;
+
+        this.probeAngleOffset = 0;
     }
 
     /** Loads all necessary assets for the scene before the simulation runs */
@@ -174,20 +176,28 @@ class Freeplay extends Phaser.Scene {
         if (this.paused || this.takingPhoto) {
             return
         } else if (this.bodies["psyche_probe"].inOrbit) {
-            //if in an orbit use controls to chance orbit distance
+            //if in an orbit use controls to chance orbit distance and rotate probe in relation to orbit.
+
+            //calculate current angle necissary for probe to point at orbit target
+            let p2 = this.bodies["psyche_probe"];
+            //console.log(p1);
+            let p1 = p2.orbitTarget;
+            //console.log(p2);
+            let relAngle = Math.atan2(p2.y - p1.y, p2.x - p1.x) * 180 / Math.PI;
+            relAngle -= 45;
+
             if (this.cursors.up.isDown && !this.bodies["psyche_probe"].isOrbitChanging()) {
                 this.bodies["psyche_probe"].addToOrbit(10);
             } else if (this.cursors.down.isDown && !this.bodies["psyche_probe"].isOrbitChanging()) {
                 this.bodies["psyche_probe"].addToOrbit(-10);
             } else if (this.cursors.left.isDown) {
-                this.bodies["psyche_probe"].angle -= 5;
-                this.bodies["psyche_probe"].minimap_icon.angle -= 5;
-                this.angle -=5; 
+                this.probeAngleOffset -= 5;
             } else if (this.cursors.right.isDown) {
-                this.bodies["psyche_probe"].angle += 5;
-                this.bodies["psyche_probe"].minimap_icon.angle += 5;
-                this.angle +=5; 
+                this.probeAngleOffset += 5;
             }
+            this.bodies["psyche_probe"].angle = relAngle + this.probeAngleOffset;
+            this.bodies["psyche_probe"].minimap_icon.angle = relAngle + this.probeAngleOffset;
+            this.angle = relAngle + this.probeAngleOffset;
         } else {
             if (this.cursors.left.isDown) {
                 this.bodies["psyche_probe"].vel.x -= moveUnit;
