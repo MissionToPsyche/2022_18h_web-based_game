@@ -11,6 +11,11 @@ class MainMenu extends Phaser.Scene {
         this.load.image('title_psyche', 'img/psyche.png');
         this.load.image('control', 'img/icons/control.png'); 
         this.load.image('exit', 'img/icons/exit.png'); // an exit button
+        // Key icons for control menu
+        this.load.image('down', 'img/icons/downkey.png'); 
+        this.load.image('right', 'img/icons/rightkey.png'); 
+        this.load.image('left', 'img/icons/leftkey.png'); 
+        this.load.image('up', 'img/icons/upkey.png'); 
     }
 
     create() {
@@ -117,12 +122,29 @@ class MainMenu extends Phaser.Scene {
     createControlMenu() {
         //Control menu
         this.controlText = this.add.text(525, 150, 'CONTROLS').setOrigin(0.5).setFontSize(120);
+        this.forwardText = this.add.text(125, 300, 'Move Foward').setOrigin(0.5).setFontSize(25);
+        this.backwardText = this.add.text(375, 300, 'Move Backward').setOrigin(0.5).setFontSize(25);
+        this.rotateLText = this.add.text(650, 300, 'Rotate Left').setOrigin(0.5).setFontSize(25);
+        this.rotateRText = this.add.text(900, 300, 'Rotate Right').setOrigin(0.5).setFontSize(25);
         this.exitButton = this.add.image(520, 618, 'exit').setScale(0.5);
+        this.leftCtrl = this.add.image(650, 425, 'left').setScale(0.5);
+        this.rightCtrl = this.add.image(900, 425, 'right').setScale(0.5);
+        this.upCtrl = this.add.image(125, 425, 'up').setScale(0.5);
+        this.downCtrl = this.add.image(375, 425, 'down').setScale(0.5);
+
         this.playButton.disableInteractive();
         this.controlButton.disableInteractive();
 
         CameraManager.addUISprite(this.controlText);
+        CameraManager.addUISprite(this.forwardText);
+        CameraManager.addUISprite(this.backwardText);
+        CameraManager.addUISprite(this.rotateLText);
+        CameraManager.addUISprite(this.rotateRText);
         CameraManager.addUISprite(this.exitButton);
+        CameraManager.addUISprite(this.upCtrl);
+        CameraManager.addUISprite(this.rightCtrl);
+        CameraManager.addUISprite(this.leftCtrl);
+        CameraManager.addUISprite(this.downCtrl);
 
         this.exitButton.setInteractive()
         .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
@@ -139,6 +161,14 @@ class MainMenu extends Phaser.Scene {
             this.shadow.setVisible(false);
             this.exitButton.setVisible(false);
             this.controlText.setVisible(false);
+            this.forwardText.setVisible(false);
+            this.backwardText.setVisible(false);
+            this.rotateLText.setVisible(false);
+            this.rotateRText.setVisible(false);
+            this.leftCtrl.setVisible(false);
+            this.rightCtrl.setVisible(false);
+            this.upCtrl.setVisible(false);
+            this.downCtrl.setVisible(false);
             this.createPlayButton();
             this.createControlButton();
         });
