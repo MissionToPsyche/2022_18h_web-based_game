@@ -169,7 +169,7 @@ class Freeplay extends Phaser.Scene {
         //creating control keys
         this.cursors = this.input.keyboard.createCursorKeys();
 
-        this.createPauseButton();
+        this.createButtons();
         this.createOrbitToggle();
         this.takePhoto();
     }
@@ -180,7 +180,7 @@ class Freeplay extends Phaser.Scene {
      * - Enforces the pause feature, only allowing bodies to move if the game is not paused
      */
     update() {
-        this.updatePauseButton();
+        this.updateButtons();
         this.updateTakePhoto();
 
         // only move if not paused, not taking photo, and not game over
@@ -222,7 +222,7 @@ class Freeplay extends Phaser.Scene {
         this.updateProbeIcons()
     }
 
-    createPauseButton() {
+    createButtons() {
         this.playButton = this.add.image(964, 708, 'play').setScale(0.5)
         this.pauseButton = this.add.image(964, 708, 'pause').setScale(0.5)
         this.restartButton = this.add.image(520, 408, 'restart').setScale(0.5)
@@ -337,30 +337,36 @@ class Freeplay extends Phaser.Scene {
         this.minimap.ignore(this.pauseText);
     }
 
-    updatePauseButton() {
+    updateButtons() {
         if (this.paused && !this.gameOver) {
-            this.pauseText.setVisible(true);
             this.playButton.setVisible(true);
+            this.playButton.setTint(0x7f7f7f);
+            this.orbitToggle.setTint(0x7f7f7f);
+
             this.pauseButton.setVisible(false);
+            this.pauseText.setVisible(true);
             this.restartButton.setVisible(true);
             this.exitButton.setVisible(true);
             this.shadow.setVisible(true);
         } else if (this.gameOver) {
-            this.failText.setVisible(true);
-            this.pauseButton.setTint(0x7f7f7f);
-            this.playButton.setTint(0x7f7f7f);
-            this.orbitToggle.setTint(0x7f7f7f);
+            this.playButton.setVisible(false);
+            this.pauseButton.setVisible(false);
             this.restartButton.setVisible(true);
             this.exitButton.setVisible(true);
+            this.failText.setVisible(true);
+            this.orbitToggle.setVisible(false);
+
             this.shadow.setVisible(false);
         } else {
-            this.pauseText.setVisible(false);
-            this.playButton.setVisible(false);
             this.pauseButton.setVisible(true);
+
+            this.playButton.setVisible(false);
+            this.pauseText.setVisible(false);
             this.failText.setVisible(false);
             this.restartButton.setVisible(false);
             this.exitButton.setVisible(false);
             this.shadow.setVisible(false);
+            this.orbitToggle.setVisible(false);
         }
     }
 
