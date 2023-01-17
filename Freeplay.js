@@ -18,9 +18,10 @@ class Freeplay extends Phaser.Scene {
         this.pauseText;
 
         this.takingPhoto = false;
-        this.foundPsycheText; // should replace to photo of psyche
+        this.foundPsycheText; 
         this.quitPhotoPageButton;
         this.psychePhoto1;
+        this.nearestBodyText;
 
         this.failText;
     }
@@ -484,6 +485,7 @@ class Freeplay extends Phaser.Scene {
             this.foundPsycheText.setVisible(false);  
              this.quitPhotoPageButton.setVisible(false);
              this.psychePhoto1.setVisible(false);
+             this.nearestBodyText.setVisible(false);
         } else {
             this.quitPhotoPageButton.setVisible(true);
         }
@@ -524,7 +526,12 @@ class Freeplay extends Phaser.Scene {
 
         this.foundPsycheText = this.add.text(100, 100, 'You found Psyche!');
         this.foundPsycheText.setFontSize(80);
+        this.nearestBodyText = this.add.text(100, 200, ' ');
+        this.nearestBodyText.setFontSize(70);
+
         this.minimap.ignore(this.foundPsycheText);
+        this.minimap.ignore(this.nearestBodyText);
+
         this.input.keyboard
             .on('keyup-SPACE', () => {
                 // disable spacebar take photo when paused
@@ -559,11 +566,16 @@ class Freeplay extends Phaser.Scene {
                                     currentDistance = thisBodyDistance;
                                     nearestBody = body;
                                 }
-                                console.log(body + " in view, distance = " + thisBodyDistance);
                             }
                         }
-                        console.log("nearest body: " + nearestBody);
-                        this.quitPhotoPageButton.setPosition(300, 400);
+                        let nearestInfo = "You found ";
+                        nearestInfo += nearestBody.charAt(0).toUpperCase();
+                        nearestInfo += nearestBody.slice(1);
+                        nearestInfo += ", \nbut you should try \nto find Psyche.";
+                        this.nearestBodyText.setText(nearestInfo);
+                        this.nearestBodyText.setVisible(true);
+                        //console.log("nearest body: " + nearestBody);
+                        this.quitPhotoPageButton.setPosition(300, 500);
                     }
                 }
             });
