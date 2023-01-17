@@ -174,7 +174,8 @@ class Freeplay extends Phaser.Scene {
         this.takePhoto();
     }
 
-    /** The scene's main update loop
+    /**
+     * The scene's main update loop
      * - Disallows the probe from escaping the solar system or going to fast
      * - Applies dynamic gravity
      * - Enforces the pause feature, only allowing bodies to move if the game is not paused
@@ -325,6 +326,10 @@ class Freeplay extends Phaser.Scene {
         this.graphics.fillPath();
     }
 
+    /**
+     * Create an interactive pause button that allows the player to suspend and resume the game
+     * Addtionally, add the pause button to the scene
+     */
     createPauseButton() {
         this.playButton = this.add.image(964, 708, 'play').setScale(0.5)
         this.pauseButton = this.add.image(964, 708, 'pause').setScale(0.5)
@@ -440,6 +445,9 @@ class Freeplay extends Phaser.Scene {
         this.minimap.ignore(this.pauseText);
     }
 
+    /**
+     * Logic that allows the pause button to behave as expected across changing game states
+     */
     updatePauseButton() {
         // if paused and not game over then we can show the pause text and allow the pause/play buttons to update
         if (this.paused && !this.gameOver) {
@@ -479,6 +487,10 @@ class Freeplay extends Phaser.Scene {
         
     }
 
+    /**
+     * Game state logic associated with the "Photo Taken" menu text and buttons, displayed
+     * when the player successfully photographs Psyche.
+     */
     updateTakePhoto() {
         if (!this.takingPhoto) {
             this.foundPsycheText.setVisible(false);  
@@ -489,6 +501,10 @@ class Freeplay extends Phaser.Scene {
         }
     }
     
+    /**
+     * Currently, this allows the player to toggle gravity on/off between the probe and all
+     * listening bodies.
+     */
     createOrbitToggle() {
         this.orbitToggle = this.add.image(56, 708, 'orbit').setScale(0.5);
         CameraManager.addUISprite(this.orbitToggle);
@@ -517,6 +533,10 @@ class Freeplay extends Phaser.Scene {
             });
     }
 
+    /**
+     * Assembles the "photo taken" menu and adds it to the scene when the player successfully
+     * takes a photo of Psyche.
+     */
     takePhoto() {
         this.psychePhoto1 = this.add.image(500, 400, 'psychePhoto1').setScale(0.8);
         this.psychePhoto1.setVisible(false);
