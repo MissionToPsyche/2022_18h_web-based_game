@@ -526,7 +526,7 @@ class Freeplay extends Phaser.Scene {
 
         this.foundPsycheText = this.add.text(100, 100, 'You found Psyche!');
         this.foundPsycheText.setFontSize(80);
-        this.nearestBodyText = this.add.text(100, 200, ' ');
+        this.nearestBodyText = this.add.text(130, 250, ' ');
         this.nearestBodyText.setFontSize(70);
 
         this.minimap.ignore(this.foundPsycheText);
@@ -568,10 +568,15 @@ class Freeplay extends Phaser.Scene {
                                 }
                             }
                         }
-                        let nearestInfo = "You found ";
-                        nearestInfo += nearestBody.charAt(0).toUpperCase();
-                        nearestInfo += nearestBody.slice(1);
-                        nearestInfo += ", \nbut you should try \nto find Psyche.";
+
+                        let nearestInfo = "";
+                        if (nearestBody != null) {
+                            nearestInfo = "You found ";
+                            nearestInfo += nearestBody.charAt(0).toUpperCase();
+                            nearestInfo += nearestBody.slice(1);
+                            nearestInfo += ", \nbut you should try \nto find Psyche.";
+                        }
+
                         this.nearestBodyText.setText(nearestInfo);
                         this.nearestBodyText.setVisible(true);
                         //console.log("nearest body: " + nearestBody);
