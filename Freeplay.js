@@ -23,6 +23,7 @@ class Freeplay extends Phaser.Scene {
         this.psychePhoto1;
 
         this.failText;
+        this.testMenu;
     }
 
     /** Loads all necessary assets for the scene before the simulation runs */
@@ -58,6 +59,9 @@ class Freeplay extends Phaser.Scene {
 
         // load the photo of psyche
         this.load.image('psychePhoto1', "img/photos/psyche1.png");
+
+        // load the test dog
+        this.load.image('testDog', "img/photos/testdog.png");
     }
 
     /**
@@ -171,6 +175,7 @@ class Freeplay extends Phaser.Scene {
 
         this.createPauseButton();
         this.createOrbitToggle();
+        this.createTestMenu();
         this.takePhoto();
     }
 
@@ -187,6 +192,7 @@ class Freeplay extends Phaser.Scene {
 
         this.updatePauseButton();
         this.updateTakePhoto();
+        this.updateTestMenu();
 
         // only move if not paused and not taking photo
         if (this.paused || this.takingPhoto) {
@@ -323,6 +329,21 @@ class Freeplay extends Phaser.Scene {
         let probeView = this.graphics.slice(centerX, centerY, viewR, startRotation, endRotation, true);
         this.minimap.ignore(probeView);
         this.graphics.fillPath();
+    }
+
+    // testing new menu system
+    createTestMenu() {
+        this.testMenu = new Menu(this);
+        this.testMenu.addElement(this.add.image(0, 0, 'testDog').setOrigin(0));
+        this.testMenu.addElement(this.add.text(0, 0, 'check our this cool dog'));
+    }
+
+    // testing new menu system
+    updateTestMenu() {
+        this.input.keyboard
+            .on('keydown-T', () => {
+                this.testMenu.toggleMenu();
+            });
     }
 
     createPauseButton() {
