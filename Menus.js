@@ -14,6 +14,10 @@ class Menu {
 		// remove the specified element from this menu
 	}
 
+	moveElement(_element, _scale, _y, _delay, _duration, _ease) {
+		// move the element
+	}
+
 	toggleMenu() {
 		// set all elements in this menu to visible
 		this.elements.forEach(function (element) {
