@@ -263,7 +263,7 @@ class Freeplay extends Phaser.Scene {
             this.bodies[body].updatePosition(this)
 
             // find psyche
-            let distance = this.bodies["psyche_probe"].getPsycheDistance();
+            let distance = this.bodies["psyche_probe"].getDistance("psyche");
 
             // the distance between pshche probe and the arrow
             let arrowDistance = 50;
@@ -526,7 +526,7 @@ class Freeplay extends Phaser.Scene {
 
         this.foundPsycheText = this.add.text(100, 100, 'You found Psyche!');
         this.foundPsycheText.setFontSize(80);
-        this.nearestBodyText = this.add.text(130, 250, ' ');
+        this.nearestBodyText = this.add.text(100, 250, ' ');
         this.nearestBodyText.setFontSize(70);
 
         this.minimap.ignore(this.foundPsycheText);
@@ -571,10 +571,10 @@ class Freeplay extends Phaser.Scene {
 
                         let nearestInfo = "";
                         if (nearestBody != null) {
-                            nearestInfo = "You found ";
+                            nearestInfo = "You found the ";
                             nearestInfo += nearestBody.charAt(0).toUpperCase();
                             nearestInfo += nearestBody.slice(1);
-                            nearestInfo += ", \nbut you should try \nto find Psyche.";
+                            nearestInfo += ", \nbut you should try \nto find the Psyche.";
                         }
 
                         this.nearestBodyText.setText(nearestInfo);
