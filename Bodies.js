@@ -244,7 +244,6 @@ class Probe extends Body {
 		this.gravityToggle = true; //TO DO: REMOVE WHEN DONE TESTING GRAVITY
 		this.inOrbit = true; //when true, indicates that probe is orbiting a planet
 		this.orbitToggle = true; //when true, starts the orbit lock on process
-		this.rotation = 0;
 
 		this.foos = 1; //fraction of orbit speed
 		this.orbitChangeCounter = 0;
@@ -268,6 +267,8 @@ class Probe extends Body {
 		//deploy the probe near earth so that it doesn't immediately collide
 		this.x = this.scene.bodies["earth"].x - 35;
 		this.y = this.scene.bodies["earth"].y;
+
+		this.controler;
 	}
 
 	/**
@@ -303,9 +304,28 @@ class Probe extends Body {
 			    this.currentOrbit += diff/this.orbitChangeCounter;
 				this.orbitChangeCounter -= 1;
 			}
-
 			
+			//set rotation based on orbit around target
+			//calculate current angle necissary for probe to point at orbit target
+            let p2 = this;
+            //console.log(p1);
+            let p1 = p2.orbitTarget;
+            //console.log(p2);
+            let relAngle = Math.atan2(p2.y - p1.y, p2.x - p1.x) * 180 / Math.PI;
+            relAngle -= 45;
+
+			this.angle = relAngle + this.controler.getRotation();
 		}
+
+		//changing velocity based on vector from controler
+		this.vel.add(this.controler.getAccelerationVector());
+
+		//when not in orbit, match angle to angle of velocity vector
+		if(!this.inOrbit) {
+			this.angle = this.vel.angle();
+		}
+
+		this.minimap_icon.angle = this.angle;
 		super.updatePosition();
 	}
 
@@ -528,5 +548,11 @@ class Probe extends Body {
     	}
     }
 
-
+	/**
+	 * Sets the controler for this Probe
+	 * @param {Controler} _controler 
+	 */
+	setControler(_controler) {
+		this.controler = _controler;
+	}
 }

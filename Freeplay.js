@@ -152,14 +152,13 @@ class Freeplay extends Phaser.Scene {
         CameraManager.addUISprite(map_border);
 
         //creating control keys
-        this.cursors = this.input.keyboard.createCursorKeys();
-        this.gravKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q);
         this.createPauseButton();
         this.createOrbitToggle();
         this.takePhoto();
 
         //creating controler
         this.controler = new Controler(this, this.bodies["psyche_probe"]);
+        this.bodies["psyche_probe"].setControler(this.controler);
     }
 
     /** The scene's main update loop
@@ -175,6 +174,7 @@ class Freeplay extends Phaser.Scene {
         this.updatePauseButton();
         this.updateTakePhoto();
 
+        /*
         // only move if not paused and not taking photo
         if (this.paused || this.takingPhoto) {
             return
@@ -271,6 +271,7 @@ class Freeplay extends Phaser.Scene {
                 }
             }
         }
+        */
 
         // don't update bodies if paused
         if (this.paused) {
@@ -538,6 +539,7 @@ class Freeplay extends Phaser.Scene {
      */
     togglePaused() {
         this.paused = !this.paused;
+        this.controler.toggleMovementKeys();
     }
 
     /** Updates the state of the on-screen pause button
@@ -700,6 +702,7 @@ class Freeplay extends Phaser.Scene {
         // disable spacebar take photo when paused
         if ((!this.paused) && (!this.gameOver)) {
             this.takingPhoto = !this.takingPhoto;
+            this.controler.toggleMovementKeys();
 
             let viewR = 100;
             let endRotation = this.bodies["psyche_probe"].rotation + Math.PI;
