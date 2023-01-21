@@ -125,13 +125,16 @@ class MainMenu extends Phaser.Scene {
         this.exitButton = this.add.image(520, 618, 'exit').setScale(0.5);
         const controls = ['Move Forward', 'Move Backward', 'Rotate Left', 'Rotate Right'];
         const icons = ['up', 'down', 'left', 'right'];
+        const objects = [];
 
         let row = 200;
         let col = 300;
 
         for(let i = 0; i < controls.length; i++){
             this.icon = this.add.image(col, row, icons[i]).setScale(0.2);
+            objects.push(this.icon);
             this.title = this.add.text(col - 150 , row, controls[i]).setFontSize(15);
+            objects.push(this.title);
             row = row + 100;
             CameraManager.addUISprite(this.icon);
             CameraManager.addUISprite(this.title);
@@ -155,6 +158,11 @@ class MainMenu extends Phaser.Scene {
             this.shadow.setVisible(false);
             this.exitButton.setVisible(false);
             this.controlText.setVisible(false);
+
+            while(objects.length > 0){
+                objects.pop().setVisible(false);
+            }
+
             this.createPlayButton();
             this.createControlButton();
         });
