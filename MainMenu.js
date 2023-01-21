@@ -16,6 +16,8 @@ class MainMenu extends Phaser.Scene {
 
         CameraManager.initializeMainCamera(this);
         CameraManager.initializeUICamera(this);
+        CameraManager.initializeMiniCamera(this);
+        CameraManager.toggleCamera('mini');
 
         var logo = this.add.image(50, 50, 'logo').setScale(0.5);
         CameraManager.addUISprite(logo);
