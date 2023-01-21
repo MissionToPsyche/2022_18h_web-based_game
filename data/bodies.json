@@ -10,7 +10,7 @@
                 "magnitude": 1
             },
             "diameter": {
-                "value": 100,
+                "value": 400,
                 "unit": "px",
                 "magnitude": 1
             },
@@ -33,12 +33,12 @@
                 "magnitude": 1
             },
             "diameter": {
-                "value": 15,
+                "value": 30,
                 "unit": "px",
                 "magnitude": 1
             },
             "orbit_distance": {
-                "value": 100,
+                "value": 800,
                 "unit": "px",
                 "magnitude": 1
             }
@@ -54,12 +54,12 @@
                 "magnitude": 1
             },
             "diameter": {
-                "value": 25,
+                "value": 50,
                 "unit": "px",
                 "magnitude": 1
             },
             "orbit_distance": {
-                "value": 150,
+                "value": 1200,
                 "unit": "px",
                 "magnitude": 1
             }
@@ -75,12 +75,33 @@
                 "magnitude": 1
             },
             "diameter": {
+                "value": 40,
+                "unit": "px",
+                "magnitude": 1
+            },
+            "orbit_distance": {
+                "value": 1600,
+                "unit": "px",
+                "magnitude": 1
+            }
+        },
+        {
+            "id": "luna",
+            "name": "Moon",
+            "orbits": "earth",
+            "angle": 3.17,
+            "mass": {
+                "value": 10,
+                "unit": "px",
+                "magnitude": 1
+            },
+            "diameter": {
                 "value": 20,
                 "unit": "px",
                 "magnitude": 1
             },
             "orbit_distance": {
-                "value": 200,
+                "value": 120,
                 "unit": "px",
                 "magnitude": 1
             }
@@ -96,12 +117,12 @@
                 "magnitude": 1
             },
             "diameter": {
-                "value": 15,
+                "value": 30,
                 "unit": "px",
                 "magnitude": 1
             },
             "orbit_distance": {
-                "value": 250,
+                "value": 2000,
                 "unit": "px",
                 "magnitude": 1
             }
@@ -117,12 +138,12 @@
                 "magnitude": 1
             },
             "diameter": {
-                "value": 100,
+                "value": 200,
                 "unit": "px",
                 "magnitude": 1
             },
             "orbit_distance": {
-                "value": 350,
+                "value": 2800,
                 "unit": "px",
                 "magnitude": 1
             }
@@ -138,12 +159,12 @@
                 "magnitude": 1
             },
             "diameter": {
-                "value": 90,
+                "value": 180,
                 "unit": "px",
                 "magnitude": 1
             },
             "orbit_distance": {
-                "value": 475,
+                "value": 3800,
                 "unit": "px",
                 "magnitude": 1
             }
@@ -159,12 +180,12 @@
                 "magnitude": 1
             },
             "diameter": {
-                "value": 50,
+                "value": 100,
                 "unit": "px",
                 "magnitude": 1
             },
             "orbit_distance": {
-                "value": 550,
+                "value": 4400,
                 "unit": "px",
                 "magnitude": 1
             }
@@ -180,12 +201,12 @@
                 "magnitude": 1
             },
             "diameter": {
-                "value": 60,
+                "value": 120,
                 "unit": "px",
                 "magnitude": 1
             },
             "orbit_distance": {
-                "value": 600,
+                "value": 4800,
                 "unit": "px",
                 "magnitude": 1
             }
@@ -201,12 +222,12 @@
                 "magnitude": 1
             },
             "diameter": {
-                "value": 10,
+                "value": 20,
                 "unit": "px",
                 "magnitude": 1
             },
             "orbit_distance": {
-                "value": 650,
+                "value": 5200,
                 "unit": "px",
                 "magnitude": 1
             }
@@ -222,35 +243,12 @@
                 "magnitude": 1
             },
             "diameter": {
-                "value": 15,
+                "value": 30,
                 "unit": "px",
                 "magnitude": 1
             },
             "orbit_distance": {
-                "value": 290,
-                "unit": "px",
-                "magnitude": 1
-            }
-        }
-    ],
-    "moons": [
-        {
-            "id": "luna",
-            "name": "Moon",
-            "orbits": "earth",
-            "angle": 3.17,
-            "mass": {
-                "value": 10,
-                "unit": "px",
-                "magnitude": 1
-            },
-            "diameter": {
-                "value": 10,
-                "unit": "px",
-                "magnitude": 1
-            },
-            "orbit_distance": {
-                "value": 20,
+                "value": 2320,
                 "unit": "px",
                 "magnitude": 1
             }
@@ -267,6 +265,11 @@
             },
             "diameter": {
                 "value": 10,
+                "unit": "px",
+                "magnitude": 1
+            },
+            "orbit_distance": {
+                "value": 40,
                 "unit": "px",
                 "magnitude": 1
             }
