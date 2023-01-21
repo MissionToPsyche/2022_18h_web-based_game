@@ -18,9 +18,10 @@ class Freeplay extends Phaser.Scene {
         this.pauseText;
 
         this.takingPhoto = false;
-        this.foundPsycheText; // should replace to photo of psyche
+        this.foundPsycheText; 
         this.quitPhotoPageButton;
         this.psychePhoto1;
+        this.nearestBodyText;
 
         this.failText;
         this.testMenu;
@@ -268,7 +269,7 @@ class Freeplay extends Phaser.Scene {
             this.bodies[body].updatePosition(this)
 
             // find psyche
-            let distance = this.bodies["psyche_probe"].getPsycheDistance();
+            let distance = this.bodies["psyche_probe"].getDistance("psyche");
 
             // the distance between pshche probe and the arrow
             let arrowDistance = 50;
@@ -505,6 +506,7 @@ class Freeplay extends Phaser.Scene {
             this.foundPsycheText.setVisible(false);  
              this.quitPhotoPageButton.setVisible(false);
              this.psychePhoto1.setVisible(false);
+             this.nearestBodyText.setVisible(false);
         } else {
             this.quitPhotoPageButton.setVisible(true);
         }
@@ -545,7 +547,12 @@ class Freeplay extends Phaser.Scene {
 
         this.foundPsycheText = this.add.text(100, 100, 'You found Psyche!');
         this.foundPsycheText.setFontSize(80);
+        this.nearestBodyText = this.add.text(100, 250, ' ');
+        this.nearestBodyText.setFontSize(70);
+
         this.minimap.ignore(this.foundPsycheText);
+        this.minimap.ignore(this.nearestBodyText);
+
         this.input.keyboard
             .on('keyup-SPACE', () => {
                 // disable spacebar take photo when paused
@@ -567,9 +574,34 @@ class Freeplay extends Phaser.Scene {
                         this.foundPsycheText.setVisible(true);
                         this.psychePhoto1.setVisible(true);
                         this.quitPhotoPageButton.setPosition(300, 650);
-                        console.log("psyche in view!");
+                        // console.log("psyche in view!");
                     } else {
-                        this.quitPhotoPageButton.setPosition(300, 400);
+                        // check which body is in the view and choose the nearest one
+                        let currentDistance = 1000; // random big number
+                        let nearestBody = null;
+                        for (var body in this.bodies) {
+                            if (this.bodies["psyche_probe"].isInView(body, viewR, startRotation, endRotation)) {
+                                // this body is in probe's view, keep the distance
+                                let thisBodyDistance = this.bodies["psyche_probe"].getDistance(body);
+                                if (thisBodyDistance < currentDistance) {
+                                    currentDistance = thisBodyDistance;
+                                    nearestBody = body;
+                                }
+                            }
+                        }
+
+                        let nearestInfo = "";
+                        if (nearestBody != null) {
+                            nearestInfo = "You found the ";
+                            nearestInfo += nearestBody.charAt(0).toUpperCase();
+                            nearestInfo += nearestBody.slice(1);
+                            nearestInfo += ", \nbut you should try \nto find the Psyche.";
+                        }
+
+                        this.nearestBodyText.setText(nearestInfo);
+                        this.nearestBodyText.setVisible(true);
+                        //console.log("nearest body: " + nearestBody);
+                        this.quitPhotoPageButton.setPosition(300, 500);
                     }
                 }
             });
