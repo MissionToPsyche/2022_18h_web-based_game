@@ -16,6 +16,8 @@ class MainMenu extends Phaser.Scene {
         this.load.image('right', 'img/icons/rightkey.png'); 
         this.load.image('left', 'img/icons/leftkey.png'); 
         this.load.image('up', 'img/icons/upkey.png'); 
+        this.load.image('space', 'img/icons/space.png'); 
+        this.load.image('p', 'img/icons/p.png'); 
     }
 
     create() {
@@ -123,12 +125,12 @@ class MainMenu extends Phaser.Scene {
         //Control menu
         this.controlText = this.add.text(525, 100, 'CONTROLS').setOrigin(0.5).setFontSize(120);
         this.exitButton = this.add.image(520, 618, 'exit').setScale(0.5);
-        const controls = ['Move Forward', 'Move Backward', 'Rotate Left', 'Rotate Right'];
-        const icons = ['up', 'down', 'left', 'right'];
+        const controls = ['Move Forward', 'Move Backward', 'Rotate Left', 'Rotate Right', 'Pause Game', 'Take Picture'];
+        const icons = ['up', 'down', 'left', 'right', 'p', 'space'];
         const objects = [];
 
         let row = 200;
-        let col = 300;
+        let col = 250;
 
         for(let i = 0; i < controls.length; i++){
             this.icon = this.add.image(col, row, icons[i]).setScale(0.2);
@@ -138,6 +140,10 @@ class MainMenu extends Phaser.Scene {
             row = row + 100;
             CameraManager.addUISprite(this.icon);
             CameraManager.addUISprite(this.title);
+            if(row == 600){
+                row = 200;
+                col = col + 300;
+            }
         }
 
         this.playButton.disableInteractive();
