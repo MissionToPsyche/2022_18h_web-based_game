@@ -318,12 +318,14 @@ class Probe extends Body {
 		}
 
 		//changing velocity based on vector from controler
-		this.vel.add(this.controler.getAccelerationVector());
+		let a_vel = this.controler.getAccelerationVector();
+		this.vel.add(a_vel);
 
-		//when not in orbit, match angle to angle of velocity vector
-		if(!this.inOrbit) {
-			this.angle = this.vel.angle();
-		}
+		//if acceleration vector from controler is > 0, change angle to face the
+		//direction of the vector
+		if(a_vel.length() > 0) {
+			this.angle = a_vel.angle() * 180 / Math.PI + 135;
+		}	
 
 		this.minimap_icon.angle = this.angle;
 		super.updatePosition();
