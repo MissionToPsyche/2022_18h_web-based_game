@@ -336,7 +336,7 @@ class Freeplay extends Phaser.Scene {
             let distance = this.bodies["psyche_probe"].getDistance("psyche");
 
             // the distance between pshche probe and the arrow
-            let arrowDistance = 50;
+            let arrowDistance = 100;
             let width = 1024;
             let height = 768;
             let directionX = width / 2 + this.bodies["psyche_probe"].getPsycheDirectionX() * arrowDistance;
@@ -350,12 +350,28 @@ class Freeplay extends Phaser.Scene {
 
             // add the image of the arrow if it not added
              if (typeof(this.direction) == "undefined") {
-                this.direction = this.add.image(directionX, directionY, 'direction').setScale(0.2);
+                this.direction = this.add.image(directionX, directionY, 'direction').setScale(0.3);
                 CameraManager.addUISprite(this.direction);
                 // make the direction indicator not on top of other page such as pause menu
                 this.direction.depth = -1;
-                //Make the minimap ignore the icon.
-                CameraManager.addMinimapSprite(this.direction);
+            }
+
+            if (this.bodies["psyche_probe"].orbitToggle) {
+
+                // earth is not the center, edit direction
+                let centerX = CameraManager.getCameraCenter().x;
+                let centerY = CameraManager.getCameraCenter().y;
+
+                let offsetX = centerX - this.bodies["psyche_probe"].x;
+                let offsetY = centerY - this.bodies["psyche_probe"].y;
+
+                let zoom = CameraManager.getMainCameraZoom();
+
+                offsetX *= zoom;
+                offsetY *= zoom;
+
+                directionX -= offsetX;
+                directionY -= offsetY;
             }
 
             // set the correct position and angle of the arrow to point to psyche
