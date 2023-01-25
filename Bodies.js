@@ -256,6 +256,8 @@ class Probe extends Body {
 		
 		this.orbitTarget = this.scene.bodies["earth"]; //the target of the probe's orbit.
 
+		this.newAngle = 0;
+
 		//overload minimap display size
 		this.minimap_icon.setDisplaySize(this.r * 200, this.r * 200)
 			.setSize(this.r * 200, this.r * 200);
@@ -267,6 +269,9 @@ class Probe extends Body {
 		//deploy the probe near earth so that it doesn't immediately collide
 		this.x = this.scene.bodies["earth"].x - 35;
 		this.y = this.scene.bodies["earth"].y;
+
+		this.rotation = Math.atan2(this.y - this.orbitTarget.y, this.x - this.orbitTarget.x) - Math.PI/4; //initial rotation faces orbited planet
+		this.minimap_icon.rotation = this.rotation;
 
 		this.controler;
 	}
@@ -311,10 +316,9 @@ class Probe extends Body {
             //console.log(p1);
             let p1 = p2.orbitTarget;
             //console.log(p2);
-            let relAngle = Math.atan2(p2.y - p1.y, p2.x - p1.x) * 180 / Math.PI;
-            relAngle -= 45;
+            let relAngle = Math.atan2(p2.y - p1.y, p2.x - p1.x) - Math.PI/4;
 
-			this.angle = relAngle + this.controler.getRotation();
+			this.newAngle = relAngle + this.controler.getRotation();
 		}
 
 		//changing velocity based on vector from controler
@@ -324,8 +328,11 @@ class Probe extends Body {
 		//if acceleration vector from controler is > 0, change angle to face the
 		//direction of the vector
 		if(a_vel.length() > 0) {
-			this.angle = a_vel.angle() * 180 / Math.PI + 135;
-		}	
+			this.newAngle = a_vel.angle() - (Math.PI/4) * 5;
+		}
+
+		//make any angle changes slowly
+		this.rotation = Phaser.Math.Angle.RotateTo(this.rotation, this.newAngle, 0.05);
 
 		this.minimap_icon.angle = this.angle;
 		super.updatePosition();

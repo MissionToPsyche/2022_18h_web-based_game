@@ -25,8 +25,8 @@ class Controler {
         this.d_left = this.keyboard.addKey(this.d_left_setting, true, true);
         this.d_right = this.keyboard.addKey(this.d_right_setting, true, true);
 
-        this.maxAcc = 0.01;
-        this.APT = 0.01;
+        this.maxAcc = 0.02;
+        this.APT = 0.02;
         this.yAcc = 0;
         this.xAcc = 0;
         this.rotation = 0;
@@ -71,8 +71,7 @@ class Controler {
                 if (this.player.inOrbit && !this.player.isOrbitChanging()) {
                     this.player.addToOrbit(10);
                 } else {
-                    this.yAcc -= this.APT;
-                    if(this.yAcc >= -this.maxAcc) { this.yAcc = -this.maxAcc }
+                    this.yAcc = -this.APT;
                 }
             }).on('up', () => {
                 this.yAcc = 0;
@@ -82,8 +81,7 @@ class Controler {
                 if (this.player.inOrbit && !this.player.isOrbitChanging()) {
                     this.player.addToOrbit(-10);
                 } else {
-                    this.yAcc += this.APT;
-                    if(this.yAcc <= this.maxAcc) { this.yAcc = this.maxAcc }
+                    this.yAcc = this.APT;
                 }
             }).on('up', () => {
                 this.yAcc = 0;
@@ -91,10 +89,9 @@ class Controler {
         this.d_left
             .on('down', () => {
                 if (this.player.inOrbit) {
-                    this.rotation -= 5;
+                    this.rotation -= 0.1;
                 } else {
-                    this.xAcc -= this.APT;
-                    if(this.xAcc <= -this.maxAcc) { this.xAcc = -this.maxAcc }
+                    this.xAcc = -this.APT;
                 }
             }).on('up', () => {
                 this.xAcc = 0;
@@ -102,10 +99,9 @@ class Controler {
         this.d_right
             .on('down', () => {
                 if (this.player.inOrbit) {
-                    this.rotation += 5;
+                    this.rotation += 0.1;
                 } else {
-                    this.xAcc += this.APT;
-                    if(this.xAcc >= this.maxAcc) { this.xAcc = this.maxAcc }
+                    this.xAcc = this.APT;
                 }
             }).on('up', () => {
                 this.xAcc = 0;
