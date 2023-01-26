@@ -622,15 +622,17 @@ class Freeplay extends Phaser.Scene {
     }
 
     takePhoto() {
-        this.psychePhoto1 = this.add.image(500, 400, 'psychePhoto1').setScale(0.8);
+        //console.log("Where is constants?");
+        //console.log(Constants.PSYCHE_PHOTO_1X);
+        this.psychePhoto1 = this.add.image(Constants.PSYCHE_PHOTO_1X, Constants.PSYCHE_PHOTO_1Y, 'psychePhoto1').setScale(Constants.PSYCHE_PHOTO_1SCALE);
         this.psychePhoto1.setVisible(false);
         
         CameraManager.addUISprite(this.psychePhoto1);
 
-        this.foundPsycheText = this.add.text(100, 100, 'You found Psyche!');
-        this.foundPsycheText.setFontSize(80);
-        this.nearestBodyText = this.add.text(100, 250, ' ');
-        this.nearestBodyText.setFontSize(70);
+        this.foundPsycheText = this.add.text(Constants.FOUND_PSYCHE_TEXT_X, Constants.FOUND_PSYCHE_TEXT_Y, 'You found Psyche!');
+        this.foundPsycheText.setFontSize(Constants.FIRST_FONT_SIZE);
+        this.nearestBodyText = this.add.text(Constants.NEAREST_BODY_TEXT_X, Constants.NEAREST_BODY_TEXT_Y, ' ');
+        this.nearestBodyText.setFontSize(Constants.SECOND_FONT_SIZE);
         CameraManager.addUISprite(this.foundPsycheText);
 
         this.input.keyboard
@@ -653,8 +655,6 @@ class Freeplay extends Phaser.Scene {
                     if (this.bodies["psyche_probe"].isInView("psyche", viewR, startRotation, endRotation)) {
                         this.foundPsycheText.setVisible(true);
                         this.psychePhoto1.setVisible(true);
-                        this.quitPhotoPageButton.setPosition(300, 650);
-                        // console.log("psyche in view!");
                     } else {
                         // check which body is in the view and choose the nearest one
                         let currentDistance = 1000; // random big number
@@ -680,19 +680,17 @@ class Freeplay extends Phaser.Scene {
 
                         this.nearestBodyText.setText(nearestInfo);
                         this.nearestBodyText.setVisible(true);
-                        //console.log("nearest body: " + nearestBody);
-                        this.quitPhotoPageButton.setPosition(300, 500);
                     }
                 }
             });
 
-        this.quitPhotoPageButton = this.add.text(300, 650, 'Back to game')
-            .setFontSize(50)
+        this.quitPhotoPageButton = this.add.text(Constants.QUIT_PHOTO_X, Constants.QUIT_PHOTO_Y, 'Back to game')
+            .setFontSize(Constants.THIRD_FONT_SIZE)
             .setStyle({
                 color: '#111',
                 backgroundColor: '#fff',
             })
-            .setPadding(10)
+            .setPadding(Constants.QUIT_PHOTO_PADDING)
             .setInteractive({useHandCursor: true })
             .on('pointerdown', () => {
                 this.takingPhoto = !this.takingPhoto;
