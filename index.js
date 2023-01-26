@@ -16,7 +16,7 @@ var config = {
         }
     },
     //defining game scenes
-    scene: [MainMenu, Freeplay]
+    scene: [MainMenu, Freeplay, intro]
 }
 
 var game = new Phaser.Game(config);

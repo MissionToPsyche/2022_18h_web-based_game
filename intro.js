@@ -1,3 +1,7 @@
+/**
+ * Class representing the Phaser 'Scene', which defines our game
+ * @extends Phaser.Scene
+ */
 class intro extends Phaser.Scene {
     constructor() {
         super({ key: "intro" });
@@ -13,15 +17,19 @@ class intro extends Phaser.Scene {
         CameraManager.initializeMainCamera(this);
         CameraManager.initializeUICamera(this);
 
-        var logo = this.add.image(50, 50, 'logo').setScale(1);
+        var logo = this.add.image(50, 50, 'logo').setScale(0.5);
         CameraManager.addUISprite(logo);
 
-        const color1 = new Phaser.Display.Color(0, 0, 0);
-        this.shadow = this.add.rectangle(0, 0,2048, 2048, color1.color);
-        this.shadow.setAlpha(0.85);
+        this.adBack();
     }
 
     update() {
     }
 
+    adBack(){
+        const color1 = new Phaser.Display.Color(0, 0, 0);
+        this.shadow = this.add.rectangle(0, 0,2048, 2048, color1.color);
+        this.shadow.setAlpha(0.85);
+        this.shadow.setVisible(true);
+    }
 }
