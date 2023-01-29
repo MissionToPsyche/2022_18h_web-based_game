@@ -25,6 +25,7 @@ class Freeplay extends Phaser.Scene {
 
         this.failText;
         this.testMenu;
+        this.testButton;
     }
 
     /** Loads all necessary assets for the scene before the simulation runs */
@@ -174,6 +175,7 @@ class Freeplay extends Phaser.Scene {
         //creating control keys
         this.cursors = this.input.keyboard.createCursorKeys();
 
+        this.testButton = new Button(this, CameraManager.getCenter(), 'testDog')
         this.createPauseButton();
         this.createOrbitToggle();
         this.createTestMenu();
