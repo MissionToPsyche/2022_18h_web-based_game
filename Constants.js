@@ -33,4 +33,6 @@ class Constants {
     static QUIT_PHOTO_Y = 650;
     static QUIT_PHOTO_PADDING = 10;
 
+    static LARGEST_SIDES = 360; // size of the array coverPsyche
+
 }

@@ -28,6 +28,8 @@ class Freeplay extends Phaser.Scene {
         this.failText;
 
         this.probeAngleOffset = 0;
+
+        this.coverPsyche; // an array storing angles player taking photos of psyche
     }
 
     /** Loads all necessary assets for the scene before the simulation runs */
@@ -622,8 +624,6 @@ class Freeplay extends Phaser.Scene {
     }
 
     takePhoto() {
-        //console.log("Where is constants?");
-        //console.log(Constants.PSYCHE_PHOTO_1X);
         this.psychePhoto1 = this.add.image(Constants.PSYCHE_PHOTO_1X, Constants.PSYCHE_PHOTO_1Y, 'psychePhoto1').setScale(Constants.PSYCHE_PHOTO_1SCALE);
         this.psychePhoto1.setVisible(false);
         
@@ -634,6 +634,10 @@ class Freeplay extends Phaser.Scene {
         this.nearestBodyText = this.add.text(Constants.NEAREST_BODY_TEXT_X, Constants.NEAREST_BODY_TEXT_Y, ' ');
         this.nearestBodyText.setFontSize(Constants.SECOND_FONT_SIZE);
         CameraManager.addUISprite(this.foundPsycheText);
+
+        // set up the array of flags
+        this.coverPsyche = new Array(Constants.LARGEST_SIDES).fill(0);
+        console.log(this.coverPsyche);
 
         this.input.keyboard
             .on('keyup-SPACE', () => {
