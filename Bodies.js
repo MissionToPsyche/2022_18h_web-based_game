@@ -317,8 +317,7 @@ class Probe extends Body {
             let p1 = p2.orbitTarget;
             //console.log(p2);
             let relAngle = Math.atan2(p2.y - p1.y, p2.x - p1.x) - Math.PI/4;
-
-			this.newAngle = relAngle + this.controler.getRotation();
+			this.rotation = relAngle + this.controler.getRotation();
 		}
 
 		//changing velocity based on vector from controler
@@ -329,10 +328,8 @@ class Probe extends Body {
 		//direction of the vector
 		if(a_vel.length() > 0) {
 			this.newAngle = a_vel.angle() - (Math.PI/4) * 5;
+			this.rotation = Phaser.Math.Angle.RotateTo(this.rotation, this.newAngle, 0.05);
 		}
-
-		//make any angle changes slowly
-		this.rotation = Phaser.Math.Angle.RotateTo(this.rotation, this.newAngle, 0.05);
 
 		this.minimap_icon.angle = this.angle;
 		super.updatePosition();
