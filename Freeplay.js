@@ -637,7 +637,6 @@ class Freeplay extends Phaser.Scene {
 
         // set up the array of flags
         this.coverPsyche = new Array(Constants.LARGEST_SIDES).fill(0);
-        console.log(this.coverPsyche);
 
         this.input.keyboard
             .on('keyup-SPACE', () => {
@@ -659,6 +658,25 @@ class Freeplay extends Phaser.Scene {
                     if (this.bodies["psyche_probe"].isInView("psyche", viewR, startRotation, endRotation)) {
                         this.foundPsycheText.setVisible(true);
                         this.psychePhoto1.setVisible(true);
+
+                        // Psyche is in the view, check the side
+                        let psycheAngle = Math.asin(this.bodies["psyche_probe"].getPsycheDirectionY());
+                        if (this.bodies["psyche_probe"].getPsycheDirectionX() < 0) {
+                            psycheAngle = Math.PI - psycheAngle;
+                        }
+                        psycheAngle = Phaser.Math.RadToDeg(psycheAngle);
+
+                        if (psycheAngle < 0) {
+                            psycheAngle += 360;
+                        }
+
+                        if (psycheAngle > 360) {
+                            psycheAngle -= 360;
+                        }
+
+                        // now psycheAngle is a positive degree number between 0 and 360
+                        console.log(psycheAngle);
+
                     } else {
                         // check which body is in the view and choose the nearest one
                         let currentDistance = 1000; // random big number
