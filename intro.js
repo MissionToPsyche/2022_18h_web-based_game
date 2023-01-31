@@ -4,11 +4,15 @@ class Intro extends Phaser.Scene {
         this.page;
         this.nextButton;
         this.introText;
+        this.startButton;
+        this.tutorialButton;
     }
 
     preload() {
         this.load.image('logo', 'img/Psyche_Icon_Color-SVG.svg'); //asset for psyche logo
         this.load.image('border', 'img/icons/intro-border.png');
+        this.load.image('start', 'img/icons/start.png'); // a start button
+        this.load.image('tutorial', 'img/icons/tutorial.png'); // a tutorial button
         this.page = 1;
     }
 
@@ -44,9 +48,7 @@ class Intro extends Phaser.Scene {
                 this.introText = this.add.text(325, 100, 'Page 2').setOrigin(0.5).setFontSize(50);
                 break;
             case 3:
-                this.introText.setVisible(false);
-                this.introText = this.add.text(325, 100, 'Page 3').setOrigin(0.5).setFontSize(50);
-                this.nextButton.setVisible(false);
+                this.createPThree();
                 break;
         }
 
@@ -72,6 +74,51 @@ class Intro extends Phaser.Scene {
         .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
             this.page = this.page + 1;
         });
+
+        this.startButton = this.add.image(620,618, 'start').setScale(0.4);
+        this.tutorialButton = this.add.image(360,618, 'tutorial').setScale(0.4);
+        CameraManager.addUISprite(this.startButton);
+        CameraManager.addUISprite(this.tutorialButton);
+
+        this.startButton.setInteractive()
+        .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
+            this.startButton.setTint(0xF9A000);
+        })
+        .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OUT, () => {
+            this.startButton.setTint(0xFFFFFF);
+        })
+        .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
+            this.startButton.setTint(0xF47D33);
+        })
+        .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
+            this.startButton.setTint(0xFFFFFF);
+            this.scene.start('Freeplay');
+        });
+
+        this.tutorialButton.setInteractive()
+        .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
+            this.tutorialButton.setTint(0xF9A000);
+        })
+        .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OUT, () => {
+            this.tutorialButton.setTint(0xFFFFFF);
+        })
+        .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
+            this.tutorialButton.setTint(0xF47D33);
+        })
+        .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
+            this.tutorialButton.setTint(0xFFFFFF);
+        })
+
+        this.startButton.setVisible(false);
+        this.tutorialButton.setVisible(false);
+    }
+
+    createPThree(){
+        this.introText.setVisible(false);
+        this.introText = this.add.text(325, 100, 'Page 3').setOrigin(0.5).setFontSize(50);
+        this.nextButton.setVisible(false);
+        this.startButton.setVisible(true);
+        this.tutorialButton.setVisible(true);
     }
 
 }
