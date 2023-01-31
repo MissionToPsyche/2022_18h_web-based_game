@@ -168,7 +168,8 @@ class Freeplay extends Phaser.Scene {
     update () {
         //Probe controls
         //**TO DO: Wrap in a custom controler later.
-        const moveUnit = 0.01;
+        const moveUnit = 1;
+        const rotationOffset = -2.4958208303518727;
 
         this.updatePauseButton();
         this.updateTakePhoto();
@@ -201,72 +202,21 @@ class Freeplay extends Phaser.Scene {
             this.angle = relAngle + this.probeAngleOffset;
         } else {
             if (this.cursors.left.isDown) {
-                this.bodies["psyche_probe"].vel.x -= moveUnit;
-                //Either turn the probe left or right depending on its current angle.
-                if(this.angle > -45){
-                    this.bodies["psyche_probe"].angle -= 5;
-                    this.bodies["psyche_probe"].minimap_icon.angle -= 5;
-                    this.angle -=5; 
-                } else if(this.angle < -45){
-                    this.bodies["psyche_probe"].angle += 5;
-                    this.bodies["psyche_probe"].minimap_icon.angle += 5;
-                    this.angle +=5; 
-                }         
-                
+                this.bodies["psyche_probe"].angle -= 1;             
             }
             else if (this.cursors.right.isDown)
             {
-                this.bodies["psyche_probe"].vel.x += moveUnit;
-    
-                //Either turn the probe left or right depending on its current angle.
-                // Set the value of the probe to 225 if it is currently facing down 
-                //to make it turn the shortest distance.
-                if(this.angle == -135){
-                    this.angle = 225;
-                } else if(this.angle < 135){
-                    this.bodies["psyche_probe"].angle += 5;
-                    this.bodies["psyche_probe"].minimap_icon.angle += 5;
-                    this.angle +=5; 
-    
-                } else if(this.angle > 135){
-                    this.bodies["psyche_probe"].angle -= 5;
-                    this.bodies["psyche_probe"].minimap_icon.angle -= 5;
-                    this.angle -=5; 
-                }
+                this.bodies["psyche_probe"].angle += 1;
             }
             if (this.cursors.up.isDown)
             {
-                this.bodies["psyche_probe"].vel.y -= moveUnit;
-    
-                //Either turn the probe left or right depending on its current angle.
-                if(this.angle > 45){
-                    this.bodies["psyche_probe"].angle -= 5;
-                    this.bodies["psyche_probe"].minimap_icon.angle -= 5;
-                    this.angle -=5; 
-                } else if(this.angle < 45){
-                    this.bodies["psyche_probe"].angle += 5;
-                    this.bodies["psyche_probe"].minimap_icon.angle += 5;
-                    this.angle +=5; 
-                }  
+                this.bodies["psyche_probe"].vel.x = Math.cos(this.bodies["psyche_probe"].rotation + rotationOffset) * moveUnit
+                this.bodies["psyche_probe"].vel.y = Math.sin(this.bodies["psyche_probe"].rotation + rotationOffset) * moveUnit
             }
             else if (this.cursors.down.isDown)
             {
-                this.bodies["psyche_probe"].vel.y += moveUnit;
-    
-                //Either turn the probe left or right depending on its current angle.
-                // Set the value of the probe to -225 if it is currently facing right 
-                //to make it turn the shortest distance.
-                if(this.angle == 135){
-                    this.angle = -225;
-                } else if(this.angle < -135){
-                    this.bodies["psyche_probe"].angle += 5;
-                    this.bodies["psyche_probe"].minimap_icon.angle += 5;
-                    this.angle +=5; 
-                } else if(this.angle > -135){
-                    this.bodies["psyche_probe"].angle -= 5;
-                    this.bodies["psyche_probe"].minimap_icon.angle -= 5;
-                    this.angle -=5; 
-                }
+                this.bodies["psyche_probe"].vel.x = Math.cos(this.bodies["psyche_probe"].rotation + rotationOffset) * -moveUnit
+                this.bodies["psyche_probe"].vel.y = Math.sin(this.bodies["psyche_probe"].rotation + rotationOffset) * -moveUnit
             }
         }
 
