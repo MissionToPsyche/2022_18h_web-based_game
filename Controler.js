@@ -89,22 +89,24 @@ class Controler {
         this.d_left
             .on('down', () => {
                 if (this.player.inOrbit) {
-                    this.rotation -= 0.1;
+                    this.rotation = -0.02;
                 } else {
                     this.xAcc = -this.APT;
                 }
             }).on('up', () => {
                 this.xAcc = 0;
+                this.rotation = 0;
             });
         this.d_right
             .on('down', () => {
                 if (this.player.inOrbit) {
-                    this.rotation += 0.1;
+                    this.rotation = 0.02;
                 } else {
                     this.xAcc = this.APT;
                 }
             }).on('up', () => {
                 this.xAcc = 0;
+                this.rotation = 0;
             });
     }
 

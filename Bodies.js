@@ -256,7 +256,7 @@ class Probe extends Body {
 		
 		this.orbitTarget = this.scene.bodies["earth"]; //the target of the probe's orbit.
 
-		this.newAngle = 0;
+		this.angleOffset = 0;
 
 		//overload minimap display size
 		this.minimap_icon.setDisplaySize(this.r * 200, this.r * 200)
@@ -309,26 +309,30 @@ class Probe extends Body {
 			    this.currentOrbit += diff/this.orbitChangeCounter;
 				this.orbitChangeCounter -= 1;
 			}
-			
+
 			//set rotation based on orbit around target
 			//calculate current angle necissary for probe to point at orbit target
             let p2 = this;
             //console.log(p1);
             let p1 = p2.orbitTarget;
             //console.log(p2);
+
+			this.angleOffset += this.controler.getRotation();
+
             let relAngle = Math.atan2(p2.y - p1.y, p2.x - p1.x) - Math.PI/4;
-			this.rotation = relAngle + this.controler.getRotation();
-		}
+			let newAngle = relAngle + this.angleOffset;
+			this.rotation = Phaser.Math.Angle.RotateTo(this.rotation, newAngle, 0.05);
+		} else {
+			//changing velocity based on vector from controler
+			let a_vel = this.controler.getAccelerationVector();
+			this.vel.add(a_vel);
 
-		//changing velocity based on vector from controler
-		let a_vel = this.controler.getAccelerationVector();
-		this.vel.add(a_vel);
-
-		//if acceleration vector from controler is > 0, change angle to face the
-		//direction of the vector
-		if(a_vel.length() > 0) {
-			this.newAngle = a_vel.angle() - (Math.PI/4) * 5;
-			this.rotation = Phaser.Math.Angle.RotateTo(this.rotation, this.newAngle, 0.05);
+			//if acceleration vector from controler is > 0, change angle to face the
+			//direction of the vector
+			if(a_vel.length() > 0) {
+				this.newAngle = a_vel.angle() - (Math.PI/4) * 5;
+				this.rotation = Phaser.Math.Angle.RotateTo(this.rotation, this.newAngle, 0.05);
+			}
 		}
 
 		this.minimap_icon.angle = this.angle;
