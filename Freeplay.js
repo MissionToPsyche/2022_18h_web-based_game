@@ -8,6 +8,7 @@ class Freeplay extends Phaser.Scene {
         //creating body objects
         this.bodies = {};
         this.json;
+        this.menuManager;
         this.keyToggle = false; //for testing only
         this.paused = false;
         this.path;
@@ -96,6 +97,9 @@ class Freeplay extends Phaser.Scene {
         CameraManager.initializeUICamera(this);
         CameraManager.initializeMiniCamera(this);
 
+        //initialize menu manager
+        this.menuManager = new MenuManager();
+
         var map_border = this.add.image(880,110,'minimap_border').setScale(0.35);
 
         //Pause menu
@@ -162,7 +166,7 @@ class Freeplay extends Phaser.Scene {
         this.gravKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q);
         this.createPauseButton();
         this.createOrbitToggle();
-        this.takePhoto();
+        this.createTakePhoto();
     }
 
     /** The scene's main update loop
@@ -175,8 +179,8 @@ class Freeplay extends Phaser.Scene {
         //**TO DO: Wrap in a custom controler later.
         const moveUnit = 0.01;
 
-        this.updatePauseButton();
-        this.updateTakePhoto();
+        this.menuManager.updatePauseButton(this);
+        this.menuManager.updateTakePhoto(this);
 
         // only move if not paused and not taking photo
         if (this.paused || this.takingPhoto) {
@@ -539,59 +543,6 @@ class Freeplay extends Phaser.Scene {
         CameraManager.addUISprite(this.shadow);
         CameraManager.addUISprite(this.pauseText);
     }
-
-    /** Updates the state of the on-screen pause button
-     *  based on the current state of Freeplay.paused.
-     */
-    updatePauseButton() {
-        // if paused and not game over then we can show the pause text and allow the pause/play buttons to update
-        if (this.paused && !this.gameOver) {
-            this.pauseText.setVisible(true)
-            this.playButton.setVisible(true)
-            this.pauseButton.setVisible(false)
-            this.restartButton.setVisible(true)
-            this.exitButton.setVisible(true)
-            this.shadow.setVisible(true)
-        } else {
-            this.pauseButton.setVisible(true)
-            this.playButton.setVisible(false)
-            this.pauseText.setVisible(false)
-        }
-
-        // if game over then show the game over text
-        if (this.gameOver) {
-            this.failText.setVisible(true)
-
-            this.pauseButton.setTint(0x7f7f7f);
-            this.playButton.setTint(0x7f7f7f);
-            this.orbitButton.setTint(0x7f7f7f);
-        } else {
-            this.failText.setVisible(false)
-        }
-
-        // if paused or game over then we can show the restart and exit buttons
-        if (this.paused || this.gameOver) {
-            this.restartButton.setVisible(true)
-            this.exitButton.setVisible(true)
-            this.shadow.setVisible(false)
-        } else {
-            this.restartButton.setVisible(false)
-            this.exitButton.setVisible(false)
-            this.shadow.setVisible(false)
-        }
-        
-    }
-
-    updateTakePhoto() {
-        if (!this.takingPhoto) {
-            this.foundPsycheText.setVisible(false);  
-             this.quitPhotoPageButton.setVisible(false);
-             this.psychePhoto1.setVisible(false);
-             this.nearestBodyText.setVisible(false);
-        } else {
-            this.quitPhotoPageButton.setVisible(true);
-        }
-    }
     
     /** Creates the button, key, and associated events
      *  For the orbit lock functionality.
@@ -638,7 +589,7 @@ class Freeplay extends Phaser.Scene {
             });
     }
 
-    takePhoto() {
+    createTakePhoto() {
         this.psychePhoto1 = this.add.image(500, 400, 'psychePhoto1').setScale(0.8);
         this.psychePhoto1.setVisible(false);
         
