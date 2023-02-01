@@ -175,7 +175,7 @@ class Freeplay extends Phaser.Scene {
         //creating control keys
         this.cursors = this.input.keyboard.createCursorKeys();
 
-        this.testButton = new Button(this, CameraManager.getCenter(), 'testDog')
+        // this.testButton = new Button(this, CameraManager.getCenter(), 'testDog')
         this.createPauseButton();
         this.createOrbitToggle();
         this.createTestMenu();
