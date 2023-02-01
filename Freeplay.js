@@ -63,6 +63,11 @@ class Freeplay extends Phaser.Scene {
 
         // load the photo of psyche
         this.load.image('psychePhoto1', "img/photos/psyche1.png");
+
+        // button sfx
+        this.load.audio('menu', 'assets/sfx/misc_menu_4.wav');
+        this.load.audio('negative', 'assets/sfx/negative.wav');
+        this.load.audio('positive', 'assets/sfx/positive.wav');
     }
 
     /**
@@ -284,6 +289,8 @@ class Freeplay extends Phaser.Scene {
         // if there was a collision then trigger the failure state and stop the simulation
         if (this.bodies["psyche_probe"].collided && !this.gameOver) {
             this.gameOver = true;
+            var fail_audio = this.sound.add('negative');
+            fail_audio.play();
             CameraManager.addUISprite(this.failText);
         }
 
@@ -450,6 +457,8 @@ class Freeplay extends Phaser.Scene {
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
                 this.playButton.setTint(0xF47D33);
+                var menu_audio = this.sound.add('menu');
+                menu_audio.play();
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
                 // disable pause when in the taking photo page
@@ -469,6 +478,8 @@ class Freeplay extends Phaser.Scene {
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
                 this.pauseButton.setTint(0xF47D33);
+                var menu_audio = this.sound.add('menu');
+                menu_audio.play();
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
                 // disable pause when in the taking photo page
@@ -488,6 +499,8 @@ class Freeplay extends Phaser.Scene {
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
                 this.restartButton.setTint(0xF47D33);
+                var menu_audio = this.sound.add('menu');
+                menu_audio.play();
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
                 this.restartButton.setTint(0xFFFFFF);
@@ -508,6 +521,8 @@ class Freeplay extends Phaser.Scene {
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
                 this.exitButton.setTint(0xF47D33);
+                var menu_audio = this.sound.add('menu');
+                menu_audio.play();
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
                 this.exitButton.setTint(0xFFFFFF);
@@ -606,6 +621,8 @@ class Freeplay extends Phaser.Scene {
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
                 this.orbitButton.setTint(0xF47D33);
+                var menu_audio = this.sound.add('menu');
+                menu_audio.play();
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
                 this.orbitButton.setTint(this.bodies["psyche_probe"].orbitToggle ? 0xF47D33 : 0xFFFFFF);
@@ -654,6 +671,8 @@ class Freeplay extends Phaser.Scene {
                         this.foundPsycheText.setVisible(true);
                         this.psychePhoto1.setVisible(true);
                         this.quitPhotoPageButton.setPosition(300, 650);
+                        var win_audio = this.sound.add('positive');
+                        win_audio.play();
                         // console.log("psyche in view!");
                     } else {
                         // check which body is in the view and choose the nearest one
