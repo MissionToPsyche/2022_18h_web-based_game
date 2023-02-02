@@ -35,4 +35,7 @@ class Constants {
 
     static LARGEST_SIDES = 360; // size of the array coverPsyche
 
+    // array of angles that player choose to cover the psyche
+    static FOUR_SIDES = new Array(0, 90, 180, 270);
+
 }

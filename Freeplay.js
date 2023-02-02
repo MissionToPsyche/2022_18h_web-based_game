@@ -29,7 +29,9 @@ class Freeplay extends Phaser.Scene {
 
         this.probeAngleOffset = 0;
 
-        this.coverPsyche; // an array storing angles player taking photos of psyche
+        this.targetAngles; // array of target angles that the player need to take photo
+        this.coverFlags; // array of flags that the player already took photo
+
     }
 
     /** Loads all necessary assets for the scene before the simulation runs */
@@ -635,8 +637,10 @@ class Freeplay extends Phaser.Scene {
         this.nearestBodyText.setFontSize(Constants.SECOND_FONT_SIZE);
         CameraManager.addUISprite(this.foundPsycheText);
 
-        // set up the array of flags
-        this.coverPsyche = new Array(Constants.LARGEST_SIDES).fill(0);
+        // TODO: can let the player to choose difficulty
+        // here default is to take photo of the psyche from four sides
+        this.targetAngles = Constants.FOUR_SIDES;
+        this.coverFlags = new Array(this.targetAngles.length).fill(0);
 
         this.input.keyboard
             .on('keyup-SPACE', () => {
