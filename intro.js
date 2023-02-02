@@ -4,6 +4,7 @@ class Intro extends Phaser.Scene {
         this.page;
         this.nextButton;
         this.introText;
+        this.contentText;
         this.startButton;
         this.tutorialButton;
     }
@@ -44,15 +45,10 @@ class Intro extends Phaser.Scene {
 
         switch(this.page){
             case 2:
-                this.introText.setVisible(false);
-                this.introText = this.add.text(325, 100, 'Page 2').setOrigin(0.5).setFontSize(50);
-                break;
-            case 3:
-                this.createPThree();
+                this.createPTwo();
                 break;
         }
-
-        CameraManager.addUISprite(this.introText);
+ 
     }
 
     createPage() {
@@ -113,9 +109,27 @@ class Intro extends Phaser.Scene {
         this.tutorialButton.setVisible(false);
     }
 
-    createPThree(){
+    createPTwo(){
         this.introText.setVisible(false);
-        this.introText = this.add.text(325, 100, 'Page 3').setOrigin(0.5).setFontSize(50);
+        var content = [
+            "1. Find Psyche in the solar system.",
+            "2. Take pictures of Psyche.",
+            "3. Get back to Earth."
+        ];
+
+        var content2 = [
+            "Do not crash into other planets!"
+        ];
+        this.introText = this.add.text(325, 100, 'Mission Task:').setFontSize(50);
+        CameraManager.addUISprite(this.introText);
+        this.contentText = this.add.text(325,200, content);
+        CameraManager.addUISprite(this.contentText);
+        this.introText = this.add.text(325, 400, 'Warning:').setFontSize(50);
+        this.introText.setFill('#F10A0A');
+        this.contentText = this.add.text(325,450, content2);
+        this.contentText.setFill('#F10A0A');
+        CameraManager.addUISprite(this.contentText);
+        CameraManager.addUISprite(this.introText);
         this.nextButton.setVisible(false);
         this.startButton.setVisible(true);
         this.tutorialButton.setVisible(true);
