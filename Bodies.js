@@ -330,7 +330,7 @@ class Probe extends Body {
 			//if acceleration vector from controler is > 0, change angle to face the
 			//direction of the vector
 			if(a_vel.length() > 0) {
-				this.newAngle = a_vel.angle() - (Math.PI/4) * 5;
+				this.newAngle = Phaser.Math.Angle.Wrap(a_vel.angle() - (Math.PI/4) * 5);
 				this.rotation = Phaser.Math.Angle.RotateTo(this.rotation, this.newAngle, 0.05);
 			}
 		}
