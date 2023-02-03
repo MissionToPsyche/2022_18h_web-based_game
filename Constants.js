@@ -38,4 +38,6 @@ class Constants {
     // array of angles that player choose to cover the psyche
     static FOUR_SIDES = new Array(0, 90, 180, 270);
 
+    static ONE_PHOTO_ANGLE = 45; // one photo covers [angle - 45, angle + 45] of the psyche
+
 }

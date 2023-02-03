@@ -679,8 +679,27 @@ class Freeplay extends Phaser.Scene {
                         }
 
                         // now psycheAngle is a positive degree number between 0 and 360
-                        console.log(psycheAngle);
+                        // check if psycheAngle covers target angle
+                        for (let i = 0; i < this.targetAngles.length; i++) {
+                            if ((Math.abs(psycheAngle - this.targetAngles[i]) <= Constants.ONE_PHOTO_ANGLE) 
+                                || (Math.abs(psycheAngle - this.targetAngles[i] + 360) <= Constants.ONE_PHOTO_ANGLE) 
+                                || (Math.abs(psycheAngle - this.targetAngles[i] - 360) <= Constants.ONE_PHOTO_ANGLE)) {
+                                // this photo covers the target angle targetAngles[i], set the flag
+                                this.coverFlags[i] = 1;
+                            }
+                        }
 
+                        // check sides covered
+                        let sidesCovered = 0;
+                        for (let i = 0; i < this.coverFlags.length; i++) {
+                            if (this.coverFlags[i] == 1) {
+                                sidesCovered++;
+                            }
+                        }
+
+                        console.log("now " + sidesCovered + " of " + this.coverFlags.length + " sides covered");
+                        console.log(this.coverFlags);
+                        
                     } else {
                         // check which body is in the view and choose the nearest one
                         let currentDistance = 1000; // random big number
