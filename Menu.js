@@ -18,6 +18,10 @@ class Menu {
 		CameraManager.addUISprite(_element);
 	}
 
+	/**
+	 * Allows you to add a button to this menu
+	 * @param {array} _button - An array containing the text and image of the button to add
+	 */
 	addButton(_button) {
 		this.elements.push(_button[0]);
 		this.elements.push(_button[1]);
@@ -27,14 +31,18 @@ class Menu {
 
 	removeElement(_element) {
 		// remove the specified element from this menu
+		// todo
 	}
 
 	moveElement(_element, _scale, _y, _delay, _duration, _ease) {
 		// move the element
+		// todo
 	}
 
+	/**
+	 * Toggle the visibility of this menu
+	 */
 	toggleMenu() {
-		// set all elements in this menu to visible
 		this.elements.forEach(function (element) {
 			if (element.visible) {
 				element.setVisible(false);

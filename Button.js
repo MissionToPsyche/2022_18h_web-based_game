@@ -5,8 +5,8 @@ class Button extends Phaser.GameObjects.Sprite {
 		this.actionKey = '';
 		this.id = _scene.add.sprite(_pos.x, _pos.y, 'button').setOrigin(0.5).setScale(0.5).setVisible(0);
 		this.text = _scene.add.text(_pos.x, _pos.y, _text, { fontSize: '26px', color: '#000000' }).setOrigin(0.5).setVisible(0);
-		CameraManager.addUISprite(this.id);
-		CameraManager.addUISprite(this.text);
+		this.menu_audio = _scene.sound.add('menu');
+		this.setInteractive();
 	}
 
 	setText(_text) {
@@ -17,8 +17,8 @@ class Button extends Phaser.GameObjects.Sprite {
 
 	}
 
-	setAction(_action) {
-		this.setInteractive()
+	setInteractive() {
+		this.id.setInteractive()
         .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
             this.id.setTint(0xF9A000);
         })
@@ -27,6 +27,7 @@ class Button extends Phaser.GameObjects.Sprite {
         })
         .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
             this.id.setTint(0xF47D33);
+            this.menu_audio.play();
         })
         .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
             this.id.setTint(0xFFFFFF);
