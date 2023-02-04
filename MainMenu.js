@@ -9,6 +9,8 @@ class MainMenu extends Phaser.Scene {
         this.load.image('title_journey', 'img/journey.png');
         this.load.image('title_to', 'img/to.png');
         this.load.image('title_psyche', 'img/psyche.png');
+
+        this.load.audio('load', 'assets/sfx/load.wav');
     }
 
     create() {
@@ -16,6 +18,8 @@ class MainMenu extends Phaser.Scene {
 
         CameraManager.initializeMainCamera(this);
         CameraManager.initializeUICamera(this);
+        CameraManager.initializeMiniCamera(this);
+        CameraManager.toggleCamera('mini');
 
         var logo = this.add.image(50, 50, 'logo').setScale(0.5);
         CameraManager.addUISprite(logo);
@@ -78,6 +82,8 @@ class MainMenu extends Phaser.Scene {
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
                 this.playButton.setTint(0xF47D33);
+                var load_audio = this.sound.add('load');
+                load_audio.play();
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
                 this.playButton.setTint(0xFFFFFF);
