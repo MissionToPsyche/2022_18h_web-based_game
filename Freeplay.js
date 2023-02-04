@@ -26,13 +26,10 @@ class Freeplay extends Phaser.Scene {
         this.nearestBodyText;
 
         this.failText;
-<<<<<<< HEAD
         this.testMenu;
         this.testButton;
-=======
 
         this.probeAngleOffset = 0;
->>>>>>> develop
     }
 
     /** Loads all necessary assets for the scene before the simulation runs */
@@ -44,6 +41,7 @@ class Freeplay extends Phaser.Scene {
         this.load.image('logo', 'img/Psyche_Icon_Color-SVG.svg'); //asset for psyche logo
         this.load.image('play', 'img/icons/play-circle.svg');
         this.load.image('pause', 'img/icons/pause-circle.svg');
+        this.load.image('button', "img/icons/button.png"); // a default button with no text
         this.load.image('orbit', 'img/icons/orbit.svg');
         this.load.image('direction', 'img/icons/direction.png'); // an arrow
         this.load.image('exit', 'img/icons/exit.png'); // an exit button
@@ -69,15 +67,11 @@ class Freeplay extends Phaser.Scene {
         // load the photo of psyche
         this.load.image('psychePhoto1', "img/photos/psyche1.png");
 
-<<<<<<< HEAD
-        // load the test dog
-        this.load.image('testDog', "img/photos/testdog.png");
-=======
         // button sfx
         this.load.audio('menu', 'assets/sfx/misc_menu_4.wav');
         this.load.audio('negative', 'assets/sfx/negative.wav');
         this.load.audio('positive', 'assets/sfx/positive.wav');
->>>>>>> develop
+
     }
 
     /**
@@ -170,7 +164,6 @@ class Freeplay extends Phaser.Scene {
         //creating control keys
         this.cursors = this.input.keyboard.createCursorKeys();
 
-        // this.testButton = new Button(this, CameraManager.getCenter(), 'testDog')
         this.gravKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q);
         this.createPauseButton();
         this.createOrbitToggle();
@@ -427,12 +420,16 @@ class Freeplay extends Phaser.Scene {
         this.graphics.fillPath();
     }
 
-<<<<<<< HEAD
     // testing new menu system
     createTestMenu() {
         this.testMenu = new Menu(this);
-        this.testMenu.addElement(this.add.image(0, 0, 'testDog').setOrigin(0));
-        this.testMenu.addElement(this.add.text(0, 0, 'check our this cool dog'));
+        this.testButton = new Button(this, CameraManager.getViewCenter(), 'button', 'dfgjkd');
+        this.testPoint = new Phaser.Geom.Point(512, 500);
+        this.testButton2 = new Button(this, this.testPoint, 'button', 'jkghdfgh');
+        this.testMenu.addButton(this.testButton.getElements());
+        this.testMenu.addButton(this.testButton2.getElements());
+        //this.testMenu.addElement(this.add.image(0, 0, 'button').setOrigin(0).setScale(0.5));
+        //this.testMenu.addElement(this.add.text(0, 0, 'Test Button', { color: '#000000' }).setOrigin(0));
     }
 
     // testing new menu system
@@ -443,11 +440,9 @@ class Freeplay extends Phaser.Scene {
             });
     }
 
-=======
     /** Creates the image objects and associated events for the 
      *  game's pause button 
      */
->>>>>>> develop
     createPauseButton() {
         this.playButton = this.add.image(964, 708, 'play').setScale(0.5)
         this.pauseButton = this.add.image(964, 708, 'pause').setScale(0.5)

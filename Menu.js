@@ -18,6 +18,13 @@ class Menu {
 		CameraManager.addUISprite(_element);
 	}
 
+	addButton(_button) {
+		this.elements.push(_button[0]);
+		this.elements.push(_button[1]);
+		CameraManager.addUISprite(_button[0]);
+		CameraManager.addUISprite(_button[1]);
+	}
+
 	removeElement(_element) {
 		// remove the specified element from this menu
 	}
