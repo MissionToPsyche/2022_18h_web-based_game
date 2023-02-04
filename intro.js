@@ -7,6 +7,8 @@ class Intro extends Phaser.Scene {
         this.contentText;
         this.startButton;
         this.tutorialButton;
+        this.done;
+        this.doneTyping;
     }
 
     preload() {
@@ -15,6 +17,7 @@ class Intro extends Phaser.Scene {
         this.load.image('start', 'img/icons/start.png'); // a start button
         this.load.image('tutorial', 'img/icons/tutorial.png'); // a tutorial button
         this.page = 1;
+        this.done = false;
     }
 
     create() {
@@ -45,7 +48,9 @@ class Intro extends Phaser.Scene {
 
         switch(this.page){
             case 2:
-                this.createPTwo();
+                if(!this.done){
+                    this.createPTwo();
+                }
                 break;
         }
  
@@ -57,6 +62,7 @@ class Intro extends Phaser.Scene {
         this.introText = this.add.text(325, 100, 'Page 1').setOrigin(0.5).setFontSize(50);
         CameraManager.addUISprite(this.nextButton);
         CameraManager.addUISprite(this.introText);
+
         this.nextButton.setInteractive()
         .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
             this.nextButton.setFillStyle(0xF9A000);
@@ -111,28 +117,45 @@ class Intro extends Phaser.Scene {
 
     createPTwo(){
         this.introText.setVisible(false);
-        var content = [
-            "1. Find Psyche in the solar system.",
-            "2. Take pictures of Psyche.",
-            "3. Get back to Earth."
-        ];
+        var content = "1. Find Psyche in the solar system.\n"
+        + "2. Take pictures of Psyche.\n3. Get back to Earth.";
 
-        var content2 = [
-            "Do not crash into other planets!"
-        ];
+        var content2 = "Do not crash into other planets!";
+        
         this.introText = this.add.text(325, 100, 'Mission Task:').setFontSize(50);
         CameraManager.addUISprite(this.introText);
-        this.contentText = this.add.text(325,200, content);
+
+        this.contentText = this.add.text(325,200, '');
+        this.typewriteText(this.contentText, content);
         CameraManager.addUISprite(this.contentText);
-        this.introText = this.add.text(325, 400, 'Warning:').setFontSize(50);
+
+        this.introText = this.add.text(325, 400, '').setFontSize(50);
+        this.typewriteText(this.introText,'Warning:');
         this.introText.setFill('#F10A0A');
-        this.contentText = this.add.text(325,450, content2);
+
+        this.contentText = this.add.text(325,450, '');
+        this.typewriteText(this.contentText,content2);
         this.contentText.setFill('#F10A0A');
         CameraManager.addUISprite(this.contentText);
         CameraManager.addUISprite(this.introText);
+
         this.nextButton.setVisible(false);
         this.startButton.setVisible(true);
         this.tutorialButton.setVisible(true);
+        this.done = true;
+    }
+
+    typewriteText(label,text){
+	    const length = text.length
+	    let i = 0
+	    this.time.addEvent({
+		    callback: () => {
+			    label.text += text[i]
+			    ++i
+		    },
+		    repeat: length - 1,
+		    delay: 100
+	    })
     }
 
 }
