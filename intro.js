@@ -115,30 +115,37 @@ class Intro extends Phaser.Scene {
         this.tutorialButton.setVisible(false);
     }
 
-    createPTwo(){
+createPTwo(){
         this.introText.setVisible(false);
         var content = "1. Find Psyche in the solar system.\n"
         + "2. Take pictures of Psyche.\n3. Get back to Earth.";
 
         var content2 = "Do not crash into other planets!";
-        
         this.introText = this.add.text(325, 100, 'Mission Task:').setFontSize(50);
         CameraManager.addUISprite(this.introText);
-
         this.contentText = this.add.text(325,200, '');
         this.typewriteText(this.contentText, content);
         CameraManager.addUISprite(this.contentText);
-
         this.introText = this.add.text(325, 400, '').setFontSize(50);
-        this.typewriteText(this.introText,'Warning:');
+        this.time.addEvent({
+            delay: 9000,
+            callback: ()=>{
+                this.typewriteText(this.introText,'Warning:');
+            },
+            loop: false
+        })
         this.introText.setFill('#F10A0A');
-
         this.contentText = this.add.text(325,450, '');
-        this.typewriteText(this.contentText,content2);
+        this.time.addEvent({
+            delay: 10500,
+            callback: ()=>{
+                this.typewriteText(this.contentText,content2);
+            },
+            loop: false
+        })
         this.contentText.setFill('#F10A0A');
         CameraManager.addUISprite(this.contentText);
         CameraManager.addUISprite(this.introText);
-
         this.nextButton.setVisible(false);
         this.startButton.setVisible(true);
         this.tutorialButton.setVisible(true);
