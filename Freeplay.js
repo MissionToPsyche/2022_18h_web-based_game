@@ -155,7 +155,9 @@ class Freeplay extends Phaser.Scene {
         CameraManager.addUISprite(map_border);
 
         this.ingame_music = this.sound.add('ingame_music');
-        this.ingame_music.play({ loop: true });
+        if (!this.ingame_music.isPlaying) {
+            this.ingame_music.play({ loop: true });
+        }
 
         //creating control keys
         this.cursors = this.input.keyboard.createCursorKeys();
@@ -516,6 +518,7 @@ class Freeplay extends Phaser.Scene {
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
                 this.exitButton.setTint(0xFFFFFF);
+                this.ingame_music.stop();
                 this.scene.start('MainMenu');
                 this.paused = false;
                 this.gameOver = false;

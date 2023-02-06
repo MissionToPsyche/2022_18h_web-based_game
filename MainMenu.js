@@ -25,7 +25,9 @@ class MainMenu extends Phaser.Scene {
         CameraManager.addUISprite(logo);
 
         this.intro_music = this.sound.add('intro_music');
-        this.intro_music.play({ loop: true });
+        if (!this.intro_music.isPlaying) {
+            this.intro_music.play({ loop: true });
+        }
 
         this.createTitle();
         this.createPlayButton();
