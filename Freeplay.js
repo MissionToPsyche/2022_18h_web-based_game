@@ -685,7 +685,12 @@ class Freeplay extends Phaser.Scene {
                                 || (Math.abs(psycheAngle - this.targetAngles[i] + 360) <= Constants.ONE_PHOTO_ANGLE) 
                                 || (Math.abs(psycheAngle - this.targetAngles[i] - 360) <= Constants.ONE_PHOTO_ANGLE)) {
                                 // this photo covers the target angle targetAngles[i], set the flag
-                                this.coverFlags[i] = 1;
+                                if (this.coverFlags[i] == 1) {
+                                    console.log("You have already taken photo of this side, please take photo of other sides.");
+                                } else {
+                                    this.coverFlags[i] = 1;
+                                    console.log("Congratuations! You just took photo of a new Psyche side!")
+                                }
                             }
                         }
 
@@ -696,9 +701,7 @@ class Freeplay extends Phaser.Scene {
                                 sidesCovered++;
                             }
                         }
-
                         console.log("now " + sidesCovered + " of " + this.coverFlags.length + " sides covered");
-                        console.log(this.coverFlags);
                         
                     } else {
                         // check which body is in the view and choose the nearest one
