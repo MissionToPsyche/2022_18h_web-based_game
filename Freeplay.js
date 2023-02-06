@@ -46,20 +46,20 @@ class Freeplay extends Phaser.Scene {
 
         //staticly loading all the individual assets for now
         //**TO DO: change to a more general method of preloading images
-        this.load.image('earth', "img/icons/earth.svg");
-        this.load.image('jupiter', "img/icons/jupiter.svg");
-        this.load.image('luna', "img/icons/luna.svg");
-        this.load.image('mars', "img/icons/mars.svg");
-        this.load.image('mercury', "img/icons/mercury.svg");
-        this.load.image('neptune', "img/icons/neptune.svg");
-        this.load.image('pluto', "img/icons/pluto.svg");
-        this.load.image('psyche', "img/icons/psyche.svg");
+        this.load.image('earth', "img/icons/earth.png");
+        this.load.image('jupiter', "img/icons/jupiter.png");
+        this.load.image('luna', "img/icons/luna.png");
+        this.load.image('mars', "img/icons/mars.png");
+        this.load.image('mercury', "img/icons/mercury.png");
+        this.load.image('neptune', "img/icons/neptune.png");
+        this.load.image('pluto', "img/icons/pluto.png");
+        this.load.image('psyche', "img/icons/psyche.png");
         this.load.image('psyche_probe', "img/icons/psyche_probe.svg");
         this.load.image('psyche_probe_icon', "img/icons/arrow.png");
-        this.load.image('saturn', "img/icons/saturn.svg");
-        this.load.image('sol', "img/icons/sol.svg");
-        this.load.image('uranus', "img/icons/uranus.svg");
-        this.load.image('venus', "img/icons/venus.svg");
+        this.load.image('saturn', "img/icons/saturn.png");
+        this.load.image('sol', "img/icons/sol.png");
+        this.load.image('uranus', "img/icons/uranus.png");
+        this.load.image('venus', "img/icons/venus.png");
 
         // load the photo of psyche
         this.load.image('psychePhoto1', "img/photos/psyche1.png");
