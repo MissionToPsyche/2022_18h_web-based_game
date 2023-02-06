@@ -320,8 +320,14 @@ class Probe extends Body {
 			this.angleOffset += this.controler.getRotation();
 
             let relAngle = Math.atan2(p2.y - p1.y, p2.x - p1.x) - Math.PI/4;
-			let newAngle = relAngle + this.angleOffset;
+			let newAngle =  relAngle + this.angleOffset;
 			this.rotation = Phaser.Math.Angle.RotateTo(this.rotation, newAngle, 0.05);
+		} else if (this.controler.controlMethod == 1) {
+			let newAngle = this.controler.getRotation();
+			this.rotation = Phaser.Math.Angle.RotateTo(this.rotation, newAngle, 0.05);
+
+			let a_vel = this.controler.getAccelerationVector();
+			this.vel.add(a_vel);
 		} else {
 			//changing velocity based on vector from controler
 			let a_vel = this.controler.getAccelerationVector();
@@ -330,8 +336,8 @@ class Probe extends Body {
 			//if acceleration vector from controler is > 0, change angle to face the
 			//direction of the vector
 			if(a_vel.length() > 0) {
-				this.newAngle = Phaser.Math.Angle.Wrap(a_vel.angle() - (Math.PI/4) * 5);
-				this.rotation = Phaser.Math.Angle.RotateTo(this.rotation, this.newAngle, 0.05);
+				let newAngle = Phaser.Math.Angle.Wrap(a_vel.angle() - (Math.PI/4) * 5);
+				this.rotation = Phaser.Math.Angle.RotateTo(this.rotation, newAngle, 0.05);
 			}
 		}
 

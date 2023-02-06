@@ -6,6 +6,8 @@ class Controler {
         this.scene = _scene;
         this.player = _player;
 
+        this.controlMethod = 1;
+
         this.pauseKey_setting = 'P';
         this.orbitKey_setting = 'SHIFT';
         this.pictureKey_setting = 'SPACE';
@@ -30,6 +32,8 @@ class Controler {
         this.yAcc = 0;
         this.xAcc = 0;
         this.rotation = 0;
+        this.totalRotation = 0;
+        this.totalAcc = 0;
 
         this.updateKeyEvents();
     }
@@ -72,9 +76,11 @@ class Controler {
                     this.player.addToOrbit(10);
                 } else {
                     this.yAcc = -this.APT;
+                    this.totalAcc = -this.APT;
                 }
             }).on('up', () => {
                 this.yAcc = 0;
+                this.totalAcc = 0;
             });
         this.d_down
             .on('down', () => {
@@ -82,14 +88,18 @@ class Controler {
                     this.player.addToOrbit(-10);
                 } else {
                     this.yAcc = this.APT;
+                    this.totalAcc = this.APT;
                 }
             }).on('up', () => {
                 this.yAcc = 0;
+                this.totalAcc = 0;
             });
         this.d_left
             .on('down', () => {
                 if (this.player.inOrbit) {
                     this.rotation = -0.02;
+                } else if (this.controlMethod == 1) {
+                    this.totalRotation = Phaser.Math.Angle.Wrap(this.totalRotation - 0.08);
                 } else {
                     this.xAcc = -this.APT;
                 }
@@ -101,6 +111,8 @@ class Controler {
             .on('down', () => {
                 if (this.player.inOrbit) {
                     this.rotation = 0.02;
+                } else if (this.controlMethod == 1) {
+                    this.totalRotation = Phaser.Math.Angle.Wrap(this.totalRotation + 0.08);
                 } else {
                     this.xAcc = this.APT;
                 }
@@ -125,9 +137,22 @@ class Controler {
      * @returns {Phaser.Math.Vector2} The acceleration vector from player input
      */
     getAccelerationVector() {
-        let accVector = new Phaser.Math.Vector2(this.xAcc, this.yAcc);
-        if (accVector.length() > this.maxAcc) { accVector.setLength(this.maxAcc) }
-        return accVector;
+        if (this.controlMethod == 1 ) {
+            let accVector = new Phaser.Math.Vector2(1, 1).setLength(this.totalAcc).rotate(Phaser.Math.Angle.Wrap(this.totalRotation));
+            return accVector;
+        } else {
+            let accVector = new Phaser.Math.Vector2(this.xAcc, this.yAcc);
+            if (accVector.length() > this.maxAcc) { accVector.setLength(this.maxAcc) }
+            return accVector;
+        }
+    }
+
+    /**
+     * Gets the control method currently being used by the game controler.
+     * @returns {number} number representing control method.
+     */
+    getControlMethod() {
+        return this.controlMethod
     }
 
     /**
@@ -135,6 +160,10 @@ class Controler {
      * @returns {number} the rotation in degrees
      */
     getRotation () {
-        return this.rotation;
+        if (this.controlMethod == 1 && !this.player.inOrbit){
+            return this.totalRotation;
+        } else {
+            return this.rotation;
+        }
     }
 }
