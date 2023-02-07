@@ -68,6 +68,7 @@ class Freeplay extends Phaser.Scene {
         this.load.audio('menu', 'assets/sfx/misc_menu_4.wav');
         this.load.audio('negative', 'assets/sfx/negative.wav');
         this.load.audio('positive', 'assets/sfx/positive.wav');
+        this.load.audio('ingame_music', 'assets/music/02_Ingame.mp3');
     }
 
     /**
@@ -156,6 +157,9 @@ class Freeplay extends Phaser.Scene {
         CameraManager.addUISprite(logo);
         CameraManager.addUISprite(this.lockText);
         CameraManager.addUISprite(map_border);
+
+        this.ingame_music = this.sound.add('ingame_music');
+        this.ingame_music.play({ loop: true });
 
         //creating control keys
         this.cursors = this.input.keyboard.createCursorKeys();
@@ -505,6 +509,7 @@ class Freeplay extends Phaser.Scene {
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
                 this.restartButton.setTint(0xFFFFFF);
                 this.scene.restart();
+                this.ingame_music.stop();
                 this.paused = false
                 this.gameOver = false;
                 // Make the direction icon show up again.
@@ -527,6 +532,7 @@ class Freeplay extends Phaser.Scene {
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
                 this.exitButton.setTint(0xFFFFFF);
                 this.scene.start('MainMenu');
+                this.ingame_music.stop();
                 this.paused = false;
                 this.gameOver = false;
             });
