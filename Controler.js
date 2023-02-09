@@ -15,6 +15,7 @@ class Controler {
         this.d_down_setting = 'DOWN';
         this.d_left_setting = 'LEFT';
         this.d_right_setting = 'RIGHT';
+        this.controlToggleKey_setting = 'C';
 
         this.keyboard = this.scene.input.keyboard;
 
@@ -26,6 +27,7 @@ class Controler {
         this.d_down = this.keyboard.addKey(this.d_down_setting, true, true);
         this.d_left = this.keyboard.addKey(this.d_left_setting, true, true);
         this.d_right = this.keyboard.addKey(this.d_right_setting, true, true);
+        this.controlToggleKey = this.keyboard.addKey(this.controlToggleKey_setting);
 
         this.maxAcc = 0.02;
         this.APT = 0.02;
@@ -46,6 +48,7 @@ class Controler {
         this.pauseKey = this.keyboard.addKey(this.pauseKey_setting);
         this.orbitKey = this.keyboard.addKey(this.orbitKey_setting);
         this.pictureKey = this.keyboard.addKey(this.pictureKey_setting);
+
         this.d_up = this.keyboard.addKey(this.d_up_setting, true, true);
         this.d_down = this.keyboard.addKey(this.d_down_setting, true, true);
         this.d_left = this.keyboard.addKey(this.d_left_setting, true, true);
@@ -69,6 +72,11 @@ class Controler {
         this.pictureKey
             .on('up', () => {
                 this.scene.photoKeyEvent();
+            });
+        this.controlToggleKey
+            .on('up', () => {
+                if (this.controlMethod == 0) { this.controlMethod = 1}
+                else { this.controlMethod = 0 }
             });
         this.d_up
             .on('down', () => {
