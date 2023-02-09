@@ -422,14 +422,17 @@ class Freeplay extends Phaser.Scene {
 
     // testing new menu system
     createTestMenu() {
+        // create a new menu
         this.testMenu = new Menu(this);
+
+        // create some buttons
         this.testButton = new Button(this, CameraManager.getViewCenter(), 'button', 'dfgjkd');
         this.testPoint = new Phaser.Geom.Point(512, 500);
         this.testButton2 = new Button(this, this.testPoint, 'button', 'jkghdfgh');
+
+        // add some buttons to the menu
         this.testMenu.addButton(this.testButton.getElements());
         this.testMenu.addButton(this.testButton2.getElements());
-        //this.testMenu.addElement(this.add.image(0, 0, 'button').setOrigin(0).setScale(0.5));
-        //this.testMenu.addElement(this.add.text(0, 0, 'Test Button', { color: '#000000' }).setOrigin(0));
     }
 
     // testing new menu system
