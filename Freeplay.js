@@ -626,6 +626,11 @@ class Freeplay extends Phaser.Scene {
     }
 
     takePhoto() {
+        console.log(Constants.HINT_X);
+        this.add.circle(Constants.HINT_X, Constants.HINT_Y, Constants.HINT_SIZE, Constants.WHITE);
+        // TODO: try to create a pie shape as the hint
+        //this.add(new slice(Constants.HINT_X, Constants.HINT_Y, 0, Math.PI/2, Constants.ORANGE));
+
         this.psychePhoto1 = this.add.image(Constants.PSYCHE_PHOTO_1X, Constants.PSYCHE_PHOTO_1Y, 'psychePhoto1').setScale(Constants.PSYCHE_PHOTO_1SCALE);
         this.psychePhoto1.setVisible(false);
         
@@ -748,4 +753,5 @@ class Freeplay extends Phaser.Scene {
             .setVisible(false);
         CameraManager.addUISprite(this.quitPhotoPageButton);
     }
+
 }

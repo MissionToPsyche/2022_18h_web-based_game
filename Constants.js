@@ -11,6 +11,10 @@ class Constants {
         }
     }
 
+    // colors
+    static WHITE = 0xFFFFFF;
+    static ORANGE = 0xF47D33;
+
     // font sizes
     static FIRST_FONT_SIZE = 80;
     static SECOND_FONT_SIZE = 70;
@@ -39,5 +43,10 @@ class Constants {
     static FOUR_SIDES = new Array(0, 90, 180, 270);
 
     static ONE_PHOTO_ANGLE = 45; // one photo covers [angle - 45, angle + 45] of the psyche
+
+    // hint circle position and size
+    static HINT_X = 150;
+    static HINT_Y = 708;
+    static HINT_SIZE = 35;
 
 }
