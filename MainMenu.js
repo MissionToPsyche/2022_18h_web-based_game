@@ -125,29 +125,36 @@ class MainMenu extends Phaser.Scene {
         //Control menu
         this.controlText = this.add.text(525, 100, 'CONTROLS').setOrigin(0.5).setFontSize(120);
         this.exitButton = this.add.image(520, 618, 'exit').setScale(0.5);
+        // Storage for title of control.
         const controls = ['Move Forward', 'Move Backward', 'Rotate Left', 'Rotate Right', 'Pause Game', 'Take Picture'];
+        // Storage for icon images. 
         const icons = ['up', 'down', 'left', 'right', 'p', 'space'];
+        // Storage of all the titles and object created. 
         const objects = [];
 
         let row = 200;
-        let col = 250;
+        let col = 220;
 
+        //Go through the list of icons and controls and make them appear. 
         for(let i = 0; i < controls.length; i++){
-            this.icon = this.add.image(col, row, icons[i]).setScale(0.2);
+            this.icon = this.add.image(col, row, icons[i]).setOrigin(0,0.5).setScale(0.2);
             objects.push(this.icon);
             this.title = this.add.text(col - 150 , row, controls[i]).setFontSize(15);
             objects.push(this.title);
             row = row + 100;
             CameraManager.addUISprite(this.icon);
             CameraManager.addUISprite(this.title);
+            // Keep 4 rows in each columns. 
             if(row == 600){
                 row = 200;
                 col = col + 300;
             }
         }
 
+        // Disable button interactions. 
         this.playButton.disableInteractive();
         this.controlButton.disableInteractive();
+
         CameraManager.addUISprite(this.controlText);
         this.exitButton.setInteractive()
         .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
@@ -165,6 +172,7 @@ class MainMenu extends Phaser.Scene {
             this.exitButton.setVisible(false);
             this.controlText.setVisible(false);
 
+            //Make all the objects that were created invisible. 
             while(objects.length > 0){
                 objects.pop().setVisible(false);
             }

@@ -16,6 +16,13 @@ class Intro extends Phaser.Scene {
         this.load.image('border', 'img/icons/intro-border.png');
         this.load.image('start', 'img/icons/start.png'); // a start button
         this.load.image('tutorial', 'img/icons/tutorial.png'); // a tutorial button
+        // typing sfx
+        this.load.audio('key1', 'assets/sfx/key1.wav');
+        this.load.audio('key2', 'assets/sfx/key2.wav');
+        this.load.audio('key3', 'assets/sfx/key3.wav');
+        this.load.audio('key4', 'assets/sfx/key4.wav');
+        this.load.audio('key5', 'assets/sfx/key5.wav');
+
         this.page = 1;
         this.done = false;
     }
@@ -32,11 +39,13 @@ class Intro extends Phaser.Scene {
         CameraManager.addUISprite(logo);
         CameraManager.addUISprite(intro_border);
 
+        // Shadow for the page. 
         const color1 = new Phaser.Display.Color(0, 0, 0);
         this.shadow = this.add.rectangle(500, 380 ,620, 650, color1.color);
         this.shadow.setAlpha(0.5);
         this.shadow.setVisible(true);
         CameraManager.addUISprite(this.shadow);
+
         this.createPage();
     }
 
@@ -48,6 +57,7 @@ class Intro extends Phaser.Scene {
 
         switch(this.page){
             case 2:
+                // Stop from creating the page over and over.
                 if(!this.done){
                     this.createPTwo();
                 }
@@ -57,6 +67,7 @@ class Intro extends Phaser.Scene {
     }
 
     createPage() {
+        // Button to flip the page.
         this.nextButton = this.add.triangle(700, 650, 0, 128, 64, 0, 128, 128, 0x6666ff).setScale(0.35);
         this.nextButton.angle = 90
         this.introText = this.add.text(325, 100, 'Page 1').setOrigin(0.5).setFontSize(50);
@@ -77,6 +88,7 @@ class Intro extends Phaser.Scene {
             this.page = this.page + 1;
         });
 
+        // Start and tutorial button for the last page of the intro.
         this.startButton = this.add.image(620,618, 'start').setScale(0.4);
         this.tutorialButton = this.add.image(360,618, 'tutorial').setScale(0.4);
         CameraManager.addUISprite(this.startButton);
@@ -117,6 +129,7 @@ class Intro extends Phaser.Scene {
 
 createPTwo(){
         this.introText.setVisible(false);
+        // Texts for last page of the intro.
         var content = "1. Find Psyche in the solar system.\n"
         + "2. Take pictures of Psyche.\n3. Get back to Earth.";
 
@@ -127,6 +140,7 @@ createPTwo(){
         this.typewriteText(this.contentText, content);
         CameraManager.addUISprite(this.contentText);
         this.introText = this.add.text(325, 400, '').setFontSize(50);
+        // Time delay for typewriter affect.
         this.time.addEvent({
             delay: 9000,
             callback: ()=>{
@@ -134,8 +148,10 @@ createPTwo(){
             },
             loop: false
         })
+        // Make the text red.
         this.introText.setFill('#F10A0A');
         this.contentText = this.add.text(325,450, '');
+
         this.time.addEvent({
             delay: 10500,
             callback: ()=>{
@@ -146,6 +162,7 @@ createPTwo(){
         this.contentText.setFill('#F10A0A');
         CameraManager.addUISprite(this.contentText);
         CameraManager.addUISprite(this.introText);
+
         this.nextButton.setVisible(false);
         this.startButton.setVisible(true);
         this.tutorialButton.setVisible(true);
@@ -157,12 +174,27 @@ createPTwo(){
 	    let i = 0
 	    this.time.addEvent({
 		    callback: () => {
-			    label.text += text[i]
-			    ++i
+			    label.text += text[i];
+                if(text[i] != "\n" || text[i] != " "){
+                    this.playTypefx();
+                }
+			    ++i;
 		    },
 		    repeat: length - 1,
 		    delay: 100
 	    })
     }
+
+    playTypefx(){
+        // Storage for sound keys. 
+        const soundKeys = ['key1', 'key2', 'key3', 'key4', 'key5'];
+        var rand = this.getRandomInt(5)
+        var key_audio = this.sound.add(soundKeys[rand]);
+        key_audio.play();
+    }
+
+    getRandomInt(max) {
+        return Math.floor(Math.random() * max);
+      }
 
 }
