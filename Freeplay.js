@@ -628,6 +628,10 @@ class Freeplay extends Phaser.Scene {
     takePhoto() {
         console.log(Constants.HINT_X);
         this.add.circle(Constants.HINT_X, Constants.HINT_Y, Constants.HINT_SIZE, Constants.WHITE);
+        let angle = 90;
+        this.add.arc(Constants.HINT_X, Constants.HINT_Y, Constants.HINT_SIZE, 0, angle, false, Constants.ORANGE);
+        this.add.triangle(Constants.HINT_X + Constants.HINT_SIZE / 2, Constants.HINT_Y + Constants.HINT_SIZE / 2, 
+            0, 0, Constants.HINT_SIZE, 0, 0, Constants.HINT_SIZE, Constants.ORANGE);
         // TODO: try to create a pie shape as the hint
         //this.add(new slice(Constants.HINT_X, Constants.HINT_Y, 0, Math.PI/2, Constants.ORANGE));
 
