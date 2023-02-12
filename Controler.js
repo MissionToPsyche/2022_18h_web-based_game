@@ -6,7 +6,7 @@ class Controler {
         this.scene = _scene;
         this.player = _player;
 
-        this.controlMethod = 1;
+        this.controlMethod = 0;
 
         this.pauseKey_setting = 'P';
         this.orbitKey_setting = 'SHIFT';
@@ -38,6 +38,11 @@ class Controler {
         this.totalAcc = 0;
 
         this.updateKeyEvents();
+
+        //temp just to view control changes. Remove later when we have an options menu for this.
+        this.controlText = this.scene.add.text(4, 90, '0');
+        this.controlText.setText("Controls: 4-Way");
+        CameraManager.addUISprite(this.controlText);
     }
 
     /**
@@ -75,8 +80,14 @@ class Controler {
             });
         this.controlToggleKey
             .on('up', () => {
-                if (this.controlMethod == 0) { this.controlMethod = 1}
-                else { this.controlMethod = 0 }
+                if (this.controlMethod == 0) { 
+                    this.controlMethod = 1;
+                    this.controlText.setText("Controls: Tank in Space");
+                }
+                else { 
+                    this.controlMethod = 0;
+                    this.controlText.setText("Controls: 4-Way");
+                }
             });
         this.d_up
             .on('down', () => {

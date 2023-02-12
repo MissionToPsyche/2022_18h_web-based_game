@@ -141,14 +141,9 @@ class Freeplay extends Phaser.Scene {
 
         //creating UISprites
         var logo = this.add.image(50,50,'logo').setScale(0.5);
-        this.gravText = this.add.text(4, 90, '0')
-        this.gravText.setText("Gravity: ON")
-        this.lockText = this.add.text(4, 120, '0')
-        this.lockText.setText("Orbit Lock: ON")
 
         //adding to UIsprites so main camera ignores them
         CameraManager.addUISprite(logo);
-        CameraManager.addUISprite(this.lockText);
         CameraManager.addUISprite(map_border);
 
         //creating control keys
