@@ -157,7 +157,7 @@ class Satellite extends Body {
 	 * @param {number} _distance - The distance between the Satellite and its parent Body
 	 * @param {Phaser.Textures.Frame} - The Frame this Satellite will be added to
 	 */
-	constructor (_scene, _id, _mass, _diameter, _parent, _angle, _distance, _frame) {
+	constructor(_scene, _id, _mass, _diameter, _parent, _angle, _distance, _day_length, _frame) {
 		super(_scene, CameraManager.getCenter(), _id, _mass, _diameter, _frame);
 		this.scene = _scene;
 		this.distance = _distance;
@@ -176,6 +176,8 @@ class Satellite extends Body {
 			this.y = this.parent.y + this.distance * Math.sin(this.theta);
 			this.vel = orbitVelocity(this, this.parent, this.theta); //set initial orbit velocity.
 		}
+
+		this.day_length = _day_length
 	}
 
 	/**
@@ -184,6 +186,10 @@ class Satellite extends Body {
 	 */
 	getPathCurve () {
 		return new Phaser.Curves.Spline(this.path);
+	}
+
+	getFrameRate() {
+		return this.day_length / 2
 	}
 
 	/** Add the current onscreen position into `this.path` */
