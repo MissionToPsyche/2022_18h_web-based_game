@@ -20,9 +20,10 @@ class Freeplay extends Phaser.Scene {
         this.pauseText;
 
         this.takingPhoto = false;
-        this.foundPsycheText; // should replace to photo of psyche
+        this.foundPsycheText; 
         this.quitPhotoPageButton;
         this.psychePhoto1;
+        this.nearestBodyText;
 
         this.failText;
 
@@ -62,6 +63,11 @@ class Freeplay extends Phaser.Scene {
 
         // load the photo of psyche
         this.load.image('psychePhoto1', "img/photos/psyche1.png");
+
+        // button sfx
+        this.load.audio('menu', 'assets/sfx/misc_menu_4.wav');
+        this.load.audio('negative', 'assets/sfx/negative.wav');
+        this.load.audio('positive', 'assets/sfx/positive.wav');
     }
 
     /**
@@ -282,6 +288,8 @@ class Freeplay extends Phaser.Scene {
         // if there was a collision then trigger the failure state and stop the simulation
         if (this.bodies["psyche_probe"].collided && !this.gameOver) {
             this.gameOver = true;
+            var fail_audio = this.sound.add('negative');
+            fail_audio.play();
             CameraManager.addUISprite(this.failText);
         }
 
@@ -331,10 +339,10 @@ class Freeplay extends Phaser.Scene {
             this.bodies[body].updatePosition(this)
 
             // find psyche
-            let distance = this.bodies["psyche_probe"].getPsycheDistance();
+            let distance = this.bodies["psyche_probe"].getDistance("psyche");
 
             // the distance between pshche probe and the arrow
-            let arrowDistance = 50;
+            let arrowDistance = 100;
             let width = 1024;
             let height = 768;
             let directionX = width / 2 + this.bodies["psyche_probe"].getPsycheDirectionX() * arrowDistance;
@@ -348,12 +356,28 @@ class Freeplay extends Phaser.Scene {
 
             // add the image of the arrow if it not added
              if (typeof(this.direction) == "undefined") {
-                this.direction = this.add.image(directionX, directionY, 'direction').setScale(0.2);
+                this.direction = this.add.image(directionX, directionY, 'direction').setScale(0.3);
                 CameraManager.addUISprite(this.direction);
                 // make the direction indicator not on top of other page such as pause menu
                 this.direction.depth = -1;
-                //Make the minimap ignore the icon.
-                CameraManager.addMinimapSprite(this.direction);
+            }
+
+            if (this.bodies["psyche_probe"].orbitToggle) {
+
+                // earth is not the center, edit direction
+                let centerX = CameraManager.getCameraCenter().x;
+                let centerY = CameraManager.getCameraCenter().y;
+
+                let offsetX = centerX - this.bodies["psyche_probe"].x;
+                let offsetY = centerY - this.bodies["psyche_probe"].y;
+
+                let zoom = CameraManager.getMainCameraZoom();
+
+                offsetX *= zoom;
+                offsetY *= zoom;
+
+                directionX -= offsetX;
+                directionY -= offsetY;
             }
 
             // set the correct position and angle of the arrow to point to psyche
@@ -434,6 +458,8 @@ class Freeplay extends Phaser.Scene {
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
                 this.updatePauseColor('pressed');
+                var menu_audio = this.sound.add('menu');
+                menu_audio.play();
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
                 // disable pause when in the taking photo page
@@ -453,6 +479,8 @@ class Freeplay extends Phaser.Scene {
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
                 this.updatePauseColor('pressed');
+                var menu_audio = this.sound.add('menu');
+                menu_audio.play();
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
                 // disable pause when in the taking photo page
@@ -472,6 +500,8 @@ class Freeplay extends Phaser.Scene {
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
                 this.restartButton.setTint(0xF47D33);
+                var menu_audio = this.sound.add('menu');
+                menu_audio.play();
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
                 this.restartButton.setTint(0xFFFFFF);
@@ -492,6 +522,8 @@ class Freeplay extends Phaser.Scene {
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
                 this.exitButton.setTint(0xF47D33);
+                var menu_audio = this.sound.add('menu');
+                menu_audio.play();
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
                 this.exitButton.setTint(0xFFFFFF);
@@ -584,6 +616,7 @@ class Freeplay extends Phaser.Scene {
             this.foundPsycheText.setVisible(false);  
              this.quitPhotoPageButton.setVisible(false);
              this.psychePhoto1.setVisible(false);
+             this.nearestBodyText.setVisible(false);
         } else {
             this.quitPhotoPageButton.setVisible(true);
         }
@@ -619,6 +652,8 @@ class Freeplay extends Phaser.Scene {
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
                 this.updateOrbitColor('on');
+                var menu_audio = this.sound.add('menu');
+                menu_audio.play();
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
                 this.updateOrbitColor(this.bodies["psyche_probe"].orbitToggle ? 'on' : null);
@@ -665,7 +700,10 @@ class Freeplay extends Phaser.Scene {
 
         this.foundPsycheText = this.add.text(100, 100, 'You found Psyche!');
         this.foundPsycheText.setFontSize(80);
+        this.nearestBodyText = this.add.text(100, 250, ' ');
+        this.nearestBodyText.setFontSize(70);
         CameraManager.addUISprite(this.foundPsycheText);
+
         /*
         this.input.keyboard
             .on('keyup-SPACE', () => {
@@ -697,7 +735,6 @@ class Freeplay extends Phaser.Scene {
         // disable spacebar take photo when paused
         if ((!this.paused) && (!this.gameOver)) {
             this.takingPhoto = !this.takingPhoto;
-            this.controler.toggleMovementKeys();
 
             let viewR = 100;
             let endRotation = this.bodies["psyche_probe"].rotation + Math.PI;
@@ -714,9 +751,36 @@ class Freeplay extends Phaser.Scene {
                 this.foundPsycheText.setVisible(true);
                 this.psychePhoto1.setVisible(true);
                 this.quitPhotoPageButton.setPosition(300, 650);
-                console.log("psyche in view!");
+                var win_audio = this.sound.add('positive');
+                win_audio.play();
+                // console.log("psyche in view!");
             } else {
-                this.quitPhotoPageButton.setPosition(300, 400);
+                // check which body is in the view and choose the nearest one
+                let currentDistance = 1000; // random big number
+                let nearestBody = null;
+                for (var body in this.bodies) {
+                    if (this.bodies["psyche_probe"].isInView(body, viewR, startRotation, endRotation)) {
+                        // this body is in probe's view, keep the distance
+                        let thisBodyDistance = this.bodies["psyche_probe"].getDistance(body);
+                        if (thisBodyDistance < currentDistance) {
+                            currentDistance = thisBodyDistance;
+                            nearestBody = body;
+                        }
+                    }
+                }
+
+                let nearestInfo = "";
+                if (nearestBody != null) {
+                    nearestInfo = "You found the ";
+                    nearestInfo += nearestBody.charAt(0).toUpperCase();
+                    nearestInfo += nearestBody.slice(1);
+                    nearestInfo += ", \nbut you should try \nto find the Psyche.";
+                }
+
+                this.nearestBodyText.setText(nearestInfo);
+                this.nearestBodyText.setVisible(true);
+                //console.log("nearest body: " + nearestBody);
+                this.quitPhotoPageButton.setPosition(300, 500);
             }
         }
     }

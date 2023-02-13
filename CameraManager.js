@@ -17,6 +17,7 @@ class CameraManager {
     static mainZoom = 3; //main camera's zoom level
     static followSprite; //sprite main camera follows
     static mainCamera; //main game camera, containing most of the game's visuals
+    static mainCameraTarget; // target of main game camera
     static uiCamera; //camera representing the game's UI
     static miniCamera;
     static gameSprites = []; //sprites to be shown in main game camera
@@ -133,11 +134,28 @@ class CameraManager {
     static setFollowSprite(sprite) {
         this.followSprite = sprite;
         this.mainCamera.startFollow(sprite, false);
+        this.mainCameraTarget = sprite;
     }
 
     /** Get the center coordinates of the camera */
     static getCenter() {
         return new Phaser.Geom.Point(this.cameraWidth/2, this.cameraHeight/2);
+    }
+
+    /**
+     * Get the coordinate of main camera's target
+     * @return {Point} target's coordinate
+     */
+    static getCameraCenter() {
+        return new Phaser.Geom.Point(this.mainCameraTarget.x, this.mainCameraTarget.y);
+    }
+
+    /**
+     * Get the zoom factor of the main camera
+     * @return {number} the zoom factor
+     */
+    static getMainCameraZoom() {
+        return this.mainCamera.zoom;
     }
 
     /**

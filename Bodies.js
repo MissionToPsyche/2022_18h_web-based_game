@@ -501,13 +501,19 @@ class Probe extends Body {
 	}
 
     /**
-     * Get the distance from this probe to psyche
-     * @return {number} The distance between this probe and psyche
+     * Get the distance from the probe to a body
+     * @param {string} the id of the body
+     * @return {number} the distance between the probe and a body
      */
-    getPsycheDistance() {
-    	let psycheX = this.scene.bodies["psyche"].x;
-    	let psycheY = this.scene.bodies["psyche"].y;
-    	return Math.sqrt((this.x - psycheX) * (this.x - psycheX) + (this.y - psycheY) * (this.y - psycheY));
+    getDistance(bodyId) {
+    	if (typeof(this.scene.bodies[bodyId].x) == undefined) {
+    		return -1;
+    	} else {
+    		let bodyX = this.scene.bodies[bodyId].x;
+    		let bodyY = this.scene.bodies[bodyId].y;
+    		return Math.sqrt((this.x - bodyX) * (this.x - bodyX) + (this.y - bodyY) * (this.y - bodyY));
+    	}
+
     }
 
     /**
@@ -516,7 +522,7 @@ class Probe extends Body {
      */
     getPsycheDirectionX() {
     	let psycheX = this.scene.bodies["psyche"].x;
-    	return (psycheX - this.x) / this.getPsycheDistance();
+    	return (psycheX - this.x) / this.getDistance("psyche");
     }
 
     /**
@@ -525,7 +531,7 @@ class Probe extends Body {
      */
     getPsycheDirectionY() {
     	let psycheY = this.scene.bodies["psyche"].y;
-    	return (psycheY - this.y) / this.getPsycheDistance();
+    	return (psycheY - this.y) / this.getDistance("psyche");
     }
 
     /**
