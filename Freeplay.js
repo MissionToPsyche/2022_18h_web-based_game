@@ -408,6 +408,14 @@ class Freeplay extends Phaser.Scene {
         let probeView = this.graphics.slice(centerX, centerY, viewR, startRotation, endRotation, true);
         
         this.graphics.fillPath();
+
+        // a dashed line around psyche
+        let psycheX = this.bodies["psyche"].x;
+        let psycheY = this.bodies["psyche"].y;
+        let strokeSize = this.bodies["psyche"].r + Constants.HINT_DISTANCE;
+        this.graphics.lineStyle(1, Constants.WHITE, Constants.HINT_ALPHA_BEFORE);
+        this.graphics.strokeCircle(psycheX, psycheY, strokeSize);
+
     }
 
     /** Creates the image objects and associated events for the 
@@ -626,15 +634,6 @@ class Freeplay extends Phaser.Scene {
     }
 
     takePhoto() {
-        console.log(Constants.HINT_X);
-        this.add.circle(Constants.HINT_X, Constants.HINT_Y, Constants.HINT_SIZE, Constants.WHITE);
-        let angle = 90;
-        this.add.arc(Constants.HINT_X, Constants.HINT_Y, Constants.HINT_SIZE, 0, angle, false, Constants.ORANGE);
-        this.add.triangle(Constants.HINT_X + Constants.HINT_SIZE / 2, Constants.HINT_Y + Constants.HINT_SIZE / 2, 
-            0, 0, Constants.HINT_SIZE, 0, 0, Constants.HINT_SIZE, Constants.ORANGE);
-        // TODO: try to create a pie shape as the hint
-        //this.add(new slice(Constants.HINT_X, Constants.HINT_Y, 0, Math.PI/2, Constants.ORANGE));
-
         this.psychePhoto1 = this.add.image(Constants.PSYCHE_PHOTO_1X, Constants.PSYCHE_PHOTO_1Y, 'psychePhoto1').setScale(Constants.PSYCHE_PHOTO_1SCALE);
         this.psychePhoto1.setVisible(false);
         

@@ -44,9 +44,8 @@ class Constants {
 
     static ONE_PHOTO_ANGLE = 45; // one photo covers [angle - 45, angle + 45] of the psyche
 
-    // hint circle position and size
-    static HINT_X = 150;
-    static HINT_Y = 708;
-    static HINT_SIZE = 35;
+    // hint circle style
+    static HINT_DISTANCE = 5;
+    static HINT_ALPHA_BEFORE = 0.2;
 
 }
