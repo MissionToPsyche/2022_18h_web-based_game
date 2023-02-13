@@ -150,7 +150,7 @@ class Freeplay extends Phaser.Scene {
                 this.bodies[body].subscribe(this.bodies["psyche_probe"]);
             }
         }
-        this.bodies["earth"].subscribe(this.bodies["luna"]);
+        this.bodies["earth"].subscribe(this.bodies["moon"]);
         //setting probe as the player
         this.player = this.bodies["psyche_probe"];
         this.newCamTarget = this.bodies["earth"];
