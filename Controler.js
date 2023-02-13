@@ -118,7 +118,7 @@ class Controler {
                 if (this.player.inOrbit) {
                     this.rotation = -0.02;
                 } else if (this.controlMethod == 1) {
-                    this.totalRotation = Phaser.Math.Angle.Wrap(this.totalRotation - 0.08);
+                    this.rotation = -0.04;
                 } else {
                     this.xAcc = -this.APT;
                 }
@@ -131,7 +131,7 @@ class Controler {
                 if (this.player.inOrbit) {
                     this.rotation = 0.02;
                 } else if (this.controlMethod == 1) {
-                    this.totalRotation = Phaser.Math.Angle.Wrap(this.totalRotation + 0.08);
+                    this.rotation = 0.04;
                 } else {
                     this.xAcc = this.APT;
                 }
@@ -179,6 +179,7 @@ class Controler {
      * @returns {number} the rotation in degrees
      */
     getRotation () {
+        this.totalRotation = this.totalRotation + this.rotation;
         if (this.controlMethod == 1 && !this.player.inOrbit){
             return this.totalRotation;
         } else {
