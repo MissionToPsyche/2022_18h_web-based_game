@@ -28,6 +28,8 @@ class Freeplay extends Phaser.Scene {
         this.failText;
 
         this.probeAngleOffset = 0;
+        this.dirs = ["n", "ne", "e", "se", "s", "sw", "w", "nw", "f", "b"]
+        this.shade_angles = [[67.5, 112.5], [112.5, 157.5], [157.5, 202.5], [202.5, 247.5], [247.5, 292.5], [292.5, 337.5], [337.5, 22.5], [22.5, 67.5]]
     }
 
     /** Loads all necessary assets for the scene before the simulation runs */
@@ -123,14 +125,29 @@ class Freeplay extends Phaser.Scene {
 
                     this.bodies[id] = new Satellite(this, id, mass, diameter, parent, angle, orbit_distance, day_length);
 
-                    this.anims.create({
-                        key: id + "-n",
-                        frames: this.anims.generateFrameNumbers(id, { frames: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] }),
-                        frameRate: this.bodies[id].getFrameRate(),
-                        repeat: -1
-                    });
+                    for (const dir of this.dirs) {
+                        const offset = 16 * this.dirs.indexOf(dir)
+                        this.anims.create({
+                            key: id + "-" + dir,
+                            frames: this.anims.generateFrameNumbers(id, {
+                                frames: [offset + 0,
+                                offset + 1,
+                                offset + 2,
+                                offset + 3,
+                                offset + 4,
+                                offset + 5,
+                                offset + 6,
+                                offset + 7,
+                                offset + 8,
+                                offset + 9]
+                            }),
+                            frameRate: 12,
+                            repeat: -1
+                        });
+                    }
 
-                    this.bodies[id].play(id + "-n");
+
+                    this.bodies[id].play(id + "-f");
                 } else {
                     this.bodies[id] = new Probe(this, id, mass, diameter);
                 }
@@ -349,6 +366,36 @@ class Freeplay extends Phaser.Scene {
     
             //update body positions
             this.bodies[body].updatePosition(this)
+
+            if (body != "psyche_probe") {
+                var p1 = new Phaser.Geom.Point(this.bodies["sun"].x, this.bodies["sun"].y);
+                var p2 = new Phaser.Geom.Point(this.bodies[body].x, this.bodies[body].y);
+                let sunAngle = Math.atan2(p2.y - p1.y, p2.x - p1.x);
+                sunAngle = Phaser.Math.RadToDeg(sunAngle)
+
+                if (sunAngle < 0) {
+                    sunAngle += 360;
+                } else if (sunAngle > 360) {
+                    sunAngle -= 360;
+                }
+
+                console.log(body + ": " + sunAngle)
+                if (body == "mars") {
+                    var p = "poo";
+                }
+                for (const idx in this.shade_angles) {
+                    const angle = this.shade_angles[idx]
+                    if (angle[0] < sunAngle && sunAngle <= angle[1]) {
+                        this.bodies[body].play(this.bodies[body].id + "-" + this.dirs[idx], true);
+                        console.log(this.bodies[body].id + "-" + this.dirs[idx])
+                        break;
+                    } else if (angle[0] > angle[1] && (angle[0] < sunAngle || sunAngle <= angle[1])) {
+                        this.bodies[body].play(this.bodies[body].id + "-" + this.dirs[idx], true);
+                        console.log(this.bodies[body].id + "-" + this.dirs[idx])
+                        break;
+                    }
+                }
+            }
 
             // find psyche
             let distance = this.bodies["psyche_probe"].getDistance("psyche");
