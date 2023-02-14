@@ -46,6 +46,10 @@ class Constants {
 
     // hint circle style
     static HINT_DISTANCE = 5;
-    static HINT_ALPHA_BEFORE = 0.2;
+    static HINT_ALPHA_BEFORE = 0.1;
+    static HINT_ALPHA_AFTER = 0.8;
+    static HINT_WIDTH_BEFORE = 2;
+    static HINT_WIDTH_AFTER = 4;
+
 
 }

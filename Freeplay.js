@@ -410,12 +410,16 @@ class Freeplay extends Phaser.Scene {
         this.graphics.fillPath();
 
         // a dashed line around psyche
-        let psycheX = this.bodies["psyche"].x;
-        let psycheY = this.bodies["psyche"].y;
-        let strokeSize = this.bodies["psyche"].r + Constants.HINT_DISTANCE;
-        this.graphics.lineStyle(1, Constants.WHITE, Constants.HINT_ALPHA_BEFORE);
+        let psycheX = this.bodies["earth"].x;
+        let psycheY = this.bodies["earth"].y;
+        let strokeSize = this.bodies["earth"].r + Constants.HINT_DISTANCE;
+        this.graphics.lineStyle(Constants.HINT_WIDTH_BEFORE, Constants.WHITE, Constants.HINT_ALPHA_BEFORE);
         this.graphics.strokeCircle(psycheX, psycheY, strokeSize);
 
+        this.graphics.lineStyle(Constants.HINT_WIDTH_AFTER, Constants.ORANGE, Constants.HINT_ALPHA_AFTER);
+        this.graphics.beginPath();
+        this.graphics.arc(psycheX, psycheY, strokeSize, 0, Phaser.Math.DegToRad(90), false);
+        this.graphics.strokePath();
     }
 
     /** Creates the image objects and associated events for the 
