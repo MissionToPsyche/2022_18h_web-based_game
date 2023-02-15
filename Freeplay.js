@@ -162,6 +162,15 @@ class Freeplay extends Phaser.Scene {
 
         this.createPauseButton();
         this.createOrbitToggle();
+
+        if(PreloadManager.get() == true){
+                            // Create a shaded dialog box
+                            const color1 = new Phaser.Display.Color(0, 0, 0);
+                            this.dialogShadow = this.add.rectangle(525, 650,550, 125, color1.color);
+                            this.dialogShadow.setAlpha(0.85);
+                            CameraManager.addUISprite(this.dialogShadow);
+            
+        }
     }
 
     /** The scene's main update loop
@@ -429,10 +438,12 @@ class Freeplay extends Phaser.Scene {
             this.restartButton.setVisible(true)
             this.exitButton.setVisible(true)
             this.shadow.setVisible(true)
+            this.showDialog(false);
         } else {
             this.restartButton.setVisible(false)
             this.exitButton.setVisible(false)
             this.shadow.setVisible(false)
+            this.showDialog(true);
         }
         
     }
@@ -463,5 +474,13 @@ class Freeplay extends Phaser.Scene {
                     this.orbitToggle.setTint(this.bodies["psyche_probe"].orbitToggle ? 0xF47D33 : 0xFFFFFF);
                 }
             });
+    }
+
+    showDialog(show){
+            if(show == true){
+                this.dialogShadow.setVisible(true);
+            } else{
+                this.dialogShadow.setVisible(false);
+            }
     }
 }
