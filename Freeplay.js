@@ -306,7 +306,30 @@ class Freeplay extends Phaser.Scene {
 
         //for probe's gravity lock functionality:
         if (this.bodies["psyche_probe"].orbitToggle && !this.bodies["psyche_probe"].inOrbit) {
-            this.bodies["psyche_probe"].maintainOrbit(this);
+            let ratio = this.bodies["psyche_probe"].maintainOrbit(this);
+            let subRadius = ratio * this.player.orbitTarget.r;
+            if (!subRadius) {
+                subRadius = this.player.orbitTarget.r;
+            }
+
+            //creating orbit lock progress indicator
+            var path = new Phaser.Geom.Circle(this.player.orbitTarget.x, this.player.orbitTarget.y, this.player.orbitTarget.r+subRadius).getPoints(false, 0.5); //path of the indicator.
+            let ind = new Phaser.Curves.Spline(path);
+            let subPoints = path.length * ratio;
+
+            this.graphics.lineStyle(1, 0xffffff, 0.5);
+            ind.draw(this.graphics, 64);
+            this.graphics.fillStyle(0xffffff, 1);
+
+            path.splice(Math.floor(subPoints));
+
+            if (path.length > 0) {
+                let prog = new Phaser.Curves.Spline(path);
+
+                this.graphics.lineStyle(1, 0xff0000, 0.5);
+                prog.draw(this.graphics, 64);
+                this.graphics.fillStyle(0x00ff00, 1);
+            }
         } else if (this.bodies["psyche_probe"].inOrbit){
             //draw the orbit boundries if probe is locked in an orbit
             this.graphics.lineStyle(1, 0xff0000, 0.5);

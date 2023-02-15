@@ -1,3 +1,5 @@
+const OCR = 500;
+
 /**
  * Class representing a Body
  * Defines the functionality for celestial bodies in the simulation
@@ -23,6 +25,7 @@ class Body extends Phaser.GameObjects.Sprite {
 		} else {
 			this.minimap_icon = new Phaser.GameObjects.Sprite(_scene, _pos.x, _pos.y, _id, _frame);
 		}
+
 		this.id = _id
 		this.mass = _mass
 		this.vel = new Phaser.Math.Vector2(0, 0)
@@ -375,7 +378,7 @@ class Probe extends Body {
 	stopOrbitLock() {
 		this.inOrbit = false;
 		this.orbitToggle = false;
-		this.orbitCounter = 500;
+		this.orbitCounter = OCR;
 		CameraManager.changeCamTarget(this);
 		CameraManager.returnToSetZoom();
 		return;
@@ -389,7 +392,7 @@ class Probe extends Body {
 	 * If the probe maintains distance for long enough,
 	 * the probe enters its locked on state.
 	 */
-	maintainOrbit(scene) {
+	maintainOrbit(scene, indicator, progress) {
 		console.log("Maintaining Lock...")
 		var p1 = new Phaser.Geom.Point(this.x, this.y);
 		var p2 = new Phaser.Geom.Point(this.orbitTarget.x, this.orbitTarget.y);
@@ -407,7 +410,10 @@ class Probe extends Body {
 			this.stopOrbitLock();
 			return;
 		}
+
 		this.orbitCounter -= 1;
+
+		return 1 - this.orbitCounter/OCR;
 	}
 
 	/**
