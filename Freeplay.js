@@ -17,6 +17,7 @@ class Freeplay extends Phaser.Scene {
         this.gameOver = false;
         this.pauseText;
         this.failText;
+        this.restart;
     }
 
     /** Loads all necessary assets for the scene before the simulation runs */
@@ -49,6 +50,7 @@ class Freeplay extends Phaser.Scene {
         this.load.image('sol', "img/icons/sol.svg");
         this.load.image('uranus', "img/icons/uranus.svg");
         this.load.image('venus', "img/icons/venus.svg");
+        this.restart = false;
     }
 
     /**
@@ -164,11 +166,11 @@ class Freeplay extends Phaser.Scene {
         this.createOrbitToggle();
 
         if(PreloadManager.get() == true){
-                            // Create a shaded dialog box
-                            const color1 = new Phaser.Display.Color(0, 0, 0);
-                            this.dialogShadow = this.add.rectangle(525, 650,550, 125, color1.color);
-                            this.dialogShadow.setAlpha(0.85);
-                            CameraManager.addUISprite(this.dialogShadow);
+            // Create a shaded dialog box
+            const color1 = new Phaser.Display.Color(0, 0, 0);
+            this.dialogShadow = this.add.rectangle(525, 650,550, 125, color1.color);
+            this.dialogShadow.setAlpha(0.85);
+            CameraManager.addUISprite(this.dialogShadow);
             
         }
     }
@@ -183,8 +185,10 @@ class Freeplay extends Phaser.Scene {
         //**TO DO: Wrap in a custom controler later.
         const moveUnit = 1;
         const rotationOffset = -2.4958208303518727;
-
+        // Stops the Pause button from updating before delayed restart from tutorial.
+        if(!this.restart){
         this.updatePauseButton();
+        }
 
         // only move if not paused or in game over
         if (!this.paused) {
@@ -305,6 +309,7 @@ class Freeplay extends Phaser.Scene {
         this.pauseButton = this.add.image(964, 708, 'pause').setScale(0.5)
         this.restartButton = this.add.image(520, 408, 'restart').setScale(0.5)
         this.exitButton = this.add.image(520, 508, 'exit').setScale(0.5)
+        this.playButton.setVisible(false);
         // Made sure the buttons and label is on top of everything.
         this.restartButton.depth = 100;
         this.playButton.depth = 100;
@@ -422,31 +427,50 @@ class Freeplay extends Phaser.Scene {
             this.shadow.setVisible(false)
         }
 
-        // if game over then show the game over text
-        if (this.gameOver) {
+        if(PreloadManager.get() == true && this.gameOver){
             this.failText.setVisible(true)
-
-            this.pauseButton.setTint(0x7f7f7f);
-            this.playButton.setTint(0x7f7f7f);
-            this.orbitToggle.setTint(0x7f7f7f);
-        } else {
-            this.failText.setVisible(false)
+            this.showDialog(false);
+            this.time.addEvent({
+                delay: 1000,
+                callback: ()=>{
+                    this.scene.restart();
+                    this.paused = false
+                    this.gameOver = false;
+                    // Make the direction icon show up again.
+                    this.direction = undefined;
+                },
+                loop: false
+            })
+            this.restart = true;
+        }
+        // if game over then show the game over text when not in tutorial mode.
+        if (this.gameOver && PreloadManager.get() == false) {
+        this.failText.setVisible(true)
+        this.pauseButton.setTint(0x7f7f7f);
+        this.playButton.setTint(0x7f7f7f);
+        this.orbitToggle.setTint(0x7f7f7f);
+        } else if(this.gameOver == false){
+        this.failText.setVisible(false)
         }
 
-        // if paused or game over then we can show the restart and exit buttons
-        if (this.paused || this.gameOver) {
+        // if paused or game over then we can show the restart and exit buttons.
+        if (!this.restart && (this.paused || this.gameOver)) {
             this.restartButton.setVisible(true)
             this.exitButton.setVisible(true)
             this.shadow.setVisible(true)
             this.showDialog(false);
-        } else {
+        } else{
             this.restartButton.setVisible(false)
             this.exitButton.setVisible(false)
             this.shadow.setVisible(false)
-            this.showDialog(true);
-        }
+            if(PreloadManager.get() == false){
+                this.showDialog(true);
+            }
+            }
         
+            
     }
+    
     
     createOrbitToggle() {
         this.orbitToggle = this.add.image(56, 708, 'orbit').setScale(0.5);
