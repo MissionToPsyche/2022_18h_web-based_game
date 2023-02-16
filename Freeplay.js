@@ -416,9 +416,23 @@ class Freeplay extends Phaser.Scene {
         this.graphics.lineStyle(Constants.HINT_WIDTH_BEFORE, Constants.WHITE, Constants.HINT_ALPHA_BEFORE);
         this.graphics.strokeCircle(psycheX, psycheY, strokeSize);
 
+        this.arcAround(psycheX, psycheY, strokeSize, 360, 10);   
+    }
+
+    /**
+     * Draw a pie shape
+     * @param {string} x - x coordinate of the center
+     * @param {string} y - y coordinate of the center
+     * @param {string} r - radius of the arc
+     * @param {number} angle - angle of the arc
+     * @param {number} size - the arc will be from angle - size to angle + size
+     */
+    arcAround(x, y, r, angle, size) {
         this.graphics.lineStyle(Constants.HINT_WIDTH_AFTER, Constants.ORANGE, Constants.HINT_ALPHA_AFTER);
         this.graphics.beginPath();
-        this.graphics.arc(psycheX, psycheY, strokeSize, 0, Phaser.Math.DegToRad(90), false);
+        let startAngle = Phaser.Math.DegToRad(angle - size);
+        let endAngle = Phaser.Math.DegToRad(angle + size);
+        this.graphics.arc(x, y, r, startAngle, endAngle, false);
         this.graphics.strokePath();
     }
 
