@@ -406,17 +406,32 @@ class Freeplay extends Phaser.Scene {
         }
 
         let probeView = this.graphics.slice(centerX, centerY, viewR, startRotation, endRotation, true);
-        
         this.graphics.fillPath();
 
+        this.drawHint();
+    }
+
+    /**
+     * Draw the hint around the Psyche. At first it's a gray circle around psyche, 
+     * as the player taking photos, the sides taken by the player will become orange.
+     */
+    drawHint() {
         // a dashed line around psyche
-        let psycheX = this.bodies["earth"].x;
-        let psycheY = this.bodies["earth"].y;
-        let strokeSize = this.bodies["earth"].r + Constants.HINT_DISTANCE;
+        let psycheX = this.bodies["psyche"].x;
+        let psycheY = this.bodies["psyche"].y;
+        let strokeSize = this.bodies["psyche"].r + Constants.HINT_DISTANCE;
         this.graphics.lineStyle(Constants.HINT_WIDTH_BEFORE, Constants.WHITE, Constants.HINT_ALPHA_BEFORE);
         this.graphics.strokeCircle(psycheX, psycheY, strokeSize);
 
-        this.arcAround(psycheX, psycheY, strokeSize, 360, 10);   
+        // draw arcs for the covered target angles
+        if (typeof(this.targetAngles) != "undefined") {
+            let arcSize = 180 / this.targetAngles.length;
+            for (let i = 0; i < this.targetAngles.length; i++) {
+                if (this.coverFlags[i] == 1) {
+                    this.arcAround(psycheX, psycheY, strokeSize, this.targetAngles[i], arcSize);
+                }
+            }
+        }
     }
 
     /**
@@ -430,8 +445,8 @@ class Freeplay extends Phaser.Scene {
     arcAround(x, y, r, angle, size) {
         this.graphics.lineStyle(Constants.HINT_WIDTH_AFTER, Constants.ORANGE, Constants.HINT_ALPHA_AFTER);
         this.graphics.beginPath();
-        let startAngle = Phaser.Math.DegToRad(angle - size);
-        let endAngle = Phaser.Math.DegToRad(angle + size);
+        let startAngle = Phaser.Math.DegToRad(180 + angle - size);
+        let endAngle = Phaser.Math.DegToRad(180 + angle + size);
         this.graphics.arc(x, y, r, startAngle, endAngle, false);
         this.graphics.strokePath();
     }
