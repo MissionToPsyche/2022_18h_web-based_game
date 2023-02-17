@@ -165,13 +165,16 @@ class Freeplay extends Phaser.Scene {
         this.createPauseButton();
         this.createOrbitToggle();
 
-        if(PreloadManager.get() == true){
+        // Check if its tutorial mode.
+        if(DialogManager.get("tutorial") == true){
             // Create a shaded dialog box
             const color1 = new Phaser.Display.Color(0, 0, 0);
             this.dialogShadow = this.add.rectangle(525, 650,550, 125, color1.color);
             this.dialogShadow.setAlpha(0.85);
+            this.dialogText = this.add.text(300,625, DialogManager.getTutorialDial(0));
             CameraManager.addUISprite(this.dialogShadow);
-            
+            CameraManager.addUISprite(this.dialogText);
+            this.minimap.ignore(this.dialogText);
         }
     }
 
@@ -427,7 +430,7 @@ class Freeplay extends Phaser.Scene {
             this.shadow.setVisible(false)
         }
 
-        if(PreloadManager.get() == true && this.gameOver){
+        if(DialogManager.get("tutorial") == true && this.gameOver){
             this.failText.setVisible(true)
             this.showDialog(false);
             this.time.addEvent({
@@ -444,7 +447,7 @@ class Freeplay extends Phaser.Scene {
             this.restart = true;
         }
         // if game over then show the game over text when not in tutorial mode.
-        if (this.gameOver && PreloadManager.get() == false) {
+        if (this.gameOver && DialogManager.get("tutorial") == false) {
         this.failText.setVisible(true)
         this.pauseButton.setTint(0x7f7f7f);
         this.playButton.setTint(0x7f7f7f);
@@ -463,7 +466,9 @@ class Freeplay extends Phaser.Scene {
             this.restartButton.setVisible(false)
             this.exitButton.setVisible(false)
             this.shadow.setVisible(false)
-            if(PreloadManager.get() == false){
+            if(DialogManager.get("tutorial") == false){
+                this.showDialog(true);
+            } else if(DialogManager.get("tutorial") == true && !this.restart){
                 this.showDialog(true);
             }
             }
@@ -503,8 +508,14 @@ class Freeplay extends Phaser.Scene {
     showDialog(show){
             if(show == true){
                 this.dialogShadow.setVisible(true);
+                this.dialogText.setVisible(true);
             } else{
+                this.dialogText.setVisible(false);
                 this.dialogShadow.setVisible(false);
             }
     }
+
 }
+
+
+

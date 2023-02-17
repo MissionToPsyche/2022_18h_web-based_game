@@ -89,7 +89,7 @@ class MainMenu extends Phaser.Scene {
                 this.playButton.setTint(0xF47D33);
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
-                PreloadManager.set();
+                DialogManager.set("tutorial");
                 this.playButton.setTint(0xFFFFFF);
                 this.scene.start('Intro');
             })
