@@ -64,6 +64,9 @@ class Freeplay extends Phaser.Scene {
         // load the photo of psyche
         this.load.image('psychePhoto1', "img/photos/psyche1.png");
 
+
+        this.load.audio('ingame_music', 'assets/music/02_Ingame.mp3');
+
         // button sfx
         this.load.audio('menu', 'assets/sfx/misc_menu_4.wav');
         this.load.audio('negative', 'assets/sfx/negative.wav');
@@ -156,6 +159,11 @@ class Freeplay extends Phaser.Scene {
         CameraManager.addUISprite(logo);
         CameraManager.addUISprite(this.lockText);
         CameraManager.addUISprite(map_border);
+
+        this.ingame_music = this.sound.add('ingame_music');
+        if (!this.ingame_music.isPlaying) {
+            this.ingame_music.play({ loop: true });
+        }
 
         //creating control keys
         this.cursors = this.input.keyboard.createCursorKeys();
@@ -526,6 +534,7 @@ class Freeplay extends Phaser.Scene {
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
                 this.exitButton.setTint(0xFFFFFF);
+                this.ingame_music.stop();
                 this.scene.start('MainMenu');
                 this.paused = false;
                 this.gameOver = false;

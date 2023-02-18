@@ -10,6 +10,7 @@ class MainMenu extends Phaser.Scene {
         this.load.image('title_to', 'img/to.png');
         this.load.image('title_psyche', 'img/psyche.png');
 
+        this.load.audio('intro_music', 'assets/music/01_Intro.mp3');
         this.load.audio('load', 'assets/sfx/load.wav');
     }
 
@@ -23,6 +24,11 @@ class MainMenu extends Phaser.Scene {
 
         var logo = this.add.image(50, 50, 'logo').setScale(0.5);
         CameraManager.addUISprite(logo);
+
+        this.intro_music = this.sound.add('intro_music');
+        if (!this.intro_music.isPlaying) {
+            this.intro_music.play({ loop: true });
+        }
 
         this.createTitle();
         this.createPlayButton();
@@ -87,6 +93,7 @@ class MainMenu extends Phaser.Scene {
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
                 this.playButton.setTint(0xFFFFFF);
+                this.intro_music.stop()
                 this.scene.start('Freeplay');
             })
     }
