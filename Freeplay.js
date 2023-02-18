@@ -167,18 +167,22 @@ class Freeplay extends Phaser.Scene {
         this.createPauseButton();
         this.createOrbitToggle();
 
+        // Create a shaded dialog box
+        const color1 = new Phaser.Display.Color(0, 0, 0);
+        this.dialogShadow = this.add.rectangle(525, 650,550, 125, color1.color);
+        this.dialogShadow.setAlpha(0.85);
+        this.dialogText = this.add.text(300,625, "");
+        CameraManager.addUISprite(this.dialogShadow);
+        CameraManager.addUISprite(this.dialogText);
+        this.minimap.ignore(this.dialogText);
+        this.minimap.ignore(this.dialogShadow);
         // Check if its tutorial mode.
         if(DialogManager.get("tutorial") == true){
-            // Create a shaded dialog box
-            const color1 = new Phaser.Display.Color(0, 0, 0);
-            this.dialogShadow = this.add.rectangle(525, 650,550, 125, color1.color);
-            this.dialogShadow.setAlpha(0.85);
-            this.dialogText = this.add.text(300,625, "");
             this.typewriteText(this.dialogText,DialogManager.getTutorialDial(0));
-            CameraManager.addUISprite(this.dialogShadow);
-            CameraManager.addUISprite(this.dialogText);
-            this.minimap.ignore(this.dialogText);
-            this.minimap.ignore(this.dialogShadow);
+        } else{
+            console.log(1);
+            this.dialogShadow.setVisible(false);
+            this.dialogText.setVisible(false);
         }
     }
 
@@ -467,9 +471,7 @@ class Freeplay extends Phaser.Scene {
             this.restartButton.setVisible(false)
             this.exitButton.setVisible(false)
             this.shadow.setVisible(false)
-            if(DialogManager.get("tutorial") == false){
-                this.showDialog(true);
-            } else if(DialogManager.get("tutorial") == true && !this.restart){
+            if(DialogManager.get("tutorial") == true && !this.restart){
                 this.showDialog(true);
             }
             }

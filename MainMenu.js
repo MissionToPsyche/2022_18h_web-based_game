@@ -18,6 +18,7 @@ class MainMenu extends Phaser.Scene {
         this.load.image('up', 'img/icons/upkey.png'); 
         this.load.image('space', 'img/icons/space.png'); 
         this.load.image('p', 'img/icons/p.png'); 
+        DialogManager.set("mission");
     }
 
     create() {
@@ -89,7 +90,6 @@ class MainMenu extends Phaser.Scene {
                 this.playButton.setTint(0xF47D33);
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
-                DialogManager.set("tutorial");
                 this.playButton.setTint(0xFFFFFF);
                 this.scene.start('Intro');
             })
