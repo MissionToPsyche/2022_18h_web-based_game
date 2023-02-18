@@ -51,6 +51,8 @@ class Freeplay extends Phaser.Scene {
         this.load.image('uranus', "img/icons/uranus.svg");
         this.load.image('venus', "img/icons/venus.svg");
         this.restart = false;
+        // Make the indicator show up again.
+        this.direction = undefined;
     }
 
     /**
@@ -171,10 +173,12 @@ class Freeplay extends Phaser.Scene {
             const color1 = new Phaser.Display.Color(0, 0, 0);
             this.dialogShadow = this.add.rectangle(525, 650,550, 125, color1.color);
             this.dialogShadow.setAlpha(0.85);
-            this.dialogText = this.add.text(300,625, DialogManager.getTutorialDial(0));
+            this.dialogText = this.add.text(300,625, "");
+            this.typewriteText(this.dialogText,DialogManager.getTutorialDial(0));
             CameraManager.addUISprite(this.dialogShadow);
             CameraManager.addUISprite(this.dialogText);
             this.minimap.ignore(this.dialogText);
+            this.minimap.ignore(this.dialogShadow);
         }
     }
 
@@ -380,8 +384,6 @@ class Freeplay extends Phaser.Scene {
                 this.scene.restart();
                 this.paused = false
                 this.gameOver = false;
-                // Make the direction icon show up again.
-                this.direction = undefined;
             });
 
             this.exitButton.setInteractive()
@@ -432,6 +434,7 @@ class Freeplay extends Phaser.Scene {
 
         if(DialogManager.get("tutorial") == true && this.gameOver){
             this.failText.setVisible(true)
+            this.minimap.ignore(this.failText);
             this.showDialog(false);
             this.time.addEvent({
                 delay: 1000,
@@ -439,8 +442,6 @@ class Freeplay extends Phaser.Scene {
                     this.scene.restart();
                     this.paused = false
                     this.gameOver = false;
-                    // Make the direction icon show up again.
-                    this.direction = undefined;
                 },
                 loop: false
             })
@@ -515,6 +516,23 @@ class Freeplay extends Phaser.Scene {
             }
     }
 
+    typewriteText(label,text){
+	    const length = text.length
+	    let i = 0
+	    this.time.addEvent({
+		    callback: () => {
+			    label.text += text[i];
+			    ++i;
+                // Skip t onew line if there are 46 characters.
+                if((i % 46) === 0){
+                    label.text += "\n";
+                    length + 1;
+                }
+		    },
+		    repeat: length - 1,
+		    delay: 100
+	    })
+    }
 }
 
 
