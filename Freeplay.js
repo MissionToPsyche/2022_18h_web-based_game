@@ -28,6 +28,8 @@ class Freeplay extends Phaser.Scene {
         this.failText;
 
         this.probeAngleOffset = 0;
+        this.dirs = ["n", "ne", "e", "se", "s", "sw", "w", "nw", "f", "b"]
+        this.shade_angles = [[67.5, 112.5], [112.5, 157.5], [157.5, 202.5], [202.5, 247.5], [247.5, 292.5], [292.5, 337.5], [337.5, 22.5], [22.5, 67.5]]
     }
 
     /** Loads all necessary assets for the scene before the simulation runs */
@@ -45,21 +47,21 @@ class Freeplay extends Phaser.Scene {
         this.load.image('restart', 'img/icons/restart.png'); // a restart button
 
         //staticly loading all the individual assets for now
-        //**TO DO: change to a more general method of preloading images
-        this.load.image('earth', "img/icons/earth.svg");
-        this.load.image('jupiter', "img/icons/jupiter.svg");
-        this.load.image('luna', "img/icons/luna.svg");
-        this.load.image('mars', "img/icons/mars.svg");
-        this.load.image('mercury', "img/icons/mercury.svg");
-        this.load.image('neptune', "img/icons/neptune.svg");
-        this.load.image('pluto', "img/icons/pluto.svg");
-        this.load.image('psyche', "img/icons/psyche.svg");
+        //**TO DO: change to a more general method of preloading images 
+        this.load.spritesheet('sun', "img/sprites/sun_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
+        this.load.spritesheet('mercury', "img/sprites/mercury_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
+        this.load.spritesheet('venus', "img/sprites/venus_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
+        this.load.spritesheet('earth', "img/sprites/earth_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
+        this.load.spritesheet('moon', "img/sprites/moon_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
+        this.load.spritesheet('mars', "img/sprites/mars_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
+        this.load.spritesheet('jupiter', "img/sprites/jupiter_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
+        this.load.spritesheet('saturn', "img/sprites/saturn_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
+        this.load.spritesheet('uranus', "img/sprites/uranus_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
+        this.load.spritesheet('neptune', "img/sprites/neptune_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
+        this.load.spritesheet('pluto', "img/sprites/pluto_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
+        this.load.spritesheet('psyche', "img/sprites/psyche_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
         this.load.image('psyche_probe', "img/icons/psyche_probe.svg");
         this.load.image('psyche_probe_icon', "img/icons/arrow.png");
-        this.load.image('saturn', "img/icons/saturn.svg");
-        this.load.image('sol', "img/icons/sol.svg");
-        this.load.image('uranus', "img/icons/uranus.svg");
-        this.load.image('venus', "img/icons/venus.svg");
 
         // load the photo of psyche
         this.load.image('psychePhoto1', "img/photos/psyche1.png");
@@ -122,7 +124,33 @@ class Freeplay extends Phaser.Scene {
                 if(type != "probes"){
                     let parent = this.bodies[body['orbits']];
                     let angle = body['angle'];
-                    this.bodies[id] = new Satellite(this, id, mass, diameter, parent, angle, orbit_distance);
+                    let day_length = body['day_length']['value'];
+
+                    this.bodies[id] = new Satellite(this, id, mass, diameter, parent, angle, orbit_distance, day_length);
+
+                    for (const dir of this.dirs) {
+                        const offset = 16 * this.dirs.indexOf(dir)
+                        this.anims.create({
+                            key: id + "-" + dir,
+                            frames: this.anims.generateFrameNumbers(id, {
+                                frames: [offset + 0,
+                                offset + 1,
+                                offset + 2,
+                                offset + 3,
+                                offset + 4,
+                                offset + 5,
+                                offset + 6,
+                                offset + 7,
+                                offset + 8,
+                                offset + 9]
+                            }),
+                            frameRate: 12,
+                            repeat: -1
+                        });
+                    }
+
+
+                    this.bodies[id].play(id + "-f");
                 } else {
                     this.bodies[id] = new Probe(this, id, mass, diameter);
                 }
@@ -142,7 +170,7 @@ class Freeplay extends Phaser.Scene {
                 this.bodies[body].subscribe(this.bodies["psyche_probe"]);
             }
         }
-        this.bodies["earth"].subscribe(this.bodies["luna"]);
+        this.bodies["earth"].subscribe(this.bodies["moon"]);
         //setting probe as the player
         this.player = this.bodies["psyche_probe"];
         this.newCamTarget = this.bodies["earth"];
@@ -345,6 +373,36 @@ class Freeplay extends Phaser.Scene {
     
             //update body positions
             this.bodies[body].updatePosition(this)
+
+            if (body != "psyche_probe") {
+                var p1 = new Phaser.Geom.Point(this.bodies["sun"].x, this.bodies["sun"].y);
+                var p2 = new Phaser.Geom.Point(this.bodies[body].x, this.bodies[body].y);
+                let sunAngle = Math.atan2(p2.y - p1.y, p2.x - p1.x);
+                sunAngle = Phaser.Math.RadToDeg(sunAngle)
+
+                if (sunAngle < 0) {
+                    sunAngle += 360;
+                } else if (sunAngle > 360) {
+                    sunAngle -= 360;
+                }
+
+                console.log(body + ": " + sunAngle)
+                if (body == "mars") {
+                    var p = "poo";
+                }
+                for (const idx in this.shade_angles) {
+                    const angle = this.shade_angles[idx]
+                    if (angle[0] < sunAngle && sunAngle <= angle[1]) {
+                        this.bodies[body].play(this.bodies[body].id + "-" + this.dirs[idx], true);
+                        console.log(this.bodies[body].id + "-" + this.dirs[idx])
+                        break;
+                    } else if (angle[0] > angle[1] && (angle[0] < sunAngle || sunAngle <= angle[1])) {
+                        this.bodies[body].play(this.bodies[body].id + "-" + this.dirs[idx], true);
+                        console.log(this.bodies[body].id + "-" + this.dirs[idx])
+                        break;
+                    }
+                }
+            }
 
             // find psyche
             let distance = this.bodies["psyche_probe"].getDistance("psyche");
