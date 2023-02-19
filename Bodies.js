@@ -244,7 +244,6 @@ class Probe extends Body {
 		this.gravityToggle = true; //TO DO: REMOVE WHEN DONE TESTING GRAVITY
 		this.inOrbit = true; //when true, indicates that probe is orbiting a planet
 		this.orbitToggle = true; //when true, starts the orbit lock on process
-		this.rotation = 0;
 
 		this.foos = 1; //fraction of orbit speed
 		this.orbitChangeCounter = 0;
@@ -257,6 +256,8 @@ class Probe extends Body {
 		
 		this.orbitTarget = this.scene.bodies["earth"]; //the target of the probe's orbit.
 
+		this.angleOffset = 0;
+
 		//overload minimap display size
 		this.minimap_icon.setDisplaySize(this.r * 200, this.r * 200)
 			.setSize(this.r * 200, this.r * 200);
@@ -268,6 +269,11 @@ class Probe extends Body {
 		//deploy the probe near earth so that it doesn't immediately collide
 		this.x = this.scene.bodies["earth"].x - 35;
 		this.y = this.scene.bodies["earth"].y;
+
+		this.rotation = Math.atan2(this.y - this.orbitTarget.y, this.x - this.orbitTarget.x) - Math.PI/4; //initial rotation faces orbited planet
+		this.minimap_icon.rotation = this.rotation;
+
+		this.controler;
 	}
 
 	/**
@@ -304,8 +310,38 @@ class Probe extends Body {
 				this.orbitChangeCounter -= 1;
 			}
 
-			
+			//set rotation based on orbit around target
+			//calculate current angle necissary for probe to point at orbit target
+            let p2 = this;
+            //console.log(p1);
+            let p1 = p2.orbitTarget;
+            //console.log(p2);
+
+			this.angleOffset += this.controler.getRotation();
+
+            let relAngle = Math.atan2(p2.y - p1.y, p2.x - p1.x) - Math.PI/4;
+			let newAngle =  relAngle + this.angleOffset;
+			this.rotation = Phaser.Math.Angle.RotateTo(this.rotation, newAngle, 0.05);
+		} else if (this.controler.controlMethod == 1) {
+			let newAngle = this.controler.getRotation();
+			this.rotation = Phaser.Math.Angle.RotateTo(this.rotation, newAngle, 0.05);
+
+			let a_vel = this.controler.getAccelerationVector();
+			this.vel.add(a_vel);
+		} else {
+			//changing velocity based on vector from controler
+			let a_vel = this.controler.getAccelerationVector();
+			this.vel.add(a_vel);
+
+			//if acceleration vector from controler is > 0, change angle to face the
+			//direction of the vector
+			if(a_vel.length() > 0) {
+				let newAngle = Phaser.Math.Angle.Wrap(a_vel.angle() - (Math.PI/4) * 5);
+				this.rotation = Phaser.Math.Angle.RotateTo(this.rotation, newAngle, 0.05);
+			}
 		}
+
+		this.minimap_icon.angle = this.angle;
 		super.updatePosition();
 	}
 
@@ -534,5 +570,11 @@ class Probe extends Body {
     	}
     }
 
-
+	/**
+	 * Sets the controler for this Probe
+	 * @param {Controler} _controler 
+	 */
+	setControler(_controler) {
+		this.controler = _controler;
+	}
 }
