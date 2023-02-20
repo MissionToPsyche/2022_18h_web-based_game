@@ -310,13 +310,8 @@ class Freeplay extends Phaser.Scene {
         }
         */
 
-        // don't update bodies if paused
-        if (this.paused) {
-            return
-        }
-
-        // don't update bodies if paused
-        if (this.paused || this.gameOver) {
+        // don't update bodies if paused, game over, or is taking photo
+        if (this.paused || this.gameOver || this.takingPhoto) {
             return
         }
 
