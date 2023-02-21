@@ -27,6 +27,7 @@ class Freeplay extends Phaser.Scene {
 
         this.failText;
         this.restart;
+        this.done;
 
         this.probeAngleOffset = 0;
         this.dirs = ["n", "ne", "e", "se", "s", "sw", "w", "nw", "f", "b"]
@@ -203,11 +204,19 @@ class Freeplay extends Phaser.Scene {
         this.dialogText = this.add.text(300,625, "");
         CameraManager.addUISprite(this.dialogShadow);
         CameraManager.addUISprite(this.dialogText);
-        this.minimap.ignore(this.dialogText);
-        this.minimap.ignore(this.dialogShadow);
+        // this.minimap.ignore(this.dialogText);
+        // this.minimap.ignore(this.dialogShadow);
         // Check if its tutorial mode.
         if(DialogManager.get("tutorial") == true){
             this.typewriteText(this.dialogText,DialogManager.getTutorialDial(0));
+            this.time.addEvent({
+                delay: 5000,
+                callback: ()=>{
+                    this.typewriteText(this.dialogText,DialogManager.getTutorialDial(1));
+                },
+                loop: false
+            })
+
         } else{
             console.log(1);
             this.dialogShadow.setVisible(false);
@@ -375,6 +384,39 @@ class Freeplay extends Phaser.Scene {
             this.graphics.lineStyle(1, 0x0000ff, 0.5);
             this.bodies["psyche_probe"].getOrbitPath('cur').draw(this.graphics, 64);
             this.graphics.fillStyle(0x00ff00, 1);
+            if(DialogManager.get("tutorial") == true && this.bodies["psyche_probe"].orbitTarget.id =="psyche"){
+                if(!this.done){
+                    this.dialogText.setVisible(false);
+                    this.dialogText = this.add.text(300,625, "");
+                    this.typewriteText(this.dialogText,DialogManager.getTutorialDial(3));
+                    this.time.addEvent({
+                        delay: 3000,
+                        callback: ()=>{
+                            this.typewriteText(this.dialogText,DialogManager.getTutorialDial(4));
+                        },
+                        loop: false
+                    })
+                    // Make sure the dialog doesn't keep on updating.
+                    this.done = true;
+                }
+            } else if(DialogManager.get("tutorial") == true && 
+            (this.bodies["psyche_probe"].orbitTarget.id !="psyche" && 
+            this.bodies["psyche_probe"].orbitTarget.id !="earth")){
+                if(!this.done){
+                    this.dialogText.setVisible(false);
+                    this.dialogText = this.add.text(300,625, "");
+                    this.typewriteText(this.dialogText,DialogManager.getTutorialDial(6));
+                    this.time.addEvent({
+                        delay: 3000,
+                        callback: ()=>{
+                            this.typewriteText(this.dialogText,DialogManager.getTutorialDial(1));
+                        },
+                        loop: false
+                    })
+                    // Make sure the dialog doesn't keep on updating.
+                    this.done = true;
+                }
+            }
         }
 
         for (const body in this.bodies) {
@@ -680,7 +722,7 @@ class Freeplay extends Phaser.Scene {
 
         if(DialogManager.get("tutorial") == true && this.gameOver){
             this.failText.setVisible(true)
-            this.minimap.ignore(this.failText);
+            //this.minimap.ignore(this.failText);
             this.showDialog(false);
             this.time.addEvent({
                 delay: 1000,
@@ -826,6 +868,13 @@ class Freeplay extends Phaser.Scene {
             this.bodies["psyche_probe"].startOrbitLock(this);
         } else {
             this.bodies["psyche_probe"].stopOrbitLock();
+            if(DialogManager.get("tutorial") == true){
+                this.dialogText.setVisible(false);
+                this.dialogText = this.add.text(300,625, "");
+                this.typewriteText(this.dialogText,DialogManager.getTutorialDial(2));
+            }
+            // Makes sure dialog for when orbiting can reappear.
+            this.done = false;
         }
     }
 
@@ -859,6 +908,11 @@ class Freeplay extends Phaser.Scene {
             .on('pointerdown', () => {
                 this.takingPhoto = !this.takingPhoto;
                 this.quitPhotoPageButton.setVisible(false);
+                if(DialogManager.get("tutorial") == true){
+                    this.dialogText.setVisible(false);
+                    this.dialogText = this.add.text(300,625, "");
+                    this.typewriteText(this.dialogText,DialogManager.getTutorialDial(5));
+                }
                 
             })
             .setVisible(false);

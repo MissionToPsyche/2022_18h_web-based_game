@@ -6,11 +6,13 @@ class DialogManager {
     }
     static mode;
     static tutorialLog = [
+        "Welcome to the Tutorial!\n",
+        "Press the shift button to get out of Orbit.",
         "Use the arrow keys to move the probe and find Psyche without crashing.",
-        "You have found Psyche! Now press the shift key to orbit around Psyche.",
-        "Your mission is to take pictures of all angles of Psyche.",
-        "Press the space bar to take pictures of Psyche.",
-        "You have finished the tutorial!"
+        "You have found Psyche!\n",
+        "Press the space key in order to take pictures of Psyche.",
+        "Good job! You have finished the tutorial!",
+        "You are orbiting the wrong planet.\n"
     ]
 
     static set(setMode){
