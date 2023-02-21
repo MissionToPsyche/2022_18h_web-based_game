@@ -62,6 +62,9 @@ class Freeplay extends Phaser.Scene {
         this.load.spritesheet('psyche', "img/sprites/psyche_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
         this.load.image('psyche_probe', "img/icons/psyche_probe.svg");
         this.load.image('psyche_probe_icon', "img/icons/arrow.png");
+        this.load.image('parallax_stars_layer1', "img/sprites/star_background_layer1.png");
+        this.load.image('parallax_stars_layer2', "img/sprites/star_background_layer2.png");
+        this.load.image('parallax_stars_layer3', "img/sprites/star_background_layer3.png");
 
         // load the photo of psyche
         this.load.image('psychePhoto1', "img/photos/psyche1.png");
@@ -108,6 +111,14 @@ class Freeplay extends Phaser.Scene {
 
         //Game over
         this.failText = this.add.text(525, 300, 'Game Over!').setOrigin(0.5).setFontSize(120);
+
+        //Parallax Background
+        this.backgroundLayer1 = this.add.image(0, 0, 'parallax_stars_layer1').setOrigin(0.5);
+        this.backgroundLayer2 = this.add.image(0, 0, 'parallax_stars_layer2').setOrigin(0.5);
+        this.backgroundLayer3 = this.add.image(0, 0, 'parallax_stars_layer2').setOrigin(0.5);
+        this.backgroundLayer1.setVisible(true);
+        this.backgroundLayer2.setVisible(true);
+        this.backgroundLayer3.setVisible(true);
 
         //creating Body objects
         this.json = this.cache.json.get('bodies');
