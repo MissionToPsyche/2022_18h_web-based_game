@@ -19,6 +19,9 @@ class MainMenu extends Phaser.Scene {
         this.load.image('space', 'img/icons/space.png'); 
         this.load.image('p', 'img/icons/p.png'); 
         DialogManager.set("mission");
+
+        this.load.audio('intro_music', 'assets/music/01_Intro.mp3');
+        this.load.audio('load', 'assets/sfx/load.wav');
     }
 
     create() {
@@ -26,9 +29,16 @@ class MainMenu extends Phaser.Scene {
 
         CameraManager.initializeMainCamera(this);
         CameraManager.initializeUICamera(this);
+        CameraManager.initializeMiniCamera(this);
+        CameraManager.toggleCamera('mini');
 
         var logo = this.add.image(50, 50, 'logo').setScale(0.5);
         CameraManager.addUISprite(logo);
+
+        this.intro_music = this.sound.add('intro_music');
+        if (!this.intro_music.isPlaying) {
+            this.intro_music.play({ loop: true });
+        }
 
         this.createTitle();
         this.createPlayButton();
@@ -88,10 +98,13 @@ class MainMenu extends Phaser.Scene {
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
                 this.playButton.setTint(0xF47D33);
+                var load_audio = this.sound.add('load');
+                load_audio.play();
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
                 this.playButton.setTint(0xFFFFFF);
                 this.scene.start('Intro');
+                this.intro_music.stop()
             })
     }
 
