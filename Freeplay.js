@@ -385,7 +385,7 @@ class Freeplay extends Phaser.Scene {
                     sunAngle -= 360;
                 }
 
-                console.log(body + ": " + sunAngle)
+                // console.log(body + ": " + sunAngle)
                 if (body == "mars") {
                     var p = "poo";
                 }
@@ -393,11 +393,11 @@ class Freeplay extends Phaser.Scene {
                     const angle = this.shade_angles[idx]
                     if (angle[0] < sunAngle && sunAngle <= angle[1]) {
                         this.bodies[body].play(this.bodies[body].id + "-" + this.dirs[idx], true);
-                        console.log(this.bodies[body].id + "-" + this.dirs[idx])
+                        // console.log(this.bodies[body].id + "-" + this.dirs[idx])
                         break;
                     } else if (angle[0] > angle[1] && (angle[0] < sunAngle || sunAngle <= angle[1])) {
                         this.bodies[body].play(this.bodies[body].id + "-" + this.dirs[idx], true);
-                        console.log(this.bodies[body].id + "-" + this.dirs[idx])
+                        // console.log(this.bodies[body].id + "-" + this.dirs[idx])
                         break;
                     }
                 }
@@ -811,105 +811,10 @@ class Freeplay extends Phaser.Scene {
         this.nearestBodyText.setFontSize(Constants.SECOND_FONT_SIZE);
         CameraManager.addUISprite(this.foundPsycheText);
 
-        /*
-        this.input.keyboard
-            .on('keyup-SPACE', () => {
-                photoKeyEvent();
         // TODO: can let the player to choose difficulty
         // here default is to take photo of the psyche from four sides
         this.targetAngles = Constants.FOUR_SIDES;
         this.coverFlags = new Array(this.targetAngles.length).fill(0);
-
-        this.input.keyboard
-            .on('keyup-SPACE', () => {
-                // disable spacebar take photo when paused
-                if ((!this.paused) && (!this.gameOver)) {
-                    this.takingPhoto = !this.takingPhoto;
-
-                    let viewR = Constants.VIEW_R;
-                    let endRotation = this.bodies["psyche_probe"].rotation + Math.PI;
-                    if (endRotation > 2 * Math.PI) {
-                        endRotation -= (2 * Math.PI);
-                    }
-                    let startRotation = endRotation + Phaser.Math.DegToRad(90);
-                    if (startRotation > 2 * Math.PI) {
-                        startRotation -= (2 * Math.PI);
-                    }
-
-                    // check if pyche is in the view
-                    if (this.bodies["psyche_probe"].isInView("psyche", viewR, startRotation, endRotation)) {
-                        this.foundPsycheText.setVisible(true);
-                        this.psychePhoto1.setVisible(true);
-
-                        // Psyche is in the view, check the side
-                        let psycheAngle = Math.asin(this.bodies["psyche_probe"].getPsycheDirectionY());
-                        if (this.bodies["psyche_probe"].getPsycheDirectionX() < 0) {
-                            psycheAngle = Math.PI - psycheAngle;
-                        }
-                        psycheAngle = Phaser.Math.RadToDeg(psycheAngle);
-
-                        if (psycheAngle < 0) {
-                            psycheAngle += 360;
-                        }
-
-                        if (psycheAngle > 360) {
-                            psycheAngle -= 360;
-                        }
-
-                        // now psycheAngle is a positive degree number between 0 and 360
-                        // check if psycheAngle covers target angle
-                        for (let i = 0; i < this.targetAngles.length; i++) {
-                            if ((Math.abs(psycheAngle - this.targetAngles[i]) <= Constants.ONE_PHOTO_ANGLE) 
-                                || (Math.abs(psycheAngle - this.targetAngles[i] + 360) <= Constants.ONE_PHOTO_ANGLE) 
-                                || (Math.abs(psycheAngle - this.targetAngles[i] - 360) <= Constants.ONE_PHOTO_ANGLE)) {
-                                // this photo covers the target angle targetAngles[i], set the flag
-                                if (this.coverFlags[i] == 1) {
-                                    console.log("You have already taken photo of this side, please take photo of other sides.");
-                                } else {
-                                    this.coverFlags[i] = 1;
-                                    console.log("Congratuations! You just took photo of a new Psyche side!")
-                                }
-                            }
-                        }
-
-                        // check sides covered
-                        let sidesCovered = 0;
-                        for (let i = 0; i < this.coverFlags.length; i++) {
-                            if (this.coverFlags[i] == 1) {
-                                sidesCovered++;
-                            }
-                        }
-                        console.log("now " + sidesCovered + " of " + this.coverFlags.length + " sides covered");
-                        
-                    } else {
-                        // check which body is in the view and choose the nearest one
-                        let currentDistance = 1000; // random big number
-                        let nearestBody = null;
-                        for (var body in this.bodies) {
-                            if (this.bodies["psyche_probe"].isInView(body, viewR, startRotation, endRotation)) {
-                                // this body is in probe's view, keep the distance
-                                let thisBodyDistance = this.bodies["psyche_probe"].getDistance(body);
-                                if (thisBodyDistance < currentDistance) {
-                                    currentDistance = thisBodyDistance;
-                                    nearestBody = body;
-                                }
-                            }
-                        }
-
-                        let nearestInfo = "";
-                        if (nearestBody != null) {
-                            nearestInfo = "You found the ";
-                            nearestInfo += nearestBody.charAt(0).toUpperCase();
-                            nearestInfo += nearestBody.slice(1);
-                            nearestInfo += ", \nbut you should try \nto find the Psyche.";
-                        }
-
-                        this.nearestBodyText.setText(nearestInfo);
-                        this.nearestBodyText.setVisible(true);
-                    }
-                }
-            });
-        */
 
         this.quitPhotoPageButton = this.add.text(Constants.QUIT_PHOTO_X, Constants.QUIT_PHOTO_Y, 'Back to game')
             .setFontSize(Constants.THIRD_FONT_SIZE)
@@ -936,7 +841,7 @@ class Freeplay extends Phaser.Scene {
         if ((!this.paused) && (!this.gameOver)) {
             this.takingPhoto = !this.takingPhoto;
 
-            let viewR = 100;
+            let viewR = Constants.VIEW_R;
             let endRotation = this.bodies["psyche_probe"].rotation + Math.PI;
             if (endRotation > 2 * Math.PI) {
                 endRotation -= (2 * Math.PI);
@@ -950,10 +855,47 @@ class Freeplay extends Phaser.Scene {
             if (this.bodies["psyche_probe"].isInView("psyche", viewR, startRotation, endRotation)) {
                 this.foundPsycheText.setVisible(true);
                 this.psychePhoto1.setVisible(true);
-                this.quitPhotoPageButton.setPosition(300, 650);
-                var win_audio = this.sound.add('positive');
-                win_audio.play();
-                // console.log("psyche in view!");
+
+                // Psyche is in the view, check the side
+                let psycheAngle = Math.asin(this.bodies["psyche_probe"].getPsycheDirectionY());
+                if (this.bodies["psyche_probe"].getPsycheDirectionX() < 0) {
+                    psycheAngle = Math.PI - psycheAngle;
+                }
+                psycheAngle = Phaser.Math.RadToDeg(psycheAngle);
+
+                if (psycheAngle < 0) {
+                    psycheAngle += 360;
+                }
+
+                if (psycheAngle > 360) {
+                    psycheAngle -= 360;
+                }
+
+                // now psycheAngle is a positive degree number between 0 and 360
+                // check if psycheAngle covers target angle
+                for (let i = 0; i < this.targetAngles.length; i++) {
+                    if ((Math.abs(psycheAngle - this.targetAngles[i]) <= Constants.ONE_PHOTO_ANGLE) 
+                        || (Math.abs(psycheAngle - this.targetAngles[i] + 360) <= Constants.ONE_PHOTO_ANGLE) 
+                        || (Math.abs(psycheAngle - this.targetAngles[i] - 360) <= Constants.ONE_PHOTO_ANGLE)) {
+                        // this photo covers the target angle targetAngles[i], set the flag
+                        if (this.coverFlags[i] == 1) {
+                            console.log("You have already taken photo of this side, please take photo of other sides.");
+                        } else {
+                            this.coverFlags[i] = 1;
+                            console.log("Congratuations! You just took photo of a new Psyche side!")
+                        }
+                    }
+                }
+
+                // check sides covered
+                let sidesCovered = 0;
+                for (let i = 0; i < this.coverFlags.length; i++) {
+                    if (this.coverFlags[i] == 1) {
+                        sidesCovered++;
+                    }
+                }
+                console.log("now " + sidesCovered + " of " + this.coverFlags.length + " sides covered");
+                        
             } else {
                 // check which body is in the view and choose the nearest one
                 let currentDistance = 1000; // random big number
@@ -979,8 +921,6 @@ class Freeplay extends Phaser.Scene {
 
                 this.nearestBodyText.setText(nearestInfo);
                 this.nearestBodyText.setVisible(true);
-                //console.log("nearest body: " + nearestBody);
-                this.quitPhotoPageButton.setPosition(300, 500);
             }
         }
     }
