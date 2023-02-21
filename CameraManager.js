@@ -97,14 +97,14 @@ class CameraManager {
         //need to find what the fraction of the zoom
         //is based on the camera's viewport size
         var zoom = this.mainCamera.height / size;
-        this.mainCamera.zoomTo(zoom);
+        this.mainCamera.zoomTo(zoom, 1000, 'Linear', true);
     }
 
     /**
      * returns the main camera to it's set zoom value.
      */
     static returnToSetZoom() {
-        this.mainCamera.zoomTo(this.mainZoom);
+        this.mainCamera.zoomTo(this.mainZoom, 1000, 'Linear', true);
     }
 
     /**
