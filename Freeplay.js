@@ -340,7 +340,16 @@ class Freeplay extends Phaser.Scene {
         }
 
         //for probe's gravity lock functionality:
-        if (this.bodies["psyche_probe"].orbitToggle && !this.bodies["psyche_probe"].inOrbit) {
+        if (this.player.findingTarget) {
+            var target = this.player.newTarget;
+            var path = new Phaser.Geom.Circle(target.x, target.y, target.r).getPoints(false, 0.5);
+            let ind = new Phaser.Curves.Spline(path);
+
+            this.graphics.lineStyle(1, 0xffffff, 0.5);
+            ind.draw(this.graphics, 64);
+            this.graphics.fillStyle(0xffffff, 1);
+        }
+        else if (this.bodies["psyche_probe"].orbitToggle && !this.bodies["psyche_probe"].inOrbit) {
             let ratio = this.bodies["psyche_probe"].maintainOrbit(this);
             let subRadius = ratio * this.player.orbitTarget.r;
             if (!subRadius) {
@@ -409,7 +418,7 @@ class Freeplay extends Phaser.Scene {
                     sunAngle -= 360;
                 }
 
-                console.log(body + ": " + sunAngle)
+                //console.log(body + ": " + sunAngle)
                 if (body == "mars") {
                     var p = "poo";
                 }
@@ -417,11 +426,11 @@ class Freeplay extends Phaser.Scene {
                     const angle = this.shade_angles[idx]
                     if (angle[0] < sunAngle && sunAngle <= angle[1]) {
                         this.bodies[body].play(this.bodies[body].id + "-" + this.dirs[idx], true);
-                        console.log(this.bodies[body].id + "-" + this.dirs[idx])
+                        //console.log(this.bodies[body].id + "-" + this.dirs[idx])
                         break;
                     } else if (angle[0] > angle[1] && (angle[0] < sunAngle || sunAngle <= angle[1])) {
                         this.bodies[body].play(this.bodies[body].id + "-" + this.dirs[idx], true);
-                        console.log(this.bodies[body].id + "-" + this.dirs[idx])
+                        //console.log(this.bodies[body].id + "-" + this.dirs[idx])
                         break;
                     }
                 }
@@ -776,7 +785,7 @@ class Freeplay extends Phaser.Scene {
     toggleOrbit() {
         this.bodies["psyche_probe"].orbitToggle = !this.bodies["psyche_probe"].orbitToggle;
         if (!this.bodies["psyche_probe"].inOrbit) { 
-            this.bodies["psyche_probe"].startOrbitLock(this);
+            this.bodies["psyche_probe"].startOrbitLock(this.player.newTarget);
         } else {
             this.bodies["psyche_probe"].stopOrbitLock();
         }

@@ -37,6 +37,8 @@ class Controler {
         this.totalRotation = 0;
         this.totalAcc = 0;
 
+        this.orbitTarget = this.scene.bodies["earth"];
+
         this.updateKeyEvents();
 
         //temp just to view control changes. Remove later when we have an options menu for this.
@@ -70,7 +72,14 @@ class Controler {
                 this.scene.updatePauseColor();
             });
         this.orbitKey
+            .on('down', () => {
+                console.log("finding closest body...");
+                if (!this.player.inOrbit) {
+                    this.player.findingTarget = true;
+                }
+            })
             .on('up', () => {
+                this.player.findingTarget = false;
                 this.scene.toggleOrbit();
                 this.scene.updateOrbitColor(this.player.orbitToggle ? 'on' : null);
             });

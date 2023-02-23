@@ -264,6 +264,8 @@ class Probe extends Body {
 		this.newOrbit = 40;
 		
 		this.orbitTarget = this.scene.bodies["earth"]; //the target of the probe's orbit.
+		this.findingTarget = false;
+		this.newTarget = this.scene.bodies["earth"];
 
 		this.angleOffset = 0;
 
@@ -366,18 +368,37 @@ class Probe extends Body {
 			return
 		}
 
+		if (this.findingTarget) {
+			this.newTarget = this.getClosestBody(this.scene);
+		}
+
         super.update(f);
     }
 
 	/**
-	 * Starts the process of the probe locking onto a body.
-	 * The probe polls all bodies in the given scene and chooses
-	 * the closest one in range, then enters the maintaining state.
-	 * @param {Phaser.Scene} scene - the scene the probe searches bodies in.
+	 * Starts the process of the probe locking onto a given body.
+	 * @param {Body} Parent - the scene the probe searches bodies in.
 	 */
-	startOrbitLock(scene) {
+	startOrbitLock(parent) {
 		//poll all planets and get closest planet within range (determined by max orbit)
 		console.log("Starting Orbit Lock")
+		if (parent != null) {
+			console.log("Lock Success!")
+			console.log(parent)
+			//set orbit target and enable orbit lock for second stage
+			this.orbitTarget = parent;
+			this.orbitToggle = true;
+		} else {
+			console.log("Lock Fail...")
+		}
+	}
+
+	/**
+	 * Gets the closest body to the probe in the given scene
+	 * @param {Phaser.Scene} scene - the scene the probe searches bodies in.
+	 * @returns {Body} The closest body
+	 */
+	getClosestBody(scene) {
 		var parent;
 		var pr = 2000;
 		var p1;
@@ -402,15 +423,7 @@ class Probe extends Body {
 			}
 		}
 
-		if (parent != null) {
-			console.log("Lock Success!")
-			console.log(parent)
-			//set orbit target and enable orbit lock for second stage
-			this.orbitTarget = parent;
-			this.orbitToggle = true;
-		} else {
-			console.log("Lock Fail...")
-		}
+		return parent;
 	}
 
 	/**
@@ -434,7 +447,7 @@ class Probe extends Body {
 	 * If the probe maintains distance for long enough,
 	 * the probe enters its locked on state.
 	 */
-	maintainOrbit(scene, indicator, progress) {
+	maintainOrbit(scene) {
 		console.log("Maintaining Lock...")
 		var p1 = new Phaser.Geom.Point(this.x, this.y);
 		var p2 = new Phaser.Geom.Point(this.orbitTarget.x, this.orbitTarget.y);
