@@ -69,7 +69,7 @@ class CameraManager {
      * @param {Scene} scene - The scene to add this camera to
      */
     static initializeMiniCamera(scene) {
-        this.miniCamera = scene.cameras.add(745, 10, 300, 205)
+        this.miniCamera = scene.cameras.add(745, 10, 270, 205)
             .setZoom(0.018)
             .setName('mini')
             .setBackgroundColor("Black")
@@ -105,6 +105,10 @@ class CameraManager {
      */
     static returnToSetZoom() {
         this.mainCamera.zoomTo(this.mainZoom);
+    }
+
+    static getMainCamera(){
+        return this.mainCamera;
     }
 
     /**

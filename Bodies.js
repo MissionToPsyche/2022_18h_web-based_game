@@ -265,8 +265,8 @@ class Probe extends Body {
 		this.angleOffset = 0;
 
 		//overload minimap display size
-		this.minimap_icon.setDisplaySize(this.r * 200, this.r * 200)
-			.setSize(this.r * 200, this.r * 200);
+		// this.minimap_icon.setDisplaySize(this.r * 200, this.r * 200)
+		// 	.setSize(this.r * 200, this.r * 200);
 
 		//set camera zoom for initial state
 		var totalSize = (this.currentOrbit * 2 + this.r * 2 ) * 1.1;
@@ -278,6 +278,7 @@ class Probe extends Body {
 
 		this.rotation = Math.atan2(this.y - this.orbitTarget.y, this.x - this.orbitTarget.x) - Math.PI/4; //initial rotation faces orbited planet
 		this.minimap_icon.rotation = this.rotation;
+		this.minimap_icon.setScale(4);
 
 		this.controler;
 	}

@@ -186,7 +186,6 @@ class Freeplay extends Phaser.Scene {
 
         //adding to UIsprites so main camera ignores them
         CameraManager.addUISprite(logo);
-        CameraManager.addUISprite(map_border);
 
         this.ingame_music = this.sound.add('ingame_music');
         if (!this.ingame_music.isPlaying) {
