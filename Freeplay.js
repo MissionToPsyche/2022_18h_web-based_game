@@ -17,6 +17,7 @@ class Freeplay extends Phaser.Scene {
         this.minigraphics;
         this.direction;
         this.gameOver = false;
+        this.gameSuccess = false;
         this.pauseText;
 
         this.takingPhoto = false;
@@ -315,7 +316,7 @@ class Freeplay extends Phaser.Scene {
         */
 
         // don't update bodies if paused, game over, or is taking photo
-        if (this.paused || this.gameOver || this.takingPhoto) {
+        if (this.paused || this.gameOver || this.gameSuccess || this.takingPhoto) {
             return
         }
 
@@ -614,6 +615,7 @@ class Freeplay extends Phaser.Scene {
                 this.scene.restart();
                 this.paused = false
                 this.gameOver = false;
+                this.gameSuccess = false;
                 // Make the direction icon show up again.
                 this.direction = undefined;
             });
@@ -637,6 +639,7 @@ class Freeplay extends Phaser.Scene {
                 this.scene.start('MainMenu');
                 this.paused = false;
                 this.gameOver = false;
+                this.gameSuccess = false;
             });
 
         //add all the images to the UI camera.
@@ -681,7 +684,7 @@ class Freeplay extends Phaser.Scene {
      */
     updatePauseButton() {
         // if paused and not game over then we can show the pause text and allow the pause/play buttons to update
-        if (this.paused && !this.gameOver) {
+        if (this.paused && !this.gameOver && !this.gameSuccess) {
             this.pauseText.setVisible(true)
             this.playButton.setVisible(true)
             this.pauseButton.setVisible(false)
@@ -701,12 +704,16 @@ class Freeplay extends Phaser.Scene {
             this.pauseButton.setTint(0x7f7f7f);
             this.playButton.setTint(0x7f7f7f);
             this.orbitButton.setTint(0x7f7f7f);
+        } else if (this.gameSuccess) {
+            this.pauseButton.setTint(0x7f7f7f);
+            this.playButton.setTint(0x7f7f7f);
+            this.orbitButton.setTint(0x7f7f7f);
         } else {
-            this.failText.setVisible(false)
+            this.failText.setVisible(false);
         }
 
         // if paused or game over then we can show the restart and exit buttons
-        if (this.paused || this.gameOver) {
+        if (this.paused || this.gameOver || this.gameSuccess) {
             this.restartButton.setVisible(true)
             this.exitButton.setVisible(true)
             this.shadow.setVisible(false)
@@ -764,7 +771,7 @@ class Freeplay extends Phaser.Scene {
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
                 this.updateOrbitColor(this.bodies["psyche_probe"].orbitToggle ? 'on' : null);
-                if(!this.gameOver) {
+                if(!this.gameOver && !this.gameSuccess) {
                     this.toggleOrbit();
                 }
             });
@@ -806,7 +813,8 @@ class Freeplay extends Phaser.Scene {
         CameraManager.addUISprite(this.psychePhoto1);
 
         this.foundPsycheText = this.add.text(Constants.FOUND_PSYCHE_TEXT_X, Constants.FOUND_PSYCHE_TEXT_Y, 'You found Psyche!');
-        this.foundPsycheText.setFontSize(Constants.FIRST_FONT_SIZE);
+        this.foundPsycheText.setFontSize(Constants.THIRD_FONT_SIZE);
+        this.foundPsycheText.depth = 1000; // larger than 100
         this.nearestBodyText = this.add.text(Constants.NEAREST_BODY_TEXT_X, Constants.NEAREST_BODY_TEXT_Y, ' ');
         this.nearestBodyText.setFontSize(Constants.SECOND_FONT_SIZE);
         CameraManager.addUISprite(this.foundPsycheText);
@@ -838,7 +846,7 @@ class Freeplay extends Phaser.Scene {
      */
     photoKeyEvent() {
         // disable spacebar take photo when paused
-        if ((!this.paused) && (!this.gameOver)) {
+        if ((!this.paused) && (!this.gameOver) && (!this.gameSuccess)) {
             this.takingPhoto = !this.takingPhoto;
 
             let viewR = Constants.VIEW_R;
@@ -879,10 +887,12 @@ class Freeplay extends Phaser.Scene {
                         || (Math.abs(psycheAngle - this.targetAngles[i] - 360) <= Constants.ONE_PHOTO_ANGLE)) {
                         // this photo covers the target angle targetAngles[i], set the flag
                         if (this.coverFlags[i] == 1) {
-                            console.log("You have already taken photo of this side, please take photo of other sides.");
+                            //console.log("You have already taken photo of this side, please take photo of other sides.");
+                            this.foundPsycheText.setText("You have already taken\nphoto of this side, please\ntake photo of other sides.");
                         } else {
                             this.coverFlags[i] = 1;
-                            console.log("Congratuations! You just took photo of a new Psyche side!")
+                            console.log("Congratulations! You just took photo of a new Psyche side!");
+                            this.foundPsycheText.setText("Good job! You just took\nphoto of a new Psyche side!");
                         }
                     }
                 }
@@ -895,6 +905,11 @@ class Freeplay extends Phaser.Scene {
                     }
                 }
                 console.log("now " + sidesCovered + " of " + this.coverFlags.length + " sides covered");
+
+                if (sidesCovered == this.coverFlags.length) {
+                    // covered all sides
+                    this.gameSuccess = true;
+                }
                         
             } else {
                 // check which body is in the view and choose the nearest one

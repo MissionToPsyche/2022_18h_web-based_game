@@ -19,6 +19,7 @@ class Constants {
     static FIRST_FONT_SIZE = 80;
     static SECOND_FONT_SIZE = 70;
     static THIRD_FONT_SIZE = 50; 
+    static FORTH_FONT_SIZE = 120;
 
     // taking photos
     static VIEW_R = 100; // radius of probe's view
@@ -28,7 +29,7 @@ class Constants {
     static PSYCHE_PHOTO_1SCALE = 0.8;
     // found psyche text
     static FOUND_PSYCHE_TEXT_X = 100;
-    static FOUND_PSYCHE_TEXT_Y = 100;
+    static FOUND_PSYCHE_TEXT_Y = 250;
     // nearest body text
     static NEAREST_BODY_TEXT_X = 100;
     static NEAREST_BODY_TEXT_Y = 250;
@@ -50,6 +51,4 @@ class Constants {
     static HINT_ALPHA_AFTER = 0.8;
     static HINT_WIDTH_BEFORE = 2;
     static HINT_WIDTH_AFTER = 4;
-
-
 }
