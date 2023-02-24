@@ -783,11 +783,12 @@ class Freeplay extends Phaser.Scene {
      * Toggles the orbit state of the probe
      */
     toggleOrbit() {
-        this.bodies["psyche_probe"].orbitToggle = !this.bodies["psyche_probe"].orbitToggle;
-        if (!this.bodies["psyche_probe"].inOrbit) { 
+        if (!this.player.orbitToggle) { 
             this.bodies["psyche_probe"].startOrbitLock(this.player.newTarget);
+            this.bodies["psyche_probe"].orbitToggle = true;
         } else {
             this.bodies["psyche_probe"].stopOrbitLock();
+            this.bodies["psyche_probe"].orbitToggle = false;
         }
     }
 

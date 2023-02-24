@@ -74,7 +74,7 @@ class Controler {
         this.orbitKey
             .on('down', () => {
                 console.log("finding closest body...");
-                if (!this.player.inOrbit) {
+                if (!this.player.orbitToggle) {
                     this.player.findingTarget = true;
                 }
             })

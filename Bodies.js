@@ -466,7 +466,7 @@ class Probe extends Body {
 			return;
 		}
 
-		this.orbitCounter -= 1;
+		this.orbitCounter--;
 
 		return 1 - this.orbitCounter/OCR;
 	}
