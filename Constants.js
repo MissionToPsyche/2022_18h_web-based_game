@@ -1,54 +1,43 @@
-/** Class of constants */
-class Constants {
-
-    /**
-     * Manage constants, shouldn't be called
-     * @constructor
-     */
-    constructor() {
-        if (this instanceof Constants) {
-            throw Error('A static class cannot be instantiated.');
-        }
-    }
-
+/** Constants */
+const Constants = {
     // colors
-    static WHITE = 0xFFFFFF;
-    static ORANGE = 0xF47D33;
+    WHITE: 0xFFFFFF,
+    ORANGE: 0xF47D33,
 
     // font sizes
-    static FIRST_FONT_SIZE = 80;
-    static SECOND_FONT_SIZE = 70;
-    static THIRD_FONT_SIZE = 50; 
-    static FORTH_FONT_SIZE = 120;
+    FIRST_FONT_SIZE: 80,
+    SECOND_FONT_SIZE: 70,
+    THIRD_FONT_SIZE: 50,
+    FORTH_FONT_SIZE: 120,
 
     // taking photos
-    static VIEW_R = 100; // radius of probe's view
+    VIEW_R: 100, // radius of probe's view
     // position and scale of psyche photo 1
-    static PSYCHE_PHOTO_1X = 500;
-    static PSYCHE_PHOTO_1Y = 400;
-    static PSYCHE_PHOTO_1SCALE = 0.8;
+    PSYCHE_PHOTO_1X: 500,
+    PSYCHE_PHOTO_1Y: 400,
+    PSYCHE_PHOTO_1SCALE: 0.8,
     // found psyche text
-    static FOUND_PSYCHE_TEXT_X = 100;
-    static FOUND_PSYCHE_TEXT_Y = 250;
+    FOUND_PSYCHE_TEXT_X: 100,
+    FOUND_PSYCHE_TEXT_Y: 250,
     // nearest body text
-    static NEAREST_BODY_TEXT_X = 100;
-    static NEAREST_BODY_TEXT_Y = 250;
+    NEAREST_BODY_TEXT_X: 100,
+    NEAREST_BODY_TEXT_Y: 250,
     // quit photo page (back to game) button
-    static QUIT_PHOTO_X = 300;
-    static QUIT_PHOTO_Y = 650;
-    static QUIT_PHOTO_PADDING = 10;
+    QUIT_PHOTO_X: 300,
+    QUIT_PHOTO_Y: 650,
+    QUIT_PHOTO_PADDING: 10,
 
-    static LARGEST_SIDES = 360; // size of the array coverPsyche
+    LARGEST_SIDES: 360, // size of the array coverPsyche
 
     // array of angles that player choose to cover the psyche
-    static FOUR_SIDES = new Array(0, 90, 180, 270);
+    FOUR_SIDES: new Array(0, 90, 180, 270),
 
-    static ONE_PHOTO_ANGLE = 45; // one photo covers [angle - 45, angle + 45] of the psyche
+    ONE_PHOTO_ANGLE: 45, // one photo covers [angle - 45, angle + 45] of the psyche
 
     // hint circle style
-    static HINT_DISTANCE = 5;
-    static HINT_ALPHA_BEFORE = 0.1;
-    static HINT_ALPHA_AFTER = 0.8;
-    static HINT_WIDTH_BEFORE = 2;
-    static HINT_WIDTH_AFTER = 4;
+    HINT_DISTANCE: 5,
+    HINT_ALPHA_BEFORE: 0.1,
+    HINT_ALPHA_AFTER: 0.8,
+    HINT_WIDTH_BEFORE: 2,
+    HINT_WIDTH_AFTER: 4,
 }
