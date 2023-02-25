@@ -193,9 +193,9 @@ class Freeplay extends Phaser.Scene {
         this.createOrbitToggle();
         this.takePhoto();
 
-        //creating controler
-        this.controler = new Controler(this, this.bodies["psyche_probe"]);
-        this.bodies["psyche_probe"].setControler(this.controler);
+        //creating controller
+        this.controller = new Controller(this, this.bodies["psyche_probe"]);
+        this.bodies["psyche_probe"].setController(this.controller);
     }
 
     /** The scene's main update loop
@@ -633,7 +633,7 @@ class Freeplay extends Phaser.Scene {
      */
     togglePaused() {
         this.paused = !this.paused;
-        this.controler.toggleMovementKeys();
+        this.controller.toggleMovementKeys();
     }
 
     /** Updates the state of the on-screen pause button

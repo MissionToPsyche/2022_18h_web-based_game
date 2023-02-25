@@ -279,7 +279,7 @@ class Probe extends Body {
 		this.rotation = Math.atan2(this.y - this.orbitTarget.y, this.x - this.orbitTarget.x) - Math.PI/4; //initial rotation faces orbited planet
 		this.minimap_icon.rotation = this.rotation;
 
-		this.controler;
+		this.controller;
 	}
 
 	/**
@@ -323,23 +323,23 @@ class Probe extends Body {
             let p1 = p2.orbitTarget;
             //console.log(p2);
 
-			this.angleOffset += this.controler.getRotation();
+			this.angleOffset += this.controller.getRotation();
 
             let relAngle = Math.atan2(p2.y - p1.y, p2.x - p1.x) - Math.PI/4;
 			let newAngle =  relAngle + this.angleOffset;
 			this.rotation = Phaser.Math.Angle.RotateTo(this.rotation, newAngle, 0.05);
-		} else if (this.controler.controlMethod == 1) {
-			let newAngle = this.controler.getRotation();
+		} else if (this.controller.controlMethod == 1) {
+			let newAngle = this.controller.getRotation();
 			this.rotation = Phaser.Math.Angle.RotateTo(this.rotation, newAngle, 0.05);
 
-			let a_vel = this.controler.getAccelerationVector();
+			let a_vel = this.controller.getAccelerationVector();
 			this.vel.add(a_vel);
 		} else {
-			//changing velocity based on vector from controler
-			let a_vel = this.controler.getAccelerationVector();
+			//changing velocity based on vector from controller
+			let a_vel = this.controller.getAccelerationVector();
 			this.vel.add(a_vel);
 
-			//if acceleration vector from controler is > 0, change angle to face the
+			//if acceleration vector from controller is > 0, change angle to face the
 			//direction of the vector
 			if(a_vel.length() > 0) {
 				let newAngle = Phaser.Math.Angle.Wrap(a_vel.angle() - (Math.PI/4) * 5);
@@ -574,13 +574,13 @@ class Probe extends Body {
     		// range is [endRotation, 2pi] union [0, startRotation]
     		return (angle >= endRotation) || (angle <= startRotation);
     	}
-    }
+	}
 
 	/**
-	 * Sets the controler for this Probe
-	 * @param {Controler} _controler 
+	 * Sets the controller for this Probe
+	 * @param {Controller} _controller 
 	 */
-	setControler(_controler) {
-		this.controler = _controler;
+	setController(_controller) {
+		this.controller = _controller;
 	}
 }

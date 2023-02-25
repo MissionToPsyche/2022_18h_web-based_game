@@ -1,8 +1,9 @@
 /**
  * Class defining functionality for controling the probe
  */
-class Controler {
-    constructor (_scene, _player) {
+
+class Controller {
+    constructor(_scene, _player) {
         this.scene = _scene;
         this.player = _player;
 
@@ -46,7 +47,7 @@ class Controler {
     }
 
     /**
-     * Updates the events for all keys in controler
+     * Updates the events for all keys in controller
      */
     updateKeyEvents() {
         //updating key settings in case of change
@@ -167,7 +168,7 @@ class Controler {
     }
 
     /**
-     * Gets the control method currently being used by the game controler.
+     * Gets the control method currently being used by the game controller.
      * @returns {number} number representing control method.
      */
     getControlMethod() {
@@ -175,7 +176,7 @@ class Controler {
     }
 
     /**
-     * Gets the current rotation from controler input
+     * Gets the current rotation from controller input
      * @returns {number} the rotation in degrees
      */
     getRotation () {
