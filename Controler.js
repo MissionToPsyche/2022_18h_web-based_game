@@ -16,6 +16,7 @@ class Controler {
         this.d_left_setting = 'LEFT';
         this.d_right_setting = 'RIGHT';
         this.controlToggleKey_setting = 'C';
+        this.mapKey_setting = 'm';
 
         this.keyboard = this.scene.input.keyboard;
 
@@ -53,6 +54,7 @@ class Controler {
         this.pauseKey = this.keyboard.addKey(this.pauseKey_setting);
         this.orbitKey = this.keyboard.addKey(this.orbitKey_setting);
         this.pictureKey = this.keyboard.addKey(this.pictureKey_setting);
+        this.mapKey = this.keyboard.addKey(this.mapKey_setting);
 
         this.d_up = this.keyboard.addKey(this.d_up_setting, true, true);
         this.d_down = this.keyboard.addKey(this.d_down_setting, true, true);
@@ -69,6 +71,11 @@ class Controler {
                 }
                 this.scene.updatePauseColor();
             });
+        this.mapKey
+            .on('up', () => {
+                this.scene.updateMap();
+            });
+
         this.orbitKey
             .on('up', () => {
                 this.scene.toggleOrbit();

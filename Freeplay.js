@@ -18,6 +18,7 @@ class Freeplay extends Phaser.Scene {
         this.direction;
         this.gameOver = false;
         this.pauseText;
+        this.map_border;
 
         this.takingPhoto = false;
         this.foundPsycheText; 
@@ -106,7 +107,8 @@ class Freeplay extends Phaser.Scene {
         CameraManager.initializeUICamera(this);
         CameraManager.initializeMiniCamera(this);
 
-        var map_border = this.add.image(880,110,'minimap_border').setScale(0.35);
+        this.map_border = this.add.image(880,110,'minimap_border').setScale(0.35);
+        this.map_border.setVisible(false);
 
         //Pause menu
         this.pauseText = this.add.text(525, 300, 'Pause').setOrigin(0.5).setFontSize(120);
@@ -185,7 +187,8 @@ class Freeplay extends Phaser.Scene {
         var logo = this.add.image(50,50,'logo').setScale(0.5);
 
         //adding to UIsprites so main camera ignores them
-        CameraManager.addUISprite(logo);
+         CameraManager.addUISprite(logo);
+         CameraManager.addUISprite(this.map_border);
 
         this.ingame_music = this.sound.add('ingame_music');
         if (!this.ingame_music.isPlaying) {
@@ -201,10 +204,8 @@ class Freeplay extends Phaser.Scene {
         this.dialogShadow = this.add.rectangle(525, 650,550, 125, color1.color);
         this.dialogShadow.setAlpha(0.85);
         this.dialogText = this.add.text(300,625, "");
-        CameraManager.addUISprite(this.dialogShadow);
-        CameraManager.addUISprite(this.dialogText);
-        // this.minimap.ignore(this.dialogText);
-        // this.minimap.ignore(this.dialogShadow);
+        //CameraManager.addUISprite(this.dialogShadow);
+        // CameraManager.addUISprite(this.dialogText);
         // Check if its tutorial mode.
         if(DialogManager.get("tutorial") == true){
             this.typewriteText(this.dialogText,DialogManager.getTutorialDial(0));
@@ -758,8 +759,16 @@ class Freeplay extends Phaser.Scene {
                 this.showDialog(true);
             }
             }
-        
             
+    }
+
+    updateMap(){
+        var visible = CameraManager.popMap();
+        if(visible){
+            this.map_border.setVisible(true);
+        }else{
+            this.map_border.setVisible(false);
+        }
     }
 
     updateTakePhoto() {

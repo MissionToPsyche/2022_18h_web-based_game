@@ -76,6 +76,17 @@ class CameraManager {
             .setBounds(0, 0, this.cameraWidth, this.cameraHeight, true)
             .ignore(this.uiSprites)
             .ignore(this.gameSprites);
+
+        this.miniCamera.setVisible(false);
+    }
+
+    static popMap(){
+        if(this.miniCamera.visible == true){
+            this.miniCamera.setVisible(false);
+        } else{
+            this.miniCamera.setVisible(true);
+        }
+        return this.miniCamera.visible;
     }
 
     /**
@@ -105,10 +116,6 @@ class CameraManager {
      */
     static returnToSetZoom() {
         this.mainCamera.zoomTo(this.mainZoom);
-    }
-
-    static getMainCamera(){
-        return this.mainCamera;
     }
 
     /**
