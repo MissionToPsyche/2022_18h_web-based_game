@@ -2,12 +2,18 @@
  * Class defining functionality for controling the probe
  */
 
+const ControlMethod = {
+    FourWay: Symbol("four_way"),
+    Tank: Symbol("tank")
+}
+
+
 class Controller {
     constructor(_scene, _player) {
         this.scene = _scene;
         this.player = _player;
 
-        this.controlMethod = 0;
+        this.controlMethod = ControlMethod.FourWay;
 
         this.pauseKey_setting = 'P';
         this.orbitKey_setting = 'SHIFT';
@@ -59,7 +65,7 @@ class Controller {
         this.d_down = this.keyboard.addKey(this.d_down_setting, true, true);
         this.d_left = this.keyboard.addKey(this.d_left_setting, true, true);
         this.d_right = this.keyboard.addKey(this.d_right_setting, true, true);
-        
+
         this.pauseKey
             .on('down', () => {
                 this.scene.updatePauseColor('pressed');
@@ -81,12 +87,12 @@ class Controller {
             });
         this.controlToggleKey
             .on('up', () => {
-                if (this.controlMethod == 0) { 
-                    this.controlMethod = 1;
+                if (this.controlMethod == ControlMethod.FourWay) {
+                    this.controlMethod = ControlMethod.Tank;
                     this.controlText.setText("Controls: Tank in Space");
                 }
-                else { 
-                    this.controlMethod = 0;
+                else {
+                    this.controlMethod = ControlMethod.FourWay;
                     this.controlText.setText("Controls: 4-Way");
                 }
             });
@@ -118,7 +124,7 @@ class Controller {
             .on('down', () => {
                 if (this.player.inOrbit) {
                     this.rotation = -0.02;
-                } else if (this.controlMethod == 1) {
+                } else if (this.controlMethod == ControlMethod.Tank) {
                     this.rotation = -0.04;
                 } else {
                     this.xAcc = -this.APT;
@@ -131,7 +137,7 @@ class Controller {
             .on('down', () => {
                 if (this.player.inOrbit) {
                     this.rotation = 0.02;
-                } else if (this.controlMethod == 1) {
+                } else if (this.controlMethod == ControlMethod.Tank) {
                     this.rotation = 0.04;
                 } else {
                     this.xAcc = this.APT;
@@ -157,7 +163,7 @@ class Controller {
      * @returns {Phaser.Math.Vector2} The acceleration vector from player input
      */
     getAccelerationVector() {
-        if (this.controlMethod == 1 ) {
+        if (this.controlMethod == ControlMethod.Tank) {
             let accVector = new Phaser.Math.Vector2(1, 1).setLength(this.totalAcc).rotate(Phaser.Math.Angle.Wrap(this.totalRotation));
             return accVector;
         } else {
@@ -179,9 +185,9 @@ class Controller {
      * Gets the current rotation from controller input
      * @returns {number} the rotation in degrees
      */
-    getRotation () {
+    getRotation() {
         this.totalRotation = this.totalRotation + this.rotation;
-        if (this.controlMethod == 1 && !this.player.inOrbit){
+        if (this.controlMethod == ControlMethod.Tank && !this.player.inOrbit) {
             return this.totalRotation;
         } else {
             return this.rotation;

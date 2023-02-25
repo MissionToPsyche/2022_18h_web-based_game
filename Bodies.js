@@ -287,84 +287,95 @@ class Probe extends Body {
 	 * velocity. Also adjusts the position of the probe
 	 * Based on the probe's orbit lock if applicatble.
 	 */
-	updatePosition () {
+	updatePosition() {
 		//checking if orbit lock is enabled
 		if (this.inOrbit) {
-			lockOrbit(this, this.orbitTarget, this.currentOrbit);
-
-			//slowly bring probe up to orbit velocity
-			//TO DO: Test this properly. I'm not 100% on if it all works
-
-			//calculate current fraction of orbit velocity.
-			//this is so that the probe can gain the velocity necissary
-			//to maintain a proper orbit smoothly rather than all at once.
-			var orbitVel = orbitVelocity(this, this.orbitTarget);
-			this.foos = covindov(this.vel, orbitVel) / orbitVel.length();
-			if (this.foos < 1) {
-				var ovf = new Phaser.Math.Vector2(orbitVel.x, orbitVel.y).setLength(orbitVel.length()/500);
-
-				this.vel.add(ovf);
-				//console.log(ovf.x + ", " + ovf.y);
-			}
-
-			//if orbit was changed, slowly bring the current orbit to the new orbit
-			if (this.orbitChangeCounter > 0) {
-				//get the difference between the two orbits:
-				var diff = this.newOrbit - this.currentOrbit;
-				//add portion of diff to current orbit.
-			    this.currentOrbit += diff/this.orbitChangeCounter;
-				this.orbitChangeCounter -= 1;
-			}
-
-			//set rotation based on orbit around target
-			//calculate current angle necissary for probe to point at orbit target
-            let p2 = this;
-            //console.log(p1);
-            let p1 = p2.orbitTarget;
-            //console.log(p2);
-
-			this.angleOffset += this.controller.getRotation();
-
-            let relAngle = Math.atan2(p2.y - p1.y, p2.x - p1.x) - Math.PI/4;
-			let newAngle =  relAngle + this.angleOffset;
-			this.rotation = Phaser.Math.Angle.RotateTo(this.rotation, newAngle, 0.05);
-		} else if (this.controller.controlMethod == 1) {
-			let newAngle = this.controller.getRotation();
-			this.rotation = Phaser.Math.Angle.RotateTo(this.rotation, newAngle, 0.05);
-
-			let a_vel = this.controller.getAccelerationVector();
-			this.vel.add(a_vel);
+			this.updateOrbitPosition();
+		} else if (this.controller.getControlMethod() == ControlMethod.Tank) {
+			this.updateRotationAndVelocity();
 		} else {
-			//changing velocity based on vector from controller
-			let a_vel = this.controller.getAccelerationVector();
-			this.vel.add(a_vel);
-
-			//if acceleration vector from controller is > 0, change angle to face the
-			//direction of the vector
-			if(a_vel.length() > 0) {
-				let newAngle = Phaser.Math.Angle.Wrap(a_vel.angle() - (Math.PI/4) * 5);
-				this.rotation = Phaser.Math.Angle.RotateTo(this.rotation, newAngle, 0.05);
-			}
+			this.updateVelocity();
+			this.updateRotation();
 		}
 
-		this.minimap_icon.angle = this.angle;
+		this.updateMinimapIconAngle();
 		super.updatePosition();
 	}
+
+	updateOrbitPosition() {
+		lockOrbit(this, this.orbitTarget, this.currentOrbit);
+
+		this.updateOrbitVelocity();
+		if (this.orbitChangeCounter > 0) {
+			this.updateOrbitChange();
+		}
+
+		this.updateOrbitRotation();
+	}
+
+	updateOrbitChange() {
+		const diff = this.newOrbit - this.currentOrbit;
+		this.currentOrbit += diff / this.orbitChangeCounter;
+		this.orbitChangeCounter--;
+	}
+
+	updateOrbitVelocity() {
+		const orbitVel = orbitVelocity(this, this.orbitTarget);
+		const dotProduct = this.vel.dot(orbitVel);
+		const fractionOfOrbitVel = dotProduct / orbitVel.lengthSq();
+
+		if (fractionOfOrbitVel < 1) {
+			const ovf = orbitVel.clone().setLength(orbitVel.length() / 500);
+			this.vel.add(ovf);
+		}
+	}
+
+	updateOrbitRotation() {
+		this.angleOffset += this.controller.getRotation();
+		const relAngle = Math.atan2(this.y - this.orbitTarget.y, this.x - this.orbitTarget.y) - (Math.PI / 4);
+		const newAngle = relAngle + this.angleOffset;
+		this.rotation = Phaser.Math.Angle.RotateTo(this.rotation, newAngle, 0.05);
+	}
+
+	updateRotationAndVelocity() {
+		const newAngle = this.controller.getRotation();
+		this.rotation = Phaser.Math.Angle.RotateTo(this.rotation, newAngle, 0.05);
+
+		this.updateVelocity();
+	}
+
+	updateVelocity() {
+		const a_vel = this.controller.getAccelerationVector();
+		this.vel.add(a_vel);
+	}
+
+	updateRotation() {
+		const a_vel = this.controller.getAccelerationVector();
+		if (a_vel.length() > 0) {
+			const newAngle = Phaser.Math.Angle.Wrap(a_vel.angle() - (Math.PI / 4) * 5);
+			this.rotation = Phaser.Math.Angle.RotateTo(this.rotation, newAngle, 0.05);
+		}
+	}
+
+	updateMinimapIconAngle() {
+		this.minimap_icon.angle = this.angle;
+	}
+
 
 	/** 
 	 * Applies the accelleration to the body from the force exerted on it
 	 * by one of the probe's listeners.
 	 * @param {Phaser.Math.Vector2} f - The applied force
 	 */
-	 update (f) {
-        //toggle for gravity
+	update(f) {
+		//toggle for gravity
 		//NOTE: FOR TESTING ONLY.
 		if (!this.gravityToggle) {
 			return
 		}
 
-        super.update(f);
-    }
+		super.update(f);
+	}
 
 	/**
 	 * Starts the process of the probe locking onto a body.
