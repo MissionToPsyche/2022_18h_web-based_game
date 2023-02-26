@@ -24,6 +24,9 @@ class Freeplay extends Phaser.Scene {
         this.foundPsycheText; 
         this.quitPhotoPageButton;
         this.psychePhoto1;
+        this.psychePhoto2;
+        this.psychePhoto3;
+        this.psychePhoto4;
         this.nearestBodyText;
 
         this.failText;
@@ -69,8 +72,11 @@ class Freeplay extends Phaser.Scene {
         this.load.image('psyche_probe_icon', "img/icons/arrow.png");
 
         // load the photo of psyche
-        this.load.image('psychePhoto1', "img/photos/psyche1.png");
-
+        for (let i = 0; i < Constants.MAX_PSYCHE_PHOTO_NUM; i++) {
+            let imageName = "psychePhoto" + i;
+            let filePath = "img/photos/images/psyche_e_0" + (i + 1) + ".png";
+            this.load.image(imageName, filePath);
+        }
 
         this.load.audio('ingame_music', 'assets/music/02_Ingame.mp3');
 
@@ -807,7 +813,7 @@ class Freeplay extends Phaser.Scene {
     }
 
     takePhoto() {
-        this.psychePhoto1 = this.add.image(Constants.PSYCHE_PHOTO_1X, Constants.PSYCHE_PHOTO_1Y, 'psychePhoto1').setScale(Constants.PSYCHE_PHOTO_1SCALE);
+        this.psychePhoto1 = this.add.image(Constants.PSYCHE_PHOTO_X, Constants.PSYCHE_PHOTO_Y, 'psychePhoto1').setScale(Constants.PSYCHE_PHOTO_SCALE);
         this.psychePhoto1.setVisible(false);
         
         CameraManager.addUISprite(this.psychePhoto1);

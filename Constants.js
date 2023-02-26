@@ -12,10 +12,14 @@ const Constants = {
 
     // taking photos
     VIEW_R: 100, // radius of probe's view
-    // position and scale of psyche photo 1
-    PSYCHE_PHOTO_1X: 500,
-    PSYCHE_PHOTO_1Y: 400,
-    PSYCHE_PHOTO_1SCALE: 0.8,
+
+    MAX_PSYCHE_PHOTO_NUM: 4, // max number of psyche to show
+
+    // position and scale of psyche photo
+    PSYCHE_PHOTO_X: 500,
+    PSYCHE_PHOTO_Y: 350,
+    PSYCHE_PHOTO_SCALE: 10,
+
     // found psyche text
     FOUND_PSYCHE_TEXT_X: 100,
     FOUND_PSYCHE_TEXT_Y: 250,
