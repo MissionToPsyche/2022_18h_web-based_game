@@ -19,6 +19,7 @@ class Freeplay extends Phaser.Scene {
         this.gameOver = false;
         this.pauseText;
         this.map_border;
+        this.isMapVisible;
 
         this.takingPhoto = false;
         this.foundPsycheText; 
@@ -593,12 +594,15 @@ class Freeplay extends Phaser.Scene {
                 this.updatePauseColor('pressed');
                 var menu_audio = this.sound.add('menu');
                 menu_audio.play();
+                
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
                 // disable pause when in the taking photo page
                 if (!this.takingPhoto) {
                     this.updatePauseColor();
                     this.togglePaused();
+                    // Check if map was visible before pause and resume the visibility.
+                    this.resumeMap();
                 }
             })
 
@@ -751,6 +755,10 @@ class Freeplay extends Phaser.Scene {
             this.exitButton.setVisible(true)
             this.shadow.setVisible(true)
             this.showDialog(false);
+            if(this.map_border.visible == true){
+                this.isMapVisible = true;
+                this.updateMap();
+            }
         } else{
             this.restartButton.setVisible(false)
             this.exitButton.setVisible(false)
@@ -760,6 +768,14 @@ class Freeplay extends Phaser.Scene {
             }
             }
             
+    }
+
+    resumeMap(){
+        // Check if map was visible before pause.
+        if(this.isMapVisible){
+            this.updateMap();
+            this.isMapVisible = false;
+        }
     }
 
     updateMap(){

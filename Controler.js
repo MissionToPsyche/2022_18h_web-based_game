@@ -68,6 +68,7 @@ class Controler {
                 // disable pause when in the taking photo page
                 if (!this.scene.takingPhoto) {
                     this.scene.togglePaused();
+                    this.scene.resumeMap();
                 }
                 this.scene.updatePauseColor();
             });
