@@ -358,7 +358,24 @@ class Probe extends Body {
 	}
 
 	updateMinimapIconAngle() {
-		this.minimap_icon.angle = this.angle;
+		this.minimap_icon.angle = Phaser.Math.RadToDeg(this.rotation);
+	}
+
+	getSpriteFrame(direction) {
+		const dirs = ["n", "ne", "e", "se", "s", "sw", "w", "nw", "f", "b"];
+		const offset = 14 * dirs.indexOf(direction);
+
+		let angle = Phaser.Math.RadToDeg(this.rotation);
+		angle -= 45;
+
+		if (angle < 0) {
+			angle += 360;
+		} else if (angle > 360) {
+			angle -= 360;
+		}
+
+		const segment = Math.abs(Math.round(angle / 45));
+		return offset + (segment % 8);
 	}
 
 

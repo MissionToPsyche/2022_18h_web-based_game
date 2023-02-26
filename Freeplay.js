@@ -60,7 +60,7 @@ class Freeplay extends Phaser.Scene {
         this.load.spritesheet('neptune', "img/sprites/neptune_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
         this.load.spritesheet('pluto', "img/sprites/pluto_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
         this.load.spritesheet('psyche', "img/sprites/psyche_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
-        this.load.image('psyche_probe', "img/icons/psyche_probe.svg");
+        this.load.spritesheet('psyche_probe', "img/sprites/probe_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
         this.load.image('psyche_probe_icon', "img/icons/arrow.png");
 
         // load the photo of psyche
@@ -121,39 +121,30 @@ class Freeplay extends Phaser.Scene {
                 let collisionGroup1 = this.matter.world.nextGroup(true);
                 let collisionGroup2 = this.matter.world.nextGroup();
 
-                if(type != "probes"){
+                if (type != "probes") {
                     let parent = this.bodies[body['orbits']];
                     let angle = body['angle'];
                     let day_length = body['day_length']['value'];
 
                     this.bodies[id] = new Satellite(this, id, mass, diameter, parent, angle, orbit_distance, day_length);
-
-                    for (const dir of this.dirs) {
-                        const offset = 16 * this.dirs.indexOf(dir)
-                        this.anims.create({
-                            key: id + "-" + dir,
-                            frames: this.anims.generateFrameNumbers(id, {
-                                frames: [offset + 0,
-                                offset + 1,
-                                offset + 2,
-                                offset + 3,
-                                offset + 4,
-                                offset + 5,
-                                offset + 6,
-                                offset + 7,
-                                offset + 8,
-                                offset + 9]
-                            }),
-                            frameRate: 12,
-                            repeat: -1
-                        });
-                    }
-
-
-                    this.bodies[id].play(id + "-f");
                 } else {
                     this.bodies[id] = new Probe(this, id, mass, diameter);
                 }
+
+                for (const dir of this.dirs) {
+                    const offset = (id == "psyche_probe" ? 14 : 16) * this.dirs.indexOf(dir)
+                    this.anims.create({
+                        key: id + "-" + dir,
+                        frames: this.anims.generateFrameNumbers(id, {
+                            start: offset,
+                            end: offset + (id == "psyche_probe" ? 7 : 9)
+                        }),
+                        frameRate: 12,
+                        repeat: -1
+                    });
+                }
+
+                this.bodies[id].setTexture(id, 0);
             }
         }
 
@@ -283,22 +274,16 @@ class Freeplay extends Phaser.Scene {
                     sunAngle -= 360;
                 }
 
-                console.log(body + ": " + sunAngle)
-                if (body == "mars") {
-                    var p = "poo";
-                }
                 for (const idx in this.shade_angles) {
                     const angle = this.shade_angles[idx]
-                    if (angle[0] < sunAngle && sunAngle <= angle[1]) {
+                    if ((angle[0] < sunAngle && sunAngle <= angle[1]) || (angle[0] > angle[1] && (angle[0] < sunAngle || sunAngle <= angle[1]))) {
                         this.bodies[body].play(this.bodies[body].id + "-" + this.dirs[idx], true);
-                        console.log(this.bodies[body].id + "-" + this.dirs[idx])
-                        break;
-                    } else if (angle[0] > angle[1] && (angle[0] < sunAngle || sunAngle <= angle[1])) {
-                        this.bodies[body].play(this.bodies[body].id + "-" + this.dirs[idx], true);
-                        console.log(this.bodies[body].id + "-" + this.dirs[idx])
                         break;
                     }
                 }
+            } else {
+                const frame = 21;// this.bodies[body].getSpriteFrame(this.dirs[idx]);
+                this.bodies[body].setFrame(frame);
             }
 
             // find psyche
