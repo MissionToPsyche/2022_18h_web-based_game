@@ -311,12 +311,11 @@ class Freeplay extends Phaser.Scene {
         */
 
         // don't update bodies if paused
-        if (this.paused) {
-            return
-        }
-
-        // don't update bodies if paused
         if (this.paused || this.gameOver) {
+            for (const body in this.bodies) {
+                this.bodies[body].stop()
+            }
+
             return
         }
 
@@ -386,19 +385,13 @@ class Freeplay extends Phaser.Scene {
                     sunAngle -= 360;
                 }
 
-                console.log(body + ": " + sunAngle)
-                if (body == "mars") {
-                    var p = "poo";
-                }
                 for (const idx in this.shade_angles) {
                     const angle = this.shade_angles[idx]
                     if (angle[0] < sunAngle && sunAngle <= angle[1]) {
                         this.bodies[body].play(this.bodies[body].id + "-" + this.dirs[idx], true);
-                        console.log(this.bodies[body].id + "-" + this.dirs[idx])
                         break;
                     } else if (angle[0] > angle[1] && (angle[0] < sunAngle || sunAngle <= angle[1])) {
                         this.bodies[body].play(this.bodies[body].id + "-" + this.dirs[idx], true);
-                        console.log(this.bodies[body].id + "-" + this.dirs[idx])
                         break;
                     }
                 }
