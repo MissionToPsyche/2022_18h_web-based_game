@@ -193,4 +193,20 @@ class Controller {
             return this.rotation;
         }
     }
+
+    up_pressed() {
+        return this.d_up.isDown;
+    }
+
+    down_pressed() {
+        return this.d_down.isDown;
+    }
+
+    left_pressed() {
+        return this.d_left.isDown;
+    }
+
+    right_pressed() {
+        return this.d_right.isDown;
+    }
 }
