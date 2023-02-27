@@ -13,7 +13,7 @@ class Button extends Phaser.GameObjects.Sprite {
 			.setDepth(100)
 			.setVisible(0);
 		this.menu_audio = _scene.sound.add('menu');
-		MenuManager.testListener(this);
+		//MenuManager.testListener(this);
 		//MenuManager.restartButtonListener(_scene, this);
 	}
 

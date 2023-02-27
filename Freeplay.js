@@ -513,19 +513,17 @@ class Freeplay extends Phaser.Scene {
 
         this.restartButtonPosition = new Phaser.Geom.Point(520, 408);
         this.restartButton = new Button(this, this.restartButtonPosition, 'button', 'Restart');
+        MenuManager.restartButtonListener(this, this.restartButton);
 
         this.exitButtonPosition = new Phaser.Geom.Point(520, 508);
         this.exitButton = new Button(this, this.exitButtonPosition, 'button', 'Exit');
+        MenuManager.exitButtonListener(this, this.exitButton);
 
         this.playButton = this.add.image(964, 708, 'play').setScale(0.5)
         this.pauseButton = this.add.image(964, 708, 'pause').setScale(0.5)
-        //this.restartButton = this.add.image(520, 408, 'restart').setScale(0.5)
-        //this.exitButton = this.add.image(520, 508, 'exit').setScale(0.5)
-        // Made sure the buttons and label is on top of everything.
-        //this.restartButton.setDepth(100);
+
         this.playButton.depth = 100;
         this.pauseButton.depth = 100;
-        //this.exitButton.setDepth(100);
         this.pauseText.depth = 100;
 
         // To darken screen
@@ -597,59 +595,9 @@ class Freeplay extends Phaser.Scene {
                 }
             });
 
-        //create events for the restart button
-        /*
-        this.restartButton.setInteractive()
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
-                this.restartButton.setTint(0xF9A000);
-            })
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OUT, () => {
-                this.restartButton.setTint(0xFFFFFF);
-            })
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
-                this.restartButton.setTint(0xF47D33);
-                var menu_audio = this.sound.add('menu');
-                menu_audio.play();
-            })
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
-                this.restartButton.setTint(0xFFFFFF);
-                this.scene.restart();
-                this.paused = false
-                this.gameOver = false;
-                // Make the direction icon show up again.
-                this.direction = undefined;
-            });
-
-        //create events for the exit button.
-        this.exitButton.setInteractive()
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
-                this.exitButton.setTint(0xF9A000);
-            })
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OUT, () => {
-                this.exitButton.setTint(0xFFFFFF);
-            })
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
-                this.exitButton.setTint(0xF47D33);
-                var menu_audio = this.sound.add('menu');
-                menu_audio.play();
-            })
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
-                this.exitButton.setTint(0xFFFFFF);
-                this.ingame_music.stop();
-                this.scene.start('MainMenu');
-                this.paused = false;
-                this.gameOver = false;
-            });
-        */
-        
-
         //add all the images to the UI camera.
         CameraManager.addUISprite(this.playButton);
         CameraManager.addUISprite(this.pauseButton);
-        //CameraManager.addUISprite(this.exitButton);
-        //CameraManager.addUISprite(this.restartButton);
-        //CameraManager.addUISprite(this.shadow);
-        //CameraManager.addUISprite(this.pauseText);
     }
 
     /**
@@ -686,17 +634,12 @@ class Freeplay extends Phaser.Scene {
     updatePauseButton() {
         // if paused and not game over then we can show the pause text and allow the pause/play buttons to update
         if (this.paused && !this.gameOver) {
-            //this.pauseText.setVisible(true)
             this.playButton.setVisible(true)
-            this.pauseButton.setVisible(false)
-            //this.restartButton.setVisible(true)
-            //this.exitButton.setVisible(true)
-            //this.shadow.setVisible(true)
+            this.pauseButton.setVisible(false);
             this.pauseMenu.setVisible(true);
         } else {
-            this.pauseButton.setVisible(true)
-            this.playButton.setVisible(false)
-            //this.pauseText.setVisible(false)
+            this.pauseButton.setVisible(true);
+            this.playButton.setVisible(false);
             this.pauseMenu.setVisible(false);
         }
 
