@@ -3,10 +3,18 @@ class Button extends Phaser.GameObjects.Sprite {
 		super(_scene, _pos.x, _pos.y, _id, _frame);
 
 		this.actionKey = '';
-		this.id = _scene.add.sprite(_pos.x, _pos.y, 'button').setOrigin(0.5).setScale(0.5).setVisible(0);
-		this.text = _scene.add.text(_pos.x, _pos.y, _text, { fontSize: '26px', color: '#000000' }).setOrigin(0.5).setVisible(0);
+		this.id = _scene.add.image(_pos.x, _pos.y, _id)
+			.setOrigin(0.5)
+			.setScale(0.5)
+			.setDepth(100)
+			.setVisible(0);
+		this.text = _scene.add.text(_pos.x, _pos.y, _text, { fontSize: '26px', color: '#000000' })
+			.setOrigin(0.5)
+			.setDepth(100)
+			.setVisible(0);
 		this.menu_audio = _scene.sound.add('menu');
-		this.setInteractive();
+		MenuManager.testListener(this);
+		//MenuManager.restartButtonListener(_scene, this);
 	}
 
 	setText(_text) {
@@ -17,26 +25,22 @@ class Button extends Phaser.GameObjects.Sprite {
 
 	}
 
-	setInteractive() {
-		this.id.setInteractive()
-        .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
-            this.id.setTint(0xF9A000);
-        })
-        .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OUT, () => {
-            this.id.setTint(0xFFFFFF);
-        })
-        .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
-            this.id.setTint(0xF47D33);
-            this.menu_audio.play();
-        })
-        .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
-            this.id.setTint(0xFFFFFF);
-        });
-	}
-
 	setPosition(_pos) {
 		//this.x = _pos.x;
 		//this.y = _pos.y;
+	}
+
+	setDepth(_depth) {
+		this.id = _depth;
+		this.text = _depth + 1;
+	}
+
+	getButton() {
+		return this.id;
+	}
+
+	getText() {
+		return this.text;
 	}
 
 	getElements() {

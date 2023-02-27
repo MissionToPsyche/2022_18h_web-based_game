@@ -40,6 +40,15 @@ class Menu {
 	}
 
 	/**
+	 * Set the visibility of this menu
+	 */
+	setVisible(_bool) {
+		this.elements.forEach(function (element) {
+				element.setVisible(_bool);
+		});
+	}
+
+	/**
 	 * Toggle the visibility of this menu
 	 */
 	toggleMenu() {
