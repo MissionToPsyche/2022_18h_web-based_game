@@ -23,10 +23,10 @@ class Freeplay extends Phaser.Scene {
         this.takingPhoto = false;
         this.foundPsycheText; 
         this.quitPhotoPageButton;
+        this.psychePhoto0;
         this.psychePhoto1;
         this.psychePhoto2;
         this.psychePhoto3;
-        this.psychePhoto4;
         this.nearestBodyText;
 
         this.failText;
@@ -734,9 +734,13 @@ class Freeplay extends Phaser.Scene {
     updateTakePhoto() {
         if (!this.takingPhoto) {
             this.foundPsycheText.setVisible(false);  
-             this.quitPhotoPageButton.setVisible(false);
-             this.psychePhoto1.setVisible(false);
-             this.nearestBodyText.setVisible(false);
+            this.quitPhotoPageButton.setVisible(false);
+            this.psychePhoto1.setVisible(false);
+            this.nearestBodyText.setVisible(false);
+        }  else if (this.gameSuccess) {
+            this.foundPsycheText.setVisible(true);  
+            this.quitPhotoPageButton.setVisible(false);
+            this.nearestBodyText.setVisible(false);
         } else {
             this.quitPhotoPageButton.setVisible(true);
         }
@@ -915,6 +919,9 @@ class Freeplay extends Phaser.Scene {
                 if (sidesCovered == this.coverFlags.length) {
                     // covered all sides
                     this.gameSuccess = true;
+                    this.foundPsycheText.setText("Good job! You successfully\ncovered all Psyche sides!");
+                    this.quitPhotoPageButton.setVisible(false);
+                    this.hidePsychePhotos();
                 }
                         
             } else {
@@ -943,6 +950,27 @@ class Freeplay extends Phaser.Scene {
                 this.nearestBodyText.setText(nearestInfo);
                 this.nearestBodyText.setVisible(true);
             }
+        }
+    }
+
+    /**
+     * hide all the psyche photos.
+     */
+    hidePsychePhotos() {
+        if (typeof(this.psychePhoto0) != "undefined") {
+            this.psychePhoto0.setVisible(false);
+        }
+
+        if (typeof(this.psychePhoto1) != "undefined") {
+            this.psychePhoto1.setVisible(false);
+        }
+
+        if (typeof(this.psychePhoto2) != "undefined") {
+            this.psychePhoto2.setVisible(false);
+        }
+
+        if (typeof(this.psychePhoto3) != "undefined") {
+            this.psychePhoto3.setVisible(false);
         }
     }
 }
