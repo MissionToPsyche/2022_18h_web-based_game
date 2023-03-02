@@ -22,6 +22,7 @@ class MainMenu extends Phaser.Scene {
 
         this.load.audio('intro_music', 'assets/music/01_Intro.mp3');
         this.load.audio('load', 'assets/sfx/load.wav');
+        this.load.audio('menu', 'assets/sfx/misc_menu_4.wav');
     }
 
     create() {
@@ -127,6 +128,8 @@ class MainMenu extends Phaser.Scene {
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
                 this.controlButton.setTint(0xF47D33);
+                var menu_audio = this.sound.add('menu');
+                menu_audio.play();
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
                 this.controlButton.setTint(0xFFFFFF);
@@ -179,6 +182,8 @@ class MainMenu extends Phaser.Scene {
         })
         .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
             this.exitButton.setTint(0xF47D33);
+            var menu_audio = this.sound.add('menu');
+            menu_audio.play();
         })
         .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
             this.exitButton.setTint(0xFFFFFF);

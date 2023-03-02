@@ -23,6 +23,9 @@ class Intro extends Phaser.Scene {
         this.load.audio('key4', 'assets/sfx/key4.wav');
         this.load.audio('key5', 'assets/sfx/key5.wav');
 
+        this.load.audio('menu', 'assets/sfx/misc_menu_4.wav');
+        this.load.audio('load', 'assets/sfx/load.wav');
+
         this.page = 1;
         this.done = false;
     }
@@ -83,6 +86,8 @@ class Intro extends Phaser.Scene {
         })
         .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
             this.nextButton.setFillStyle(0xF47D33);
+            var menu_audio = this.sound.add('menu');
+            menu_audio.play();
         })
         .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
             this.page = this.page + 1;
@@ -103,6 +108,8 @@ class Intro extends Phaser.Scene {
         })
         .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
             this.startButton.setTint(0xF47D33);
+            var load_audio = this.sound.add('load');
+            load_audio.play();
         })
         .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
             this.startButton.setTint(0xFFFFFF);
@@ -118,6 +125,8 @@ class Intro extends Phaser.Scene {
         })
         .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
             this.tutorialButton.setTint(0xF47D33);
+            var load_audio = this.sound.add('load');
+            load_audio.play();
         })
         .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
             this.tutorialButton.setTint(0xFFFFFF);
