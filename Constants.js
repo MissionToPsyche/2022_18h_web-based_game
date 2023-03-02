@@ -3,6 +3,7 @@ const Constants = {
     // colors
     WHITE: 0xFFFFFF,
     ORANGE: 0xF47D33,
+    DARKBLUE: 0x12031D,
 
     // font sizes
     FIRST_FONT_SIZE: 80,
@@ -17,8 +18,13 @@ const Constants = {
 
     // position and scale of psyche photo
     PSYCHE_PHOTO_X: 500,
-    PSYCHE_PHOTO_Y: 350,
+    PSYCHE_PHOTO_Y: 430,
     PSYCHE_PHOTO_SCALE: 10,
+
+    // psyche photo background
+    PHOTO_BACKGROUND_WIDTH: 600,
+    PHOTO_BACKGROUND_HEIGHT: 400,
+    PHOTO_BORDER: 10,
 
     // found psyche text
     FOUND_PSYCHE_TEXT_X: 100,

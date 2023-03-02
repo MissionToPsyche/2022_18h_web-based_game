@@ -27,6 +27,8 @@ class Freeplay extends Phaser.Scene {
         this.psychePhoto1;
         this.psychePhoto2;
         this.psychePhoto3;
+        this.photoBackground;
+        this.photoBorder;
         this.nearestBodyText;
 
         this.failText;
@@ -735,6 +737,8 @@ class Freeplay extends Phaser.Scene {
         if (!this.takingPhoto) {
             this.foundPsycheText.setVisible(false);  
             this.quitPhotoPageButton.setVisible(false);
+            this.photoBackground.setVisible(false);
+            this.photoBorder.setVisible(false);
             this.psychePhoto1.setVisible(false);
             this.nearestBodyText.setVisible(false);
         }  else if (this.gameSuccess) {
@@ -817,10 +821,23 @@ class Freeplay extends Phaser.Scene {
     }
 
     takePhoto() {
-        this.psychePhoto1 = this.add.image(Constants.PSYCHE_PHOTO_X, Constants.PSYCHE_PHOTO_Y, 'psychePhoto1').setScale(Constants.PSYCHE_PHOTO_SCALE);
+        this.photoBorder = this.add.rectangle(Constants.PSYCHE_PHOTO_X, 
+            Constants.PSYCHE_PHOTO_Y, Constants.PHOTO_BACKGROUND_WIDTH + Constants.PHOTO_BORDER, 
+            Constants.PHOTO_BACKGROUND_HEIGHT + Constants.PHOTO_BORDER, Constants.WHITE);
+        this.photoBackground = this.add.rectangle(Constants.PSYCHE_PHOTO_X, 
+            Constants.PSYCHE_PHOTO_Y, Constants.PHOTO_BACKGROUND_WIDTH, 
+            Constants.PHOTO_BACKGROUND_HEIGHT, Constants.DARKBLUE);
+        this.psychePhoto1 = this.add.image(Constants.PSYCHE_PHOTO_X, 
+            Constants.PSYCHE_PHOTO_Y, 'psychePhoto1')
+            .setScale(Constants.PSYCHE_PHOTO_SCALE);
+        this.photoBorder.setVisible(false);
+        this.photoBackground.setVisible(false);
         this.psychePhoto1.setVisible(false);
         
         CameraManager.addUISprite(this.psychePhoto1);
+        CameraManager.addUISprite(this.photoBorder);
+        CameraManager.addUISprite(this.photoBackground);
+
 
         this.foundPsycheText = this.add.text(Constants.FOUND_PSYCHE_TEXT_X, Constants.FOUND_PSYCHE_TEXT_Y, 'You found Psyche!');
         this.foundPsycheText.setFontSize(Constants.THIRD_FONT_SIZE);
@@ -873,6 +890,8 @@ class Freeplay extends Phaser.Scene {
             if (this.bodies["psyche_probe"].isInView("psyche", viewR, startRotation, endRotation)) {
                 this.foundPsycheText.setVisible(true);
                 this.psychePhoto1.setVisible(true);
+                this.photoBorder.setVisible(true);
+                this.photoBackground.setVisible(true);
 
                 // Psyche is in the view, check the side
                 let psycheAngle = Math.asin(this.bodies["psyche_probe"].getPsycheDirectionY());
@@ -957,6 +976,8 @@ class Freeplay extends Phaser.Scene {
      * hide all the psyche photos.
      */
     hidePsychePhotos() {
+        this.photoBorder.setVisible(false);
+        this.photoBackground.setVisible(false);
         if (typeof(this.psychePhoto0) != "undefined") {
             this.psychePhoto0.setVisible(false);
         }
