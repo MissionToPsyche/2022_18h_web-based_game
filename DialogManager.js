@@ -12,7 +12,8 @@ class DialogManager {
         "You have found Psyche!\n",
         "Press the space key in order to take pictures of Psyche.",
         "Good job! You have finished the tutorial!",
-        "You are orbiting the wrong planet.\n"
+        "You are orbiting the wrong planet.\n",
+        "You are orbiting Earth again.\n"
     ]
 
     static set(setMode){
