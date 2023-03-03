@@ -495,7 +495,19 @@ class Freeplay extends Phaser.Scene {
         let psycheY = this.bodies["psyche"].y;
         let strokeSize = this.bodies["psyche"].r + Constants.HINT_DISTANCE;
         this.graphics.lineStyle(Constants.HINT_WIDTH_BEFORE, Constants.WHITE, Constants.HINT_ALPHA_BEFORE);
-        this.graphics.strokeCircle(psycheX, psycheY, strokeSize);
+        
+        const segments = 32;
+        const angleStep = (2 * Math.PI) / segments;
+
+        for (let i = 0; i < segments; i += 2) {
+            let startX = Math.cos(i * angleStep) * strokeSize + psycheX;
+            let startY = Math.sin(i * angleStep) * strokeSize + psycheY;
+            let endX = Math.cos((i + 1) * angleStep) * strokeSize + psycheX;
+            let endY = Math.sin((i + 1) * angleStep) * strokeSize + psycheY;
+
+            this.graphics.lineStyle(Constants.HINT_WIDTH_BEFORE, Constants.WHITE, Constants.HINT_ALPHA_BEFORE);
+            this.graphics.lineBetween(startX, startY, endX, endY);
+        }
 
         // draw arcs for the covered target angles
         if (typeof(this.targetAngles) != "undefined") {
