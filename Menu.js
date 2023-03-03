@@ -29,8 +29,11 @@ class Menu {
 		CameraManager.addUISprite(_button[1]);
 	}
 
+	/**
+	 * Remove the specified element from this menu
+	 * @param {object} _element - The element to remove
+	 */
 	removeElement(_element) {
-		// remove the specified element from this menu
 		// todo
 	}
 
@@ -41,6 +44,7 @@ class Menu {
 
 	/**
 	 * Set the visibility of this menu
+	 * @param {boolean} _bool - Decides the visibility of this menu
 	 */
 	setVisible(_bool) {
 		this.elements.forEach(function (element) {
@@ -49,7 +53,8 @@ class Menu {
 	}
 
 	/**
-	 * Toggle the visibility of this menu
+	 * Toggle the visibility of this menu. If this menu is visible, it will be hidden.
+	 * If this menu is hidden, it will become visible.
 	 */
 	toggleMenu() {
 		this.elements.forEach(function (element) {
