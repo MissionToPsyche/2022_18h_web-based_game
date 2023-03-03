@@ -621,6 +621,7 @@ class Freeplay extends Phaser.Scene {
                 this.paused = false
                 this.gameOver = false;
                 this.gameSuccess = false;
+                this.takingPhoto = false;
                 // Make the direction icon show up again.
                 this.direction = undefined;
             });
@@ -828,7 +829,7 @@ class Freeplay extends Phaser.Scene {
 
         this.psychePhotos = new Array(Constants.MAX_PSYCHE_PHOTO_NUM);
         for (let i = 0; i < Constants.MAX_PSYCHE_PHOTO_NUM; i++) {
-            let imageName = "psychePhoto" + (i + 1);
+            let imageName = "psychePhoto" + i;
             this.psychePhotos[i] = this.add.image(Constants.PSYCHE_PHOTO_X, 
                 Constants.PSYCHE_PHOTO_Y, imageName)
                 .setScale(Constants.PSYCHE_PHOTO_SCALE);
@@ -888,7 +889,6 @@ class Freeplay extends Phaser.Scene {
             // check if pyche is in the view
             if (this.bodies["psyche_probe"].isInView("psyche", viewR, startRotation, endRotation)) {
                 this.foundPsycheText.setVisible(true);
-                this.showPsychePhoto(0);
 
                 // Psyche is in the view, check the side
                 let psycheAngle = Math.asin(this.bodies["psyche_probe"].getPsycheDirectionY());
@@ -911,12 +911,12 @@ class Freeplay extends Phaser.Scene {
                     if ((Math.abs(psycheAngle - this.targetAngles[i]) <= Constants.ONE_PHOTO_ANGLE) 
                         || (Math.abs(psycheAngle - this.targetAngles[i] + 360) <= Constants.ONE_PHOTO_ANGLE) 
                         || (Math.abs(psycheAngle - this.targetAngles[i] - 360) <= Constants.ONE_PHOTO_ANGLE)) {
+                        this.showPsychePhoto(i);
                         // this photo covers the target angle targetAngles[i], set the flag
                         if (this.coverFlags[i] == 1) {
                             this.foundPsycheText.setText("You have already taken\nphoto of this side, please\ntake photo of other sides.");
                         } else {
                             this.coverFlags[i] = 1;
-                            console.log("Congratulations! You just took photo of a new Psyche side!");
                             this.foundPsycheText.setText("Good job! You just took\nphoto of a new Psyche side!");
                         }
                     }
@@ -936,7 +936,6 @@ class Freeplay extends Phaser.Scene {
                     this.gameSuccess = true;
                     this.foundPsycheText.setText("Good job! You successfully\ncovered all Psyche sides!");
                     this.quitPhotoPageButton.setVisible(false);
-                    //this.hidePsychePhotos();
                 }
                         
             } else {
