@@ -23,10 +23,7 @@ class Freeplay extends Phaser.Scene {
         this.takingPhoto = false;
         this.foundPsycheText; 
         this.quitPhotoPageButton;
-        this.psychePhoto0;
-        this.psychePhoto1;
-        this.psychePhoto2;
-        this.psychePhoto3;
+        this.psychePhotos;
         this.photoBackground;
         this.photoBorder;
         this.nearestBodyText;
@@ -737,9 +734,7 @@ class Freeplay extends Phaser.Scene {
         if (!this.takingPhoto) {
             this.foundPsycheText.setVisible(false);  
             this.quitPhotoPageButton.setVisible(false);
-            this.photoBackground.setVisible(false);
-            this.photoBorder.setVisible(false);
-            this.psychePhoto1.setVisible(false);
+            this.hidePsychePhotos();
             this.nearestBodyText.setVisible(false);
         }  else if (this.gameSuccess) {
             this.foundPsycheText.setVisible(true);  
@@ -827,17 +822,21 @@ class Freeplay extends Phaser.Scene {
         this.photoBackground = this.add.rectangle(Constants.PSYCHE_PHOTO_X, 
             Constants.PSYCHE_PHOTO_Y, Constants.PHOTO_BACKGROUND_WIDTH, 
             Constants.PHOTO_BACKGROUND_HEIGHT, Constants.DARKBLUE);
-        this.psychePhoto1 = this.add.image(Constants.PSYCHE_PHOTO_X, 
-            Constants.PSYCHE_PHOTO_Y, 'psychePhoto1')
-            .setScale(Constants.PSYCHE_PHOTO_SCALE);
-        this.photoBorder.setVisible(false);
-        this.photoBackground.setVisible(false);
-        this.psychePhoto1.setVisible(false);
-        
-        CameraManager.addUISprite(this.psychePhoto1);
+
         CameraManager.addUISprite(this.photoBorder);
         CameraManager.addUISprite(this.photoBackground);
 
+        this.psychePhotos = new Array(Constants.MAX_PSYCHE_PHOTO_NUM);
+        for (let i = 0; i < Constants.MAX_PSYCHE_PHOTO_NUM; i++) {
+            let imageName = "psychePhoto" + (i + 1);
+            this.psychePhotos[i] = this.add.image(Constants.PSYCHE_PHOTO_X, 
+                Constants.PSYCHE_PHOTO_Y, imageName)
+                .setScale(Constants.PSYCHE_PHOTO_SCALE);
+            CameraManager.addUISprite(this.psychePhotos[i]);
+
+        }
+        
+        this.hidePsychePhotos();
 
         this.foundPsycheText = this.add.text(Constants.FOUND_PSYCHE_TEXT_X, Constants.FOUND_PSYCHE_TEXT_Y, 'You found Psyche!');
         this.foundPsycheText.setFontSize(Constants.THIRD_FONT_SIZE);
@@ -889,9 +888,7 @@ class Freeplay extends Phaser.Scene {
             // check if pyche is in the view
             if (this.bodies["psyche_probe"].isInView("psyche", viewR, startRotation, endRotation)) {
                 this.foundPsycheText.setVisible(true);
-                this.psychePhoto1.setVisible(true);
-                this.photoBorder.setVisible(true);
-                this.photoBackground.setVisible(true);
+                this.showPsychePhoto(0);
 
                 // Psyche is in the view, check the side
                 let psycheAngle = Math.asin(this.bodies["psyche_probe"].getPsycheDirectionY());
@@ -916,7 +913,6 @@ class Freeplay extends Phaser.Scene {
                         || (Math.abs(psycheAngle - this.targetAngles[i] - 360) <= Constants.ONE_PHOTO_ANGLE)) {
                         // this photo covers the target angle targetAngles[i], set the flag
                         if (this.coverFlags[i] == 1) {
-                            //console.log("You have already taken photo of this side, please take photo of other sides.");
                             this.foundPsycheText.setText("You have already taken\nphoto of this side, please\ntake photo of other sides.");
                         } else {
                             this.coverFlags[i] = 1;
@@ -940,7 +936,7 @@ class Freeplay extends Phaser.Scene {
                     this.gameSuccess = true;
                     this.foundPsycheText.setText("Good job! You successfully\ncovered all Psyche sides!");
                     this.quitPhotoPageButton.setVisible(false);
-                    this.hidePsychePhotos();
+                    //this.hidePsychePhotos();
                 }
                         
             } else {
@@ -978,20 +974,28 @@ class Freeplay extends Phaser.Scene {
     hidePsychePhotos() {
         this.photoBorder.setVisible(false);
         this.photoBackground.setVisible(false);
-        if (typeof(this.psychePhoto0) != "undefined") {
-            this.psychePhoto0.setVisible(false);
+        for (let i = 0; i < Constants.MAX_PSYCHE_PHOTO_NUM; i++) {
+            if (typeof(this.psychePhotos[i]) != "undefined") {
+                this.psychePhotos[i].setVisible(false);
+            }
         }
+    }
 
-        if (typeof(this.psychePhoto1) != "undefined") {
-            this.psychePhoto1.setVisible(false);
-        }
-
-        if (typeof(this.psychePhoto2) != "undefined") {
-            this.psychePhoto2.setVisible(false);
-        }
-
-        if (typeof(this.psychePhoto3) != "undefined") {
-            this.psychePhoto3.setVisible(false);
+    /**
+     * show the psyche photo at a specific index. 
+     * @param {number} idx - index of the psyche photo.
+     */
+    showPsychePhoto(idx) {
+        this.photoBorder.setVisible(true);
+        this.photoBackground.setVisible(true);
+        for (let i = 0; i < Constants.MAX_PSYCHE_PHOTO_NUM; i++) {
+            if (typeof(this.psychePhotos[i]) != "undefined") {
+                if (i == idx) {
+                    this.psychePhotos[i].setVisible(true);
+                } else {
+                    this.psychePhotos[i].setVisible(false);
+                }
+            }
         }
     }
 }
