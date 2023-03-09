@@ -2,9 +2,10 @@
  * Class defining functionality for controling the probe
  */
 class Controler {
-    constructor (_scene, _player) {
+    constructor (_scene, _player, _tutorial) {
         this.scene = _scene;
         this.player = _player;
+        this.tutorial = _tutorial;
 
         this.controlMethod = 0;
 
@@ -105,6 +106,9 @@ class Controler {
                     this.yAcc = -this.APT;
                     this.totalAcc = -this.APT;
                 }
+                if(DialogManager.get("tutorial") == true){
+                    this.tutorial.movementTutor(1);
+                }
             }).on('up', () => {
                 this.yAcc = 0;
                 this.totalAcc = 0;
@@ -116,6 +120,9 @@ class Controler {
                 } else {
                     this.yAcc = this.APT;
                     this.totalAcc = this.APT;
+                }
+                if(DialogManager.get("tutorial") == true){
+                    this.tutorial.movementTutor(2);
                 }
             }).on('up', () => {
                 this.yAcc = 0;
@@ -130,6 +137,9 @@ class Controler {
                 } else {
                     this.xAcc = -this.APT;
                 }
+                if(DialogManager.get("tutorial") == true){
+                    this.tutorial.movementTutor(3);
+                }
             }).on('up', () => {
                 this.xAcc = 0;
                 this.rotation = 0;
@@ -142,6 +152,9 @@ class Controler {
                     this.rotation = 0.04;
                 } else {
                     this.xAcc = this.APT;
+                }
+                if(DialogManager.get("tutorial") == true){
+                    this.tutorial.loadMsg(2);
                 }
             }).on('up', () => {
                 this.xAcc = 0;

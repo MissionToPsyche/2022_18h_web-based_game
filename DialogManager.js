@@ -8,12 +8,17 @@ class DialogManager {
     static tutorialLog = [
         "Welcome to the Tutorial!\n",
         "Press the shift button to get out of Orbit.",
-        "Use the arrow keys to move the probe and find Psyche without crashing.",
+        "Now that you know how to fly, find Psyche without crashing.",
         "You have found Psyche!\n",
         "Press the space key in order to take pictures of Psyche.",
         "Good job! You have finished the tutorial!",
         "You are orbiting the wrong planet.\n",
-        "You are orbiting Earth again.\n"
+        "You are orbiting Earth again.\n",
+        "Press and hold the up arrow key to go up.",
+        "Press and hold the down arrow key to go down.",
+        "Press and hold the left arrow key to go left.",
+        "Press and hold the right arrow key to go right.",
+        "The longer you press and hold on to the arrow keys the faster you fly."
     ]
 
     static set(setMode){

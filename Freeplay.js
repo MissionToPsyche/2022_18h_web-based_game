@@ -214,7 +214,7 @@ class Freeplay extends Phaser.Scene {
         this.takePhoto();
 
         //creating controler
-        this.controler = new Controler(this, this.bodies["psyche_probe"]);
+        this.controler = new Controler(this, this.bodies["psyche_probe"], this.tutorial);
         this.bodies["psyche_probe"].setControler(this.controler);
     }
 
@@ -623,6 +623,7 @@ class Freeplay extends Phaser.Scene {
                 this.scene.restart();
                 this.paused = false
                 this.gameOver = false;
+                this.earthDone = false;
             });
 
         //create events for the exit button.
@@ -644,6 +645,7 @@ class Freeplay extends Phaser.Scene {
                 this.scene.start('MainMenu');
                 this.paused = false;
                 this.gameOver = false;
+                this.earthDone = false;
             });
 
         //add all the images to the UI camera.

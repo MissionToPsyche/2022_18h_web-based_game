@@ -9,6 +9,8 @@ class tutorialManager {
         this.dialogShadow = this.scene.add.rectangle(525, 650,550, 125, _color)
         .setAlpha(0.85);
         this.dialogText = this.scene.add.text(300,625, "");
+        this.movmentTutNum = 1;
+        this.movementNotDone = true;
     }
 
     loadMsg(num){
@@ -28,7 +30,25 @@ class tutorialManager {
             case 1:
                 this.dialogText.setVisible(false);
                 this.dialogText = this.scene.add.text(300,625, "");
-                this.typewriteText(this.dialogText,DialogManager.getTutorialDial(2));
+                this.typewriteText(this.dialogText,DialogManager.getTutorialDial(8));
+                break;
+            // When player done with movement tutorial.
+            case 2:
+                if(this.movmentTutNum == 4 && this.movementNotDone){
+                    this.dialogText.setVisible(false);
+                    this.dialogText = this.scene.add.text(300,625, "");
+                        this.typewriteText(this.dialogText,DialogManager.getTutorialDial(12));
+                        this.scene.time.addEvent({
+                            delay: 8500,
+                            callback: ()=>{
+                                this.dialogText.setVisible(false);
+                                this.dialogText = this.scene.add.text(300,625, "");
+                                this.typewriteText(this.dialogText,DialogManager.getTutorialDial(2));
+                            },
+                            loop: false
+                        })
+                    this.movementNotDone = false;
+                }
                 break;
             // When player finds Psyche.
             case 3:
@@ -75,6 +95,15 @@ class tutorialManager {
                     loop: false
                 })
                 break;
+        }
+    }
+
+    movementTutor(phase){
+        if(this.movmentTutNum == phase){
+            this.movmentTutNum = this.movmentTutNum + 1;
+            this.dialogText.setVisible(false);
+            this.dialogText = this.scene.add.text(300,625, "");
+            this.typewriteText(this.dialogText,DialogManager.getTutorialDial(this.movmentTutNum + 7));
         }
     }
 
