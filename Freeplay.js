@@ -928,6 +928,9 @@ class Freeplay extends Phaser.Scene {
                         if (this.coverFlags[i] == 1) {
                             this.foundPsycheText.setText("You have already taken\nphoto of this side, please\ntake photo of other sides.");
                         } else {
+                            // taking photo, play positive sfx
+                            var positive_audio = this.sound.add('positive');
+                            positive_audio.play();
                             this.coverFlags[i] = 1;
                             this.foundPsycheText.setText("Good job! You just took\nphoto of a new Psyche side!");
                         }
