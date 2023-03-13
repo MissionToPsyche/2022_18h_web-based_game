@@ -332,13 +332,13 @@ class Probe extends Body {
 
 	updateOrbitRotation() {
 		this.angleOffset += this.controller.getRotation();
-		const relAngle = Math.atan2(this.y - this.orbitTarget.y, this.x - this.orbitTarget.y) - (Math.PI / 4);
+		const relAngle = Math.atan2(this.y - this.orbitTarget.y, this.x - this.orbitTarget.y);
 		const newAngle = relAngle + this.angleOffset;
 		this.rotation = Phaser.Math.Angle.RotateTo(this.rotation, newAngle, 0.05);
 	}
 
 	updateRotationAndVelocity() {
-		const newAngle = this.controller.getRotation();
+		const newAngle = this.controller.getRotation() + (Math.PI / 4);
 		this.rotation = Phaser.Math.Angle.RotateTo(this.rotation, newAngle, 0.05);
 
 		this.updateVelocity();
@@ -352,7 +352,7 @@ class Probe extends Body {
 	updateRotation() {
 		const a_vel = this.controller.getAccelerationVector();
 		if (a_vel.length() > 0) {
-			const newAngle = Phaser.Math.Angle.Wrap(a_vel.angle() - (Math.PI / 4) * 5);
+			const newAngle = Phaser.Math.Angle.Wrap(a_vel.angle() - (Math.PI));
 			this.rotation = Phaser.Math.Angle.RotateTo(this.rotation, newAngle, 0.05);
 		}
 	}

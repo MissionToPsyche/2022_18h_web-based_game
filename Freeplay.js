@@ -376,7 +376,7 @@ class Freeplay extends Phaser.Scene {
         let viewR = 100;
         this.graphics.fillStyle(0xFFFFFF, 0.3);
 
-        let endRotation = this.bodies["psyche_probe"].rotation + Math.PI;
+        let endRotation = this.bodies["psyche_probe"].rotation + (3 * Math.PI / 4);
         if (endRotation > 2 * Math.PI) {
             endRotation -= (2 * Math.PI);
         }
