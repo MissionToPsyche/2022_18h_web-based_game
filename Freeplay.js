@@ -886,7 +886,7 @@ class Freeplay extends Phaser.Scene {
                 if(DialogManager.get("tutorial") == true){
                     this.tutorial.loadMsg(5);
                 }
-                
+                this.resumeMap();
             })
             .setVisible(false);
         CameraManager.addUISprite(this.quitPhotoPageButton);
@@ -899,6 +899,12 @@ class Freeplay extends Phaser.Scene {
         // disable spacebar take photo when paused
         if ((!this.paused) && (!this.gameOver)) {
             this.takingPhoto = !this.takingPhoto;
+            if(this.map_border.visible == true){
+                this.isMapVisible = true;
+                this.updateMap();
+            } else{
+                this.resumeMap();
+            }
 
             let viewR = 100;
             let endRotation = this.bodies["psyche_probe"].rotation + Math.PI;
