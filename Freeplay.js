@@ -191,7 +191,6 @@ class Freeplay extends Phaser.Scene {
 
         this.createPauseButton();
         this.createOrbitToggle();
-        this.createTestMenu();
         this.takePhoto();
 
         //creating controler
@@ -211,7 +210,6 @@ class Freeplay extends Phaser.Scene {
 
         this.updatePauseButton();
         this.updateTakePhoto();
-        this.updateTestMenu();
 
         /*
         // only move if not paused and not taking photo
@@ -478,29 +476,6 @@ class Freeplay extends Phaser.Scene {
         let probeView = this.graphics.slice(centerX, centerY, viewR, startRotation, endRotation, true);
         
         this.graphics.fillPath();
-    }
-
-    // testing new menu system
-    createTestMenu() {
-        // create a new menu
-        this.testMenu = new Menu(this);
-
-        // create some buttons
-        this.testButton = new Button(this, CameraManager.getViewCenter(), 'button', 'dfgjkd');
-        this.testPoint = new Phaser.Geom.Point(512, 500);
-        this.testButton2 = new Button(this, this.testPoint, 'button', 'jkghdfgh');
-
-        // add some buttons to the menu
-        this.testMenu.addButton(this.testButton.getElements());
-        this.testMenu.addButton(this.testButton2.getElements());
-    }
-
-    // testing new menu system
-    updateTestMenu() {
-        this.input.keyboard
-            .on('keydown-T', () => {
-                this.testMenu.toggleMenu();
-            });
     }
 
     /** Creates the image objects and associated events for the 
