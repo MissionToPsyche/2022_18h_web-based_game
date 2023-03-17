@@ -365,6 +365,10 @@ class Freeplay extends Phaser.Scene {
         if (this.bodies["psyche_probe"].orbitToggle && !this.bodies["psyche_probe"].inOrbit) {
             this.bodies["psyche_probe"].maintainOrbit(this);
         } else if (this.bodies["psyche_probe"].inOrbit){
+            if(this.map_border.visible == true){
+                this.isMapVisible = true;
+                this.updateMap();
+            }
             //draw the orbit boundries if probe is locked in an orbit
             this.graphics.lineStyle(1, 0xff0000, 0.5);
             this.bodies["psyche_probe"].getOrbitPath('new').draw(this.graphics, 64);
@@ -752,13 +756,21 @@ class Freeplay extends Phaser.Scene {
 
     resumeMap(){
         // Check if map was visible before pause.
-        if(this.isMapVisible){
+        if(this.isMapVisible && !this.bodies["psyche_probe"].inOrbit){
             this.updateMap();
             this.isMapVisible = false;
         }
     }
 
     updateMap(){
+        if(!this.bodies["psyche_probe"].inOrbit){
+            this.changeMap();
+        } else if(this.bodies["psyche_probe"].inOrbit && this.map_border.visible == true){
+            this.changeMap();
+        }
+    }
+
+    changeMap(){
         var visible = CameraManager.popMap();
         if(visible){
             this.map_border.setVisible(true);
@@ -850,6 +862,7 @@ class Freeplay extends Phaser.Scene {
             }
             // Makes sure dialog for when orbiting can reappear.
             this.done = false;
+            this.resumeMap();
         }
     }
 
@@ -886,7 +899,7 @@ class Freeplay extends Phaser.Scene {
                 if(DialogManager.get("tutorial") == true){
                     this.tutorial.loadMsg(5);
                 }
-                this.resumeMap();
+                //this.resumeMap();
             })
             .setVisible(false);
         CameraManager.addUISprite(this.quitPhotoPageButton);
@@ -899,12 +912,12 @@ class Freeplay extends Phaser.Scene {
         // disable spacebar take photo when paused
         if ((!this.paused) && (!this.gameOver)) {
             this.takingPhoto = !this.takingPhoto;
-            if(this.map_border.visible == true){
-                this.isMapVisible = true;
-                this.updateMap();
-            } else{
-                this.resumeMap();
-            }
+            //  if(this.map_border.visible == true){
+            //      this.isMapVisible = true;
+            //      this.updateMap();
+            //  } else{
+            //     this.resumeMap();
+            // }
 
             let viewR = 100;
             let endRotation = this.bodies["psyche_probe"].rotation + Math.PI;
