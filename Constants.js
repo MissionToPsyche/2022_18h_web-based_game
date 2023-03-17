@@ -50,4 +50,9 @@ const Constants = {
     HINT_ALPHA_AFTER: 0.8,
     HINT_WIDTH_BEFORE: 2,
     HINT_WIDTH_AFTER: 2,
+
+    // mute button size
+    MUTE_X: 964,
+    MUTE_Y: 620,
+    MUTE_SCALE: 0.5,
 }

@@ -37,6 +37,9 @@ class Freeplay extends Phaser.Scene {
 
         this.targetAngles; // array of target angles that the player need to take photo
         this.coverFlags; // array of flags that the player already took photo
+
+        this.mutedButton;
+        this.notmutedButton;
     }
 
     /** Loads all necessary assets for the scene before the simulation runs */
@@ -48,6 +51,8 @@ class Freeplay extends Phaser.Scene {
         this.load.image('logo', 'img/Psyche_Icon_Color-SVG.svg'); //asset for psyche logo
         this.load.image('play', 'img/icons/play-circle.svg');
         this.load.image('pause', 'img/icons/pause-circle.svg');
+        this.load.image('muted', 'img/icons/muted.png');
+        this.load.image('notmuted', 'img/icons/notmuted.png');
         this.load.image('orbit', 'img/icons/orbit.svg');
         this.load.image('direction', 'img/icons/direction.png'); // an arrow
         this.load.image('exit', 'img/icons/exit.png'); // an exit button
@@ -202,6 +207,7 @@ class Freeplay extends Phaser.Scene {
         this.createPauseButton();
         this.createOrbitToggle();
         this.takePhoto();
+        this.createMuteButton();
 
         //creating controler
         this.controler = new Controler(this, this.bodies["psyche_probe"]);
@@ -1011,5 +1017,18 @@ class Freeplay extends Phaser.Scene {
                 }
             }
         }
+    }
+
+    /**
+     * create the mute button and related events.
+     */
+    createMuteButton() {
+        this.mutedButton = this.add.image(Constants.MUTE_X, 
+            Constants.MUTE_Y, 'muted').setScale(Constants.MUTE_SCALE);
+        this.notmutedButton = this.add.image(Constants.MUTE_X, 
+            Constants.MUTE_Y, 'notmuted').setScale(Constants.MUTE_SCALE);
+        this.mutedButton.depth = 100;
+        this.notmutedButton.depth = 100;
+        this.mutedButton.setVisible(false);
     }
 }
