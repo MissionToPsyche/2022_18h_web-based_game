@@ -25,7 +25,6 @@ class Freeplay extends Phaser.Scene {
         this.psychePhoto1;
         this.nearestBodyText;
 
-        this.failText;
         this.testMenu;
         this.testButton;
 
@@ -106,9 +105,6 @@ class Freeplay extends Phaser.Scene {
         CameraManager.initializeMiniCamera(this);
 
         var map_border = this.add.image(880,110,'minimap_border').setScale(0.35);
-
-        //Game over
-        this.failText = this.add.text(525, 300, 'Game Over!').setOrigin(0.5).setFontSize(120);
 
         //creating Body objects
         this.json = this.cache.json.get('bodies');
@@ -326,7 +322,6 @@ class Freeplay extends Phaser.Scene {
             this.gameOver = true;
             var fail_audio = this.sound.add('negative');
             fail_audio.play();
-            CameraManager.addUISprite(this.failText);
         }
 
         this.graphics.clear(); //clear previous itteration's graphics
@@ -620,13 +615,15 @@ class Freeplay extends Phaser.Scene {
 
         // if game over then show the game over text
         if (this.gameOver) {
-            this.failText.setVisible(true)
+            //this.failText.setVisible(true)
+            this.pauseText.setText("Game Over!");
+            this.pauseMenu.setVisible(true);
 
             this.pauseButton.setTint(0x7f7f7f);
             this.playButton.setTint(0x7f7f7f);
             this.orbitButton.setTint(0x7f7f7f);
         } else {
-            this.failText.setVisible(false)
+            //this.failText.setVisible(false)
         }
 
         // if paused or game over then we can show the restart and exit buttons
