@@ -60,6 +60,7 @@ class Freeplay extends Phaser.Scene {
         this.load.spritesheet('neptune', "img/sprites/neptune_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
         this.load.spritesheet('pluto', "img/sprites/pluto_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
         this.load.spritesheet('psyche', "img/sprites/psyche_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
+        this.load.spritesheet('asteroid', "img/sprites/asteroid_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
         this.load.image('psyche_probe', "img/icons/psyche_probe.svg");
         this.load.image('psyche_probe_icon', "img/icons/arrow.png");
 
