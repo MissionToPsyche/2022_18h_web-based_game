@@ -68,6 +68,7 @@ class Freeplay extends Phaser.Scene {
         this.load.image('psyche_probe', "img/icons/psyche_probe.svg");
         this.load.image('psyche_probe_icon', "img/icons/arrow.png");
         this.restart = false;
+        this.earthDone = false;
         // Make the indicator show up again.
         this.direction = undefined;
 
@@ -785,7 +786,7 @@ class Freeplay extends Phaser.Scene {
              this.quitPhotoPageButton.setVisible(false);
              this.psychePhoto1.setVisible(false);
              this.nearestBodyText.setVisible(false);
-        } else {
+        } else if(!DialogManager.get("tutorial") == true){
             this.quitPhotoPageButton.setVisible(true);
         }
     }
@@ -857,8 +858,12 @@ class Freeplay extends Phaser.Scene {
         } else {
             this.bodies["psyche_probe"].stopOrbitLock();
             if(DialogManager.get("tutorial") == true){
-                this.earthDone = true;
-                this.tutorial.loadMsg(1);
+                if(this.earthDone == false){
+                    this.earthDone = true;
+                    this.tutorial.loadMsg(1);
+                }else{
+                    this.tutorial.loadMsg(4);
+                }
             }
             // Makes sure dialog for when orbiting can reappear.
             this.done = false;
@@ -937,7 +942,7 @@ class Freeplay extends Phaser.Scene {
                 var win_audio = this.sound.add('positive');
                 win_audio.play();
                 // console.log("psyche in view!");
-            } else {
+            } else if(!DialogManager.get("tutorial")){
                 // check which body is in the view and choose the nearest one
                 let currentDistance = 1000; // random big number
                 let nearestBody = null;

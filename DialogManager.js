@@ -18,7 +18,10 @@ class DialogManager {
         "Press and hold the down arrow key to go down.",
         "Press and hold the left arrow key to go left.",
         "Press and hold the right arrow key to go right.",
-        "The longer you press and hold on to the arrow keys the faster you fly."
+        "The longer you press and hold on to the arrow keys the faster you fly.",
+        "Press m to see the minimap.",
+        "Seems like you are lost.\n",
+        "Follow the orange arrow to find Psyche or press m for minimap!"
     ]
 
     static set(setMode){

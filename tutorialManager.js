@@ -1,14 +1,16 @@
 class tutorialManager {
 
     /**
-     * Represents a camera manager
+     * Represents a tutorial manager
      * @constructor
      */
     constructor(_scene, _color) {
         this.scene = _scene;
         this.dialogShadow = this.scene.add.rectangle(525, 650,550, 125, _color)
         .setAlpha(0.85);
+        this.dialogTextOG = this.scene.add.text(300,625, "");
         this.dialogText = this.scene.add.text(300,625, "");
+        this.OGtxtdone = false;
         this.movmentTutNum = 1;
         this.movementNotDone = true;
     }
@@ -17,18 +19,19 @@ class tutorialManager {
         switch(num){
             // When tutorial start.
             case 0:
-                this.typewriteText(this.dialogText,DialogManager.getTutorialDial(0));
+                this.typewriteText(this.dialogTextOG,DialogManager.getTutorialDial(0));
                 this.scene.time.addEvent({
                     delay: 5000,
                     callback: ()=>{
-                        this.typewriteText(this.dialogText,DialogManager.getTutorialDial(1));
+                        this.typewriteText(this.dialogTextOG,DialogManager.getTutorialDial(1));
                     },
                     loop: false
                 })
                 break;
             // When player gets out of orbit.
             case 1:
-                this.dialogText.setVisible(false);
+                this.dialogTextOG.setVisible(false);
+                this.OGtxtdone = true;
                 this.dialogText = this.scene.add.text(300,625, "");
                 this.typewriteText(this.dialogText,DialogManager.getTutorialDial(8));
                 break;
@@ -47,6 +50,15 @@ class tutorialManager {
                             },
                             loop: false
                         })
+                        this.scene.time.addEvent({
+                            delay: 17000,
+                            callback: ()=>{
+                                this.dialogText.setVisible(false);
+                                this.dialogText = this.scene.add.text(300,625, "");
+                                this.typewriteText(this.dialogText,DialogManager.getTutorialDial(15));
+                            },
+                            loop: false
+                        })
                     this.movementNotDone = false;
                 }
                 break;
@@ -59,6 +71,19 @@ class tutorialManager {
                         delay: 4000,
                         callback: ()=>{
                             this.typewriteText(this.dialogText,DialogManager.getTutorialDial(4));
+                        },
+                        loop: false
+                    })
+                break;
+            // When player orbit the wrong planet.
+            case 4:
+                this.dialogText.setVisible(false);
+                this.dialogText = this.scene.add.text(300,625, "");
+                    this.typewriteText(this.dialogText,DialogManager.getTutorialDial(14));
+                    this.scene.time.addEvent({
+                        delay: 4000,
+                        callback: ()=>{
+                            this.typewriteText(this.dialogText,DialogManager.getTutorialDial(13));
                         },
                         loop: false
                     })
@@ -108,12 +133,17 @@ class tutorialManager {
     }
 
     msgVisibility(visibility){
-        if(visibility){
+        if(visibility && !this.OGtxtdone){
+            this.dialogShadow.setVisible(true);
+            this.dialogTextOG.setVisible(true);
+        } else if(visibility && this.OGtxtdone){
             this.dialogShadow.setVisible(true);
             this.dialogText.setVisible(true);
-        } else{
+        }
+        else{
             this.dialogShadow.setVisible(false);
             this.dialogText.setVisible(false);
+            this.dialogTextOG.setVisible(false);
         }
     }
 
