@@ -358,7 +358,7 @@ class Probe extends Body {
 	}
 
 	updateMinimapIconAngle() {
-		this.minimap_icon.angle = Phaser.Math.RadToDeg(this.rotation);
+		this.minimap_icon.angle = Phaser.Math.RadToDeg(this.rotation - (Math.PI / 4));
 	}
 
 	getSpriteFrame(direction) {
