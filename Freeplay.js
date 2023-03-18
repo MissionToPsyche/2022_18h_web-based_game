@@ -1030,5 +1030,30 @@ class Freeplay extends Phaser.Scene {
         this.mutedButton.depth = 100;
         this.notmutedButton.depth = 100;
         this.mutedButton.setVisible(false);
+
+        CameraManager.addUISprite(this.mutedButton);
+        CameraManager.addUISprite(this.notmutedButton);
+
+        // events of not muted button
+        this.notmutedButton.setInteractive()
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
+                // set color to orange
+                this.notmutedButton.setTint(Constants.ORANGE);
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OUT, () => {
+                // set color to white
+                this.notmutedButton.setTint(Constants.WHITE);
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
+                // set color to orange and play sound
+                this.notmutedButton.setTint(Constants.ORANGE);
+                let buttonSound = this.sound.add('menu');
+                buttonSound.play();
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
+                // stop background music
+                this.ingame_music.stop();
+            });
+
     }
 }
