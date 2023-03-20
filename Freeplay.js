@@ -28,7 +28,8 @@ class Freeplay extends Phaser.Scene {
         this.photoBorder;
         this.nearestBodyText;
 
-        this.failText;
+        this.testMenu;
+        this.testButton;
 
         this.probeAngleOffset = 0;
 
@@ -48,6 +49,7 @@ class Freeplay extends Phaser.Scene {
         this.load.image('logo', 'img/Psyche_Icon_Color-SVG.svg'); //asset for psyche logo
         this.load.image('play', 'img/icons/play-circle.svg');
         this.load.image('pause', 'img/icons/pause-circle.svg');
+        this.load.image('button', "img/icons/button.png"); // a default button with no text
         this.load.image('orbit', 'img/icons/orbit.svg');
         this.load.image('direction', 'img/icons/direction.png'); // an arrow
         this.load.image('exit', 'img/icons/exit.png'); // an exit button
@@ -86,6 +88,7 @@ class Freeplay extends Phaser.Scene {
         this.load.audio('menu', 'assets/sfx/misc_menu_4.wav');
         this.load.audio('negative', 'assets/sfx/negative.wav');
         this.load.audio('positive', 'assets/sfx/positive.wav');
+
     }
 
     /**
@@ -115,12 +118,6 @@ class Freeplay extends Phaser.Scene {
         CameraManager.initializeMiniCamera(this);
 
         var map_border = this.add.image(880,110,'minimap_border').setScale(0.35);
-
-        //Pause menu
-        this.pauseText = this.add.text(525, 300, 'Pause').setOrigin(0.5).setFontSize(120);
-
-        //Game over
-        this.failText = this.add.text(525, 300, 'Game Over!').setOrigin(0.5).setFontSize(120);
 
         //creating Body objects
         this.json = this.cache.json.get('bodies');
@@ -209,7 +206,6 @@ class Freeplay extends Phaser.Scene {
             this.ingame_music.play({ loop: true });
         }
 
-        //creating control keys
         this.createPauseButton();
         this.createOrbitToggle();
         this.takePhoto();
@@ -243,7 +239,6 @@ class Freeplay extends Phaser.Scene {
             this.gameOver = true;
             var fail_audio = this.sound.add('negative');
             fail_audio.play();
-            CameraManager.addUISprite(this.failText);
         }
 
         this.graphics.clear(); //clear previous itteration's graphics
@@ -467,21 +462,35 @@ class Freeplay extends Phaser.Scene {
      *  game's pause button 
      */
     createPauseButton() {
+        this.pauseMenu = new Menu(this);
+
+        this.pauseText = this.add.text(525, 300, 'Pause').setOrigin(0.5).setFontSize(120);
+
+        this.restartButtonPosition = new Phaser.Geom.Point(520, 408);
+        this.restartButton = new Button(this, this.restartButtonPosition, 'button', 'Restart');
+        MenuManager.restartButtonListener(this, this.restartButton);
+
+        this.exitButtonPosition = new Phaser.Geom.Point(520, 508);
+        this.exitButton = new Button(this, this.exitButtonPosition, 'button', 'Exit');
+        MenuManager.exitButtonListener(this, this.exitButton);
+
         this.playButton = this.add.image(964, 708, 'play').setScale(0.5)
         this.pauseButton = this.add.image(964, 708, 'pause').setScale(0.5)
-        this.restartButton = this.add.image(520, 408, 'restart').setScale(0.5)
-        this.exitButton = this.add.image(520, 508, 'exit').setScale(0.5)
-        // Made sure the buttons and label is on top of everything.
-        this.restartButton.depth = 100;
+
         this.playButton.depth = 100;
         this.pauseButton.depth = 100;
-        this.exitButton.depth = 100;
         this.pauseText.depth = 100;
 
         // To darken screen
         const color1 = new Phaser.Display.Color(0, 0, 0);
         this.shadow = this.add.rectangle(0, 0,2048, 2048, color1.color);
         this.shadow.setAlpha(0.5);
+
+        this.pauseMenu.addElement(this.pauseText);
+        this.pauseMenu.addButton(this.restartButton.getElements());
+        this.pauseMenu.addButton(this.exitButton.getElements());
+        this.pauseMenu.addElement(this.shadow);
+
 
         //create keyboard events. Mostly just sets the tint of the button.
         /*
@@ -541,59 +550,9 @@ class Freeplay extends Phaser.Scene {
                 }
             });
 
-        //create events for the restart button
-        this.restartButton.setInteractive()
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
-                this.restartButton.setTint(0xF9A000);
-            })
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OUT, () => {
-                this.restartButton.setTint(0xFFFFFF);
-            })
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
-                this.restartButton.setTint(0xF47D33);
-                var menu_audio = this.sound.add('menu');
-                menu_audio.play();
-            })
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
-                this.restartButton.setTint(0xFFFFFF);
-                this.scene.restart();
-                this.paused = false
-                this.gameOver = false;
-                this.gameSuccess = false;
-                this.takingPhoto = false;
-                // Make the direction icon show up again.
-                this.direction = undefined;
-            });
-
-        //create events for the exit button.
-        this.exitButton.setInteractive()
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
-                this.exitButton.setTint(0xF9A000);
-            })
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OUT, () => {
-                this.exitButton.setTint(0xFFFFFF);
-            })
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
-                this.exitButton.setTint(0xF47D33);
-                var menu_audio = this.sound.add('menu');
-                menu_audio.play();
-            })
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
-                this.exitButton.setTint(0xFFFFFF);
-                this.ingame_music.stop();
-                this.scene.start('MainMenu');
-                this.paused = false;
-                this.gameOver = false;
-                this.gameSuccess = false;
-            });
-
         //add all the images to the UI camera.
         CameraManager.addUISprite(this.playButton);
         CameraManager.addUISprite(this.pauseButton);
-        CameraManager.addUISprite(this.exitButton);
-        CameraManager.addUISprite(this.restartButton);
-        CameraManager.addUISprite(this.shadow);
-        CameraManager.addUISprite(this.pauseText);
     }
 
     /**
@@ -632,19 +591,19 @@ class Freeplay extends Phaser.Scene {
         if (this.paused && !this.gameOver && !this.gameSuccess) {
             this.pauseText.setVisible(true)
             this.playButton.setVisible(true)
-            this.pauseButton.setVisible(false)
-            this.restartButton.setVisible(true)
-            this.exitButton.setVisible(true)
-            this.shadow.setVisible(true)
+            this.pauseButton.setVisible(false);
+            this.pauseMenu.setVisible(true);
         } else {
-            this.pauseButton.setVisible(true)
-            this.playButton.setVisible(false)
-            this.pauseText.setVisible(false)
+            this.pauseButton.setVisible(true);
+            this.playButton.setVisible(false);
+            this.pauseMenu.setVisible(false);
         }
 
         // if game over then show the game over text
         if (this.gameOver) {
-            this.failText.setVisible(true)
+            //this.failText.setVisible(true)
+            this.pauseText.setText("Game Over!");
+            this.pauseMenu.setVisible(true);
 
             this.pauseButton.setTint(0x7f7f7f);
             this.playButton.setTint(0x7f7f7f);
@@ -653,8 +612,6 @@ class Freeplay extends Phaser.Scene {
             this.pauseButton.setTint(0x7f7f7f);
             this.playButton.setTint(0x7f7f7f);
             this.orbitButton.setTint(0x7f7f7f);
-        } else {
-            this.failText.setVisible(false);
         }
 
         // if paused or game over then we can show the restart and exit buttons
