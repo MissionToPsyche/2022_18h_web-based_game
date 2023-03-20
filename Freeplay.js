@@ -506,7 +506,6 @@ class Freeplay extends Phaser.Scene {
         this.pauseMenu.addButton(this.exitButton.getElements());
         this.pauseMenu.addElement(this.shadow);
 
-
         //create keyboard events. Mostly just sets the tint of the button.
         /*
         this.input.keyboard
@@ -622,19 +621,6 @@ class Freeplay extends Phaser.Scene {
             this.pauseButton.setTint(0x7f7f7f);
             this.playButton.setTint(0x7f7f7f);
             this.orbitButton.setTint(0x7f7f7f);
-        } else {
-            //this.failText.setVisible(false)
-        }
-
-        // if paused or game over then we can show the restart and exit buttons
-        if (this.paused || this.gameOver) {
-            this.restartButton.setVisible(true)
-            this.exitButton.setVisible(true)
-            this.shadow.setVisible(false)
-        } else {
-            this.restartButton.setVisible(false)
-            this.exitButton.setVisible(false)
-            this.shadow.setVisible(false)
         }
         
     }
