@@ -230,6 +230,10 @@ class Freeplay extends Phaser.Scene {
 
         // don't update bodies if paused, game over, or is taking photo
         if (this.paused || this.gameOver || this.gameSuccess || this.takingPhoto) {
+            for (const body in this.bodies) {
+                this.bodies[body].stop()
+            }
+            
             return
         }
 
