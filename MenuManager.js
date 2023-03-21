@@ -25,6 +25,7 @@ class MenuManager {
                 _scene.gameOver = false;
                 // Make the direction icon show up again.
                 _scene.direction = undefined;
+                _scene.isMapVisible = false;
             });
 	}
 
@@ -46,6 +47,7 @@ class MenuManager {
                 _scene.scene.start('MainMenu');
                 _scene.paused = false;
                 _scene.gameOver = false;
+                _scene.isMapVisible = false;
             });
 	}
 

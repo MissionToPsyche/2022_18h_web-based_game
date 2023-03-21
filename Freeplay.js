@@ -736,12 +736,14 @@ class Freeplay extends Phaser.Scene {
             this.quitPhotoPageButton.setVisible(false);
             this.hidePsychePhotos();
             this.nearestBodyText.setVisible(false);
-        }  else if (this.gameSuccess) {
+        } else if (this.gameSuccess) {
             this.foundPsycheText.setVisible(true);  
             this.quitPhotoPageButton.setVisible(false);
             this.nearestBodyText.setVisible(false);
         } else if(!DialogManager.get("tutorial") == true){
             this.quitPhotoPageButton.setVisible(true);
+        }else if(DialogManager.get("tutorial") == true){
+            this.takingPhoto = !this.takingPhoto;
         }
     }
     
