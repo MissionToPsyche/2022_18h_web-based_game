@@ -41,6 +41,9 @@ class Freeplay extends Phaser.Scene {
 
         this.mutedButton;
         this.notmutedButton;
+
+        this.probeStartRotation = 0;
+        this.probeEndRotation = 0;
     }
 
     /** Loads all necessary assets for the scene before the simulation runs */
@@ -81,7 +84,6 @@ class Freeplay extends Phaser.Scene {
         this.load.image('psyche_probe_icon', "img/icons/arrow.png");
 
         // load the photo of psyche
-        this.load.image('psychePhoto1', "img/photos/psyche1.png");
         for (let i = 0; i < Constants.MAX_PSYCHE_PHOTO_NUM; i++) {
             let imageName = "psychePhoto" + i;
             let filePath = "img/photos/images/psyche_e_0" + (i + 1) + ".png";
@@ -408,6 +410,8 @@ class Freeplay extends Phaser.Scene {
         }
 
         let probeView = this.graphics.slice(centerX, centerY, viewR, startRotation, endRotation, true);
+        this.probeStartRotation = startRotation;
+        this.probeEndRotation = endRotation;
 
         this.graphics.fillPath();
 
@@ -781,14 +785,9 @@ class Freeplay extends Phaser.Scene {
             this.takingPhoto = !this.takingPhoto;
 
             let viewR = Constants.VIEW_R;
-            let endRotation = this.bodies["psyche_probe"].rotation + Math.PI;
-            if (endRotation > 2 * Math.PI) {
-                endRotation -= (2 * Math.PI);
-            }
-            let startRotation = endRotation + Phaser.Math.DegToRad(90);
-            if (startRotation > 2 * Math.PI) {
-                startRotation -= (2 * Math.PI);
-            }
+
+            let startRotation = this.probeStartRotation;
+            let endRotation = this.probeEndRotation;
 
             // check if pyche is in the view
             if (this.bodies["psyche_probe"].isInView("psyche", viewR, startRotation, endRotation)) {
