@@ -97,7 +97,7 @@ class CameraManager {
      */
     static setCameraZoom(zoom) {
         this.mainZoom = zoom;
-        this.mainCamera.zoomTo(zoom);
+        this.mainCamera.zoomTo(zoom, 2000, 'Linear', true);
     }
 
     /**
@@ -110,14 +110,14 @@ class CameraManager {
         //need to find what the fraction of the zoom
         //is based on the camera's viewport size
         var zoom = this.mainCamera.height / size;
-        this.mainCamera.zoomTo(zoom);
+        this.mainCamera.zoomTo(zoom, 2000, 'Quad.easeIn', true);
     }
 
     /**
      * returns the main camera to it's set zoom value.
      */
     static returnToSetZoom() {
-        this.mainCamera.zoomTo(this.mainZoom);
+        this.mainCamera.zoomTo(this.mainZoom, 2000, 'Quad.easeOut', true);
     }
 
     /**
