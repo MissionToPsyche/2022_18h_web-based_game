@@ -522,8 +522,10 @@ class Freeplay extends Phaser.Scene {
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
                 this.updatePauseColor('pressed');
-                var menu_audio = this.sound.add('menu');
-                menu_audio.play();
+                if (!this.gameOver) {
+                    var menu_audio = this.sound.add('menu');
+                    menu_audio.play();
+                }
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
                 // disable pause when in the taking photo page
@@ -543,8 +545,10 @@ class Freeplay extends Phaser.Scene {
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
                 this.updatePauseColor('pressed');
-                var menu_audio = this.sound.add('menu');
-                menu_audio.play();
+                if (!this.gameOver) {
+                    var menu_audio = this.sound.add('menu');
+                    menu_audio.play();
+                }
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
                 // disable pause when in the taking photo page
@@ -567,8 +571,10 @@ class Freeplay extends Phaser.Scene {
         this.HUD.addElement(CameraManager.miniCamera);
         this.HUD.addElement(this.map_border);
         this.HUD.addElement(this.orbitButton);
-        this.HUD.addElement(this.pauseButton);
-        this.HUD.addElement(this.playButton);
+
+        // we want this control visible at all times, so it is not added to the HUD menu
+        //this.HUD.addElement(this.pauseButton);
+        //this.HUD.addElement(this.playButton);
     }
 
     updateHeadsUpDisplay() {
@@ -630,7 +636,10 @@ class Freeplay extends Phaser.Scene {
         if (this.gameOver) {
             //this.failText.setVisible(true)
             this.pauseText.setText("Game Over!");
+            this.playButton.setVisible(true);
+            this.pauseButton.setVisible(false);
             this.pauseMenu.setVisible(true);
+            this.HUD.setVisible(false);
 
             this.pauseButton.setTint(0x7f7f7f);
             this.playButton.setTint(0x7f7f7f);
@@ -699,8 +708,10 @@ class Freeplay extends Phaser.Scene {
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
                 this.updateOrbitColor('on');
-                var menu_audio = this.sound.add('menu');
-                menu_audio.play();
+                if (!this.gameOver) {
+                    var menu_audio = this.sound.add('menu');
+                    menu_audio.play();
+                }
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
                 this.updateOrbitColor(this.bodies["psyche_probe"].orbitToggle ? 'on' : null);
