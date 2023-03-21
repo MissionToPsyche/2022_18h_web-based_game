@@ -1,12 +1,19 @@
 /**
  * Class defining functionality for controling the probe
  */
-class Controler {
-    constructor (_scene, _player) {
+
+const ControlMethod = {
+    FourWay: Symbol("four_way"),
+    Tank: Symbol("tank")
+}
+
+
+class Controller {
+    constructor(_scene, _player) {
         this.scene = _scene;
         this.player = _player;
 
-        this.controlMethod = 0;
+        this.controlMethod = ControlMethod.FourWay;
 
         this.pauseKey_setting = 'P';
         this.orbitKey_setting = 'SHIFT';
@@ -46,7 +53,7 @@ class Controler {
     }
 
     /**
-     * Updates the events for all keys in controler
+     * Updates the events for all keys in controller
      */
     updateKeyEvents() {
         //updating key settings in case of change
@@ -58,7 +65,7 @@ class Controler {
         this.d_down = this.keyboard.addKey(this.d_down_setting, true, true);
         this.d_left = this.keyboard.addKey(this.d_left_setting, true, true);
         this.d_right = this.keyboard.addKey(this.d_right_setting, true, true);
-        
+
         this.pauseKey
             .on('down', () => {
                 this.scene.updatePauseColor('pressed');
@@ -80,12 +87,12 @@ class Controler {
             });
         this.controlToggleKey
             .on('up', () => {
-                if (this.controlMethod == 0) { 
-                    this.controlMethod = 1;
+                if (this.controlMethod == ControlMethod.FourWay) {
+                    this.controlMethod = ControlMethod.Tank;
                     this.controlText.setText("Controls: Tank in Space");
                 }
-                else { 
-                    this.controlMethod = 0;
+                else {
+                    this.controlMethod = ControlMethod.FourWay;
                     this.controlText.setText("Controls: 4-Way");
                 }
             });
@@ -117,7 +124,7 @@ class Controler {
             .on('down', () => {
                 if (this.player.inOrbit) {
                     this.rotation = -0.02;
-                } else if (this.controlMethod == 1) {
+                } else if (this.controlMethod == ControlMethod.Tank) {
                     this.rotation = -0.04;
                 } else {
                     this.xAcc = -this.APT;
@@ -130,7 +137,7 @@ class Controler {
             .on('down', () => {
                 if (this.player.inOrbit) {
                     this.rotation = 0.02;
-                } else if (this.controlMethod == 1) {
+                } else if (this.controlMethod == ControlMethod.Tank) {
                     this.rotation = 0.04;
                 } else {
                     this.xAcc = this.APT;
@@ -156,7 +163,7 @@ class Controler {
      * @returns {Phaser.Math.Vector2} The acceleration vector from player input
      */
     getAccelerationVector() {
-        if (this.controlMethod == 1 ) {
+        if (this.controlMethod == ControlMethod.Tank) {
             let accVector = new Phaser.Math.Vector2(1, 1).setLength(this.totalAcc).rotate(Phaser.Math.Angle.Wrap(this.totalRotation));
             return accVector;
         } else {
@@ -167,7 +174,7 @@ class Controler {
     }
 
     /**
-     * Gets the control method currently being used by the game controler.
+     * Gets the control method currently being used by the game controller.
      * @returns {number} number representing control method.
      */
     getControlMethod() {
@@ -175,15 +182,31 @@ class Controler {
     }
 
     /**
-     * Gets the current rotation from controler input
+     * Gets the current rotation from controller input
      * @returns {number} the rotation in degrees
      */
-    getRotation () {
+    getRotation() {
         this.totalRotation = this.totalRotation + this.rotation;
-        if (this.controlMethod == 1 && !this.player.inOrbit){
+        if (this.controlMethod == ControlMethod.Tank && !this.player.inOrbit) {
             return this.totalRotation;
         } else {
             return this.rotation;
         }
+    }
+
+    up_pressed() {
+        return this.d_up.isDown;
+    }
+
+    down_pressed() {
+        return this.d_down.isDown;
+    }
+
+    left_pressed() {
+        return this.d_left.isDown;
+    }
+
+    right_pressed() {
+        return this.d_right.isDown;
     }
 }

@@ -28,7 +28,8 @@ class Freeplay extends Phaser.Scene {
         this.photoBorder;
         this.nearestBodyText;
 
-        this.failText;
+        this.testMenu;
+        this.testButton;
 
         this.probeAngleOffset = 0;
 
@@ -51,8 +52,12 @@ class Freeplay extends Phaser.Scene {
         this.load.image('logo', 'img/Psyche_Icon_Color-SVG.svg'); //asset for psyche logo
         this.load.image('play', 'img/icons/play-circle.svg');
         this.load.image('pause', 'img/icons/pause-circle.svg');
+<<<<<<< HEAD
         this.load.image('muted', 'img/icons/muted.png');
         this.load.image('notmuted', 'img/icons/notmuted.png');
+=======
+        this.load.image('button', "img/icons/button.png"); // a default button with no text
+>>>>>>> develop
         this.load.image('orbit', 'img/icons/orbit.svg');
         this.load.image('direction', 'img/icons/direction.png'); // an arrow
         this.load.image('exit', 'img/icons/exit.png'); // an exit button
@@ -72,22 +77,26 @@ class Freeplay extends Phaser.Scene {
         this.load.spritesheet('neptune', "img/sprites/neptune_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
         this.load.spritesheet('pluto', "img/sprites/pluto_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
         this.load.spritesheet('psyche', "img/sprites/psyche_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
-        this.load.image('psyche_probe', "img/icons/psyche_probe.svg");
+        this.load.spritesheet('psyche_probe', "img/sprites/probe_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
+        this.load.spritesheet('psyche_probe_fx', "img/sprites/fx_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
         this.load.image('psyche_probe_icon', "img/icons/arrow.png");
 
         // load the photo of psyche
+        this.load.image('psychePhoto1', "img/photos/psyche1.png");
         for (let i = 0; i < Constants.MAX_PSYCHE_PHOTO_NUM; i++) {
             let imageName = "psychePhoto" + i;
             let filePath = "img/photos/images/psyche_e_0" + (i + 1) + ".png";
             this.load.image(imageName, filePath);
         }
 
+        // load ingame music
         this.load.audio('ingame_music', 'assets/music/02_Ingame.mp3');
 
         // button sfx
         this.load.audio('menu', 'assets/sfx/misc_menu_4.wav');
         this.load.audio('negative', 'assets/sfx/negative.wav');
         this.load.audio('positive', 'assets/sfx/positive.wav');
+
     }
 
     /**
@@ -118,12 +127,6 @@ class Freeplay extends Phaser.Scene {
 
         var map_border = this.add.image(880,110,'minimap_border').setScale(0.35);
 
-        //Pause menu
-        this.pauseText = this.add.text(525, 300, 'Pause').setOrigin(0.5).setFontSize(120);
-
-        //Game over
-        this.failText = this.add.text(525, 300, 'Game Over!').setOrigin(0.5).setFontSize(120);
-
         //creating Body objects
         this.json = this.cache.json.get('bodies');
         for (var type in this.json) {
@@ -136,42 +139,50 @@ class Freeplay extends Phaser.Scene {
                 let collisionGroup1 = this.matter.world.nextGroup(true);
                 let collisionGroup2 = this.matter.world.nextGroup();
 
-                if(type != "probes"){
+                if (type != "probes") {
                     let parent = this.bodies[body['orbits']];
                     let angle = body['angle'];
                     let day_length = body['day_length']['value'];
 
                     this.bodies[id] = new Satellite(this, id, mass, diameter, parent, angle, orbit_distance, day_length);
-
-                    for (const dir of this.dirs) {
-                        const offset = 16 * this.dirs.indexOf(dir)
-                        this.anims.create({
-                            key: id + "-" + dir,
-                            frames: this.anims.generateFrameNumbers(id, {
-                                frames: [offset + 0,
-                                offset + 1,
-                                offset + 2,
-                                offset + 3,
-                                offset + 4,
-                                offset + 5,
-                                offset + 6,
-                                offset + 7,
-                                offset + 8,
-                                offset + 9]
-                            }),
-                            frameRate: 12,
-                            repeat: -1
-                        });
-                    }
-
-
-                    this.bodies[id].play(id + "-f");
                 } else {
                     this.bodies[id] = new Probe(this, id, mass, diameter);
                 }
+
+                for (const dir of this.dirs) {
+                    const offset = (id == "psyche_probe" ? 14 : 16) * this.dirs.indexOf(dir)
+                    this.anims.create({
+                        key: id + "-" + dir,
+                        frames: this.anims.generateFrameNumbers(id, {
+                            start: offset,
+                            end: offset + (id == "psyche_probe" ? 7 : 9)
+                        }),
+                        frameRate: 12,
+                        repeat: -1
+                    });
+                }
+
+                this.bodies[id].setTexture(id, 0);
             }
         }
 
+        const fx = ["thrust", "brake"]
+        this.psyche_probe_fx = this.add.sprite(this.bodies["psyche_probe"].x, this.bodies["psyche_probe"].y, "psyche_probe_fx")
+        this.psyche_probe_fx.setDisplaySize(this.bodies["psyche_probe"].r * 2, this.bodies["psyche_probe"].r * 2)
+            .setSize(this.bodies["psyche_probe"].r * 2, this.bodies["psyche_probe"].r * 2);
+        this.psyche_probe_fx.setDisplayOrigin(7, 5)
+        for (let i = 0; i < 2; i++) {
+            const offset = 6 * i
+            this.psyche_probe_fx.anims.create({
+                key: "psyche_probe_fx-" + fx[i],
+                frames: this.anims.generateFrameNumbers("psyche_probe_fx", { start: offset, end: offset + 5 }),
+                framerate: 12,
+                repeat: -1
+            })
+        }
+        this.psyche_probe_fx.setTexture("psyche_probe_fx", 0);
+
+        CameraManager.addGameSprite(this.psyche_probe_fx)
         CameraManager.addGameSprite(this.graphics);
         CameraManager.addMinimapSprite(this.minigraphics);
         // Make the main camera ignore the player icon.
@@ -203,15 +214,14 @@ class Freeplay extends Phaser.Scene {
             this.ingame_music.play({ loop: true });
         }
 
-        //creating control keys
         this.createPauseButton();
         this.createOrbitToggle();
         this.takePhoto();
         this.createMuteButton();
 
-        //creating controler
-        this.controler = new Controler(this, this.bodies["psyche_probe"]);
-        this.bodies["psyche_probe"].setControler(this.controler);
+        //creating controller
+        this.controller = new Controller(this, this.bodies["psyche_probe"]);
+        this.bodies["psyche_probe"].setController(this.controller);
     }
 
     /** The scene's main update loop
@@ -219,115 +229,16 @@ class Freeplay extends Phaser.Scene {
      * - Applies dynamic gravity
      * - Enforces the pause feature, only allowing bodies to move if the game is not paused
      */
-    update () {
-        //Probe controls
-        //**TO DO: Wrap in a custom controler later.
-        const moveUnit = 0.01;
-
+    update() {
         this.updatePauseButton();
         this.updateTakePhoto();
 
-        /*
-        // only move if not paused and not taking photo
-        if (this.paused || this.takingPhoto) {
-            return
-        } else if (this.bodies["psyche_probe"].inOrbit) {
-            //if in an orbit use controls to chance orbit distance and rotate probe in relation to orbit.
-
-            //calculate current angle necissary for probe to point at orbit target
-            let p2 = this.bodies["psyche_probe"];
-            //console.log(p1);
-            let p1 = p2.orbitTarget;
-            //console.log(p2);
-            let relAngle = Math.atan2(p2.y - p1.y, p2.x - p1.x) * 180 / Math.PI;
-            relAngle -= 45;
-
-            if (this.cursors.up.isDown && !this.bodies["psyche_probe"].isOrbitChanging()) {
-                this.bodies["psyche_probe"].addToOrbit(10);
-            } else if (this.cursors.down.isDown && !this.bodies["psyche_probe"].isOrbitChanging()) {
-                this.bodies["psyche_probe"].addToOrbit(-10);
-            } else if (this.cursors.left.isDown) {
-                this.probeAngleOffset -= 5;
-            } else if (this.cursors.right.isDown) {
-                this.probeAngleOffset += 5;
-            }
-            this.bodies["psyche_probe"].angle = relAngle + this.probeAngleOffset;
-            this.bodies["psyche_probe"].minimap_icon.angle = relAngle + this.probeAngleOffset;
-            this.angle = relAngle + this.probeAngleOffset;
-        } else {
-            if (this.cursors.left.isDown) {
-                this.bodies["psyche_probe"].vel.x -= moveUnit;
-                //Either turn the probe left or right depending on its current angle.
-                if(this.angle > -45){
-                    this.bodies["psyche_probe"].angle -= 5;
-                    this.bodies["psyche_probe"].minimap_icon.angle -= 5;
-                    this.angle -=5; 
-                } else if(this.angle < -45){
-                    this.bodies["psyche_probe"].angle += 5;
-                    this.bodies["psyche_probe"].minimap_icon.angle += 5;
-                    this.angle +=5; 
-                }         
-                
-            }
-            else if (this.cursors.right.isDown)
-            {
-                this.bodies["psyche_probe"].vel.x += moveUnit;
-    
-                //Either turn the probe left or right depending on its current angle.
-                // Set the value of the probe to 225 if it is currently facing down 
-                //to make it turn the shortest distance.
-                if(this.angle == -135){
-                    this.angle = 225;
-                } else if(this.angle < 135){
-                    this.bodies["psyche_probe"].angle += 5;
-                    this.bodies["psyche_probe"].minimap_icon.angle += 5;
-                    this.angle +=5; 
-    
-                } else if(this.angle > 135){
-                    this.bodies["psyche_probe"].angle -= 5;
-                    this.bodies["psyche_probe"].minimap_icon.angle -= 5;
-                    this.angle -=5; 
-                }
-            }
-            if (this.cursors.up.isDown)
-            {
-                this.bodies["psyche_probe"].vel.y -= moveUnit;
-    
-                //Either turn the probe left or right depending on its current angle.
-                if(this.angle > 45){
-                    this.bodies["psyche_probe"].angle -= 5;
-                    this.bodies["psyche_probe"].minimap_icon.angle -= 5;
-                    this.angle -=5; 
-                } else if(this.angle < 45){
-                    this.bodies["psyche_probe"].angle += 5;
-                    this.bodies["psyche_probe"].minimap_icon.angle += 5;
-                    this.angle +=5; 
-                }  
-            }
-            else if (this.cursors.down.isDown)
-            {
-                this.bodies["psyche_probe"].vel.y += moveUnit;
-    
-                //Either turn the probe left or right depending on its current angle.
-                // Set the value of the probe to -225 if it is currently facing right 
-                //to make it turn the shortest distance.
-                if(this.angle == 135){
-                    this.angle = -225;
-                } else if(this.angle < -135){
-                    this.bodies["psyche_probe"].angle += 5;
-                    this.bodies["psyche_probe"].minimap_icon.angle += 5;
-                    this.angle +=5; 
-                } else if(this.angle > -135){
-                    this.bodies["psyche_probe"].angle -= 5;
-                    this.bodies["psyche_probe"].minimap_icon.angle -= 5;
-                    this.angle -=5; 
-                }
-            }
-        }
-        */
-
         // don't update bodies if paused, game over, or is taking photo
         if (this.paused || this.gameOver || this.gameSuccess || this.takingPhoto) {
+            for (const body in this.bodies) {
+                this.bodies[body].stop()
+            }
+            
             return
         }
 
@@ -337,7 +248,6 @@ class Freeplay extends Phaser.Scene {
             this.gameOver = true;
             var fail_audio = this.sound.add('negative');
             fail_audio.play();
-            CameraManager.addUISprite(this.failText);
         }
 
         this.graphics.clear(); //clear previous itteration's graphics
@@ -397,76 +307,90 @@ class Freeplay extends Phaser.Scene {
                     sunAngle -= 360;
                 }
 
-                // console.log(body + ": " + sunAngle)
-                if (body == "mars") {
-                    var p = "poo";
-                }
                 for (const idx in this.shade_angles) {
                     const angle = this.shade_angles[idx]
-                    if (angle[0] < sunAngle && sunAngle <= angle[1]) {
+                    if ((angle[0] < sunAngle && sunAngle <= angle[1]) || (angle[0] > angle[1] && (angle[0] < sunAngle || sunAngle <= angle[1]))) {
                         this.bodies[body].play(this.bodies[body].id + "-" + this.dirs[idx], true);
-                        // console.log(this.bodies[body].id + "-" + this.dirs[idx])
                         break;
                     } else if (angle[0] > angle[1] && (angle[0] < sunAngle || sunAngle <= angle[1])) {
                         this.bodies[body].play(this.bodies[body].id + "-" + this.dirs[idx], true);
-                        // console.log(this.bodies[body].id + "-" + this.dirs[idx])
                         break;
                     }
                 }
-            }
-
-            // find psyche
-            let distance = this.bodies["psyche_probe"].getDistance("psyche");
-
-            // the distance between pshche probe and the arrow
-            let arrowDistance = 100;
-            let width = 1024;
-            let height = 768;
-            let directionX = width / 2 + this.bodies["psyche_probe"].getPsycheDirectionX() * arrowDistance;
-            let directionY = height / 2 + this.bodies["psyche_probe"].getPsycheDirectionY() * arrowDistance;
-            
-            // calculate the rotation of the arrow image
-            let directionAngle = Math.asin(this.bodies["psyche_probe"].getPsycheDirectionY());
-            if (this.bodies["psyche_probe"].getPsycheDirectionX() < 0) {
-                directionAngle = Math.PI - directionAngle;
-            }
-
-            // add the image of the arrow if it not added
-             if (typeof(this.direction) == "undefined") {
-                this.direction = this.add.image(directionX, directionY, 'direction').setScale(0.3);
-                CameraManager.addUISprite(this.direction);
-                // make the direction indicator not on top of other page such as pause menu
-                this.direction.depth = -1;
-            }
-
-            if (this.bodies["psyche_probe"].orbitToggle) {
-
-                // earth is not the center, edit direction
-                let centerX = CameraManager.getCameraCenter().x;
-                let centerY = CameraManager.getCameraCenter().y;
-
-                let offsetX = centerX - this.bodies["psyche_probe"].x;
-                let offsetY = centerY - this.bodies["psyche_probe"].y;
-
-                let zoom = CameraManager.getMainCameraZoom();
-
-                offsetX *= zoom;
-                offsetY *= zoom;
-
-                directionX -= offsetX;
-                directionY -= offsetY;
-            }
-
-            // set the correct position and angle of the arrow to point to psyche
-            this.direction.setPosition(directionX, directionY);
-            this.direction.rotation = directionAngle;
-
-            // decrease opacity when near psyche
-            if (distance < 90) {
-                this.direction.alpha = (distance - 50)/50;
             } else {
-                this.direction.alpha = 0.8;
+                const frame = 20;// this.bodies[body].getSpriteFrame(this.dirs[idx]);
+                this.bodies[body].setFrame(frame);
             }
+        }
+
+        this.psyche_probe_fx.setRotation(this.bodies["psyche_probe"].rotation);
+        this.psyche_probe_fx.setPosition(this.bodies["psyche_probe"].x, this.bodies["psyche_probe"].y);
+
+        if (this.controller.up_pressed()) {
+            this.psyche_probe_fx.setVisible(true);
+            this.psyche_probe_fx.play("psyche_probe_fx-thrust", true);
+        } else if ((this.controller.left_pressed() || this.controller.right_pressed() || this.controller.down_pressed()) && this.controller.controlMethod == ControlMethod.FourWay) {
+            this.psyche_probe_fx.setVisible(true);
+            this.psyche_probe_fx.play("psyche_probe_fx-thrust", true);
+        } else if (this.controller.down_pressed() && this.controller.controlMethod == ControlMethod.Tank) {
+            this.psyche_probe_fx.setVisible(true);
+            this.psyche_probe_fx.play("psyche_probe_fx-brake", true);
+        } else {
+            this.psyche_probe_fx.setVisible(false);
+            this.psyche_probe_fx.stop();
+        }
+
+        // find psyche
+        let distance = this.bodies["psyche_probe"].getDistance("psyche");
+
+        // the distance between pshche probe and the arrow
+        let arrowDistance = 100;
+        let width = 1024;
+        let height = 768;
+        let directionX = width / 2 + this.bodies["psyche_probe"].getPsycheDirectionX() * arrowDistance;
+        let directionY = height / 2 + this.bodies["psyche_probe"].getPsycheDirectionY() * arrowDistance;
+
+        // calculate the rotation of the arrow image
+        let directionAngle = Math.asin(this.bodies["psyche_probe"].getPsycheDirectionY());
+        if (this.bodies["psyche_probe"].getPsycheDirectionX() < 0) {
+            directionAngle = Math.PI - directionAngle;
+        }
+
+        // add the image of the arrow if it not added
+        if (typeof (this.direction) == "undefined") {
+            this.direction = this.add.image(directionX, directionY, 'direction').setScale(0.3);
+            CameraManager.addUISprite(this.direction);
+            // make the direction indicator not on top of other page such as pause menu
+            this.direction.depth = -1;
+        }
+
+        if (this.bodies["psyche_probe"].orbitToggle) {
+
+            // earth is not the center, edit direction
+            let centerX = CameraManager.getCameraCenter().x;
+            let centerY = CameraManager.getCameraCenter().y;
+
+            let offsetX = centerX - this.bodies["psyche_probe"].x;
+            let offsetY = centerY - this.bodies["psyche_probe"].y;
+
+            let zoom = CameraManager.getMainCameraZoom();
+
+            offsetX *= zoom;
+            offsetY *= zoom;
+
+            directionX -= offsetX;
+            directionY -= offsetY;
+        }
+
+        // set the correct position and angle of the arrow to point to psyche
+        this.direction.setPosition(directionX, directionY);
+        this.direction.rotation = directionAngle;
+
+        // decrease opacity when near psyche
+        if (distance < 90) {
+            this.direction.alpha = (distance - 50) / 50;
+        } else {
+            this.direction.alpha = 0.8;
         }
 
         // create probe's view
@@ -475,16 +399,17 @@ class Freeplay extends Phaser.Scene {
         let viewR = 100;
         this.graphics.fillStyle(0xFFFFFF, 0.3);
 
-        let endRotation = this.bodies["psyche_probe"].rotation + Math.PI;
+        let endRotation = this.bodies["psyche_probe"].rotation + (3 * Math.PI / 4);
         if (endRotation > 2 * Math.PI) {
             endRotation -= (2 * Math.PI);
         }
-        let startRotation = endRotation + Phaser.Math.DegToRad(90);
+        let startRotation = endRotation + (Math.PI / 2);
         if (startRotation > 2 * Math.PI) {
             startRotation -= (2 * Math.PI);
         }
 
         let probeView = this.graphics.slice(centerX, centerY, viewR, startRotation, endRotation, true);
+
         this.graphics.fillPath();
 
         this.drawHint();
@@ -546,21 +471,35 @@ class Freeplay extends Phaser.Scene {
      *  game's pause button 
      */
     createPauseButton() {
+        this.pauseMenu = new Menu(this);
+
+        this.pauseText = this.add.text(525, 300, 'Pause').setOrigin(0.5).setFontSize(120);
+
+        this.restartButtonPosition = new Phaser.Geom.Point(520, 408);
+        this.restartButton = new Button(this, this.restartButtonPosition, 'button', 'Restart');
+        MenuManager.restartButtonListener(this, this.restartButton);
+
+        this.exitButtonPosition = new Phaser.Geom.Point(520, 508);
+        this.exitButton = new Button(this, this.exitButtonPosition, 'button', 'Exit');
+        MenuManager.exitButtonListener(this, this.exitButton);
+
         this.playButton = this.add.image(964, 708, 'play').setScale(0.5)
         this.pauseButton = this.add.image(964, 708, 'pause').setScale(0.5)
-        this.restartButton = this.add.image(520, 408, 'restart').setScale(0.5)
-        this.exitButton = this.add.image(520, 508, 'exit').setScale(0.5)
-        // Made sure the buttons and label is on top of everything.
-        this.restartButton.depth = 100;
+
         this.playButton.depth = 100;
         this.pauseButton.depth = 100;
-        this.exitButton.depth = 100;
         this.pauseText.depth = 100;
 
         // To darken screen
         const color1 = new Phaser.Display.Color(0, 0, 0);
         this.shadow = this.add.rectangle(0, 0,2048, 2048, color1.color);
         this.shadow.setAlpha(0.5);
+
+        this.pauseMenu.addElement(this.pauseText);
+        this.pauseMenu.addButton(this.restartButton.getElements());
+        this.pauseMenu.addButton(this.exitButton.getElements());
+        this.pauseMenu.addElement(this.shadow);
+
 
         //create keyboard events. Mostly just sets the tint of the button.
         /*
@@ -620,59 +559,9 @@ class Freeplay extends Phaser.Scene {
                 }
             });
 
-        //create events for the restart button
-        this.restartButton.setInteractive()
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
-                this.restartButton.setTint(0xF9A000);
-            })
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OUT, () => {
-                this.restartButton.setTint(0xFFFFFF);
-            })
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
-                this.restartButton.setTint(0xF47D33);
-                var menu_audio = this.sound.add('menu');
-                menu_audio.play();
-            })
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
-                this.restartButton.setTint(0xFFFFFF);
-                this.scene.restart();
-                this.paused = false
-                this.gameOver = false;
-                this.gameSuccess = false;
-                this.takingPhoto = false;
-                // Make the direction icon show up again.
-                this.direction = undefined;
-            });
-
-        //create events for the exit button.
-        this.exitButton.setInteractive()
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
-                this.exitButton.setTint(0xF9A000);
-            })
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OUT, () => {
-                this.exitButton.setTint(0xFFFFFF);
-            })
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
-                this.exitButton.setTint(0xF47D33);
-                var menu_audio = this.sound.add('menu');
-                menu_audio.play();
-            })
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
-                this.exitButton.setTint(0xFFFFFF);
-                this.ingame_music.stop();
-                this.scene.start('MainMenu');
-                this.paused = false;
-                this.gameOver = false;
-                this.gameSuccess = false;
-            });
-
         //add all the images to the UI camera.
         CameraManager.addUISprite(this.playButton);
         CameraManager.addUISprite(this.pauseButton);
-        CameraManager.addUISprite(this.exitButton);
-        CameraManager.addUISprite(this.restartButton);
-        CameraManager.addUISprite(this.shadow);
-        CameraManager.addUISprite(this.pauseText);
     }
 
     /**
@@ -700,7 +589,7 @@ class Freeplay extends Phaser.Scene {
      */
     togglePaused() {
         this.paused = !this.paused;
-        this.controler.toggleMovementKeys();
+        this.controller.toggleMovementKeys();
     }
 
     /** Updates the state of the on-screen pause button
@@ -711,19 +600,19 @@ class Freeplay extends Phaser.Scene {
         if (this.paused && !this.gameOver && !this.gameSuccess) {
             this.pauseText.setVisible(true)
             this.playButton.setVisible(true)
-            this.pauseButton.setVisible(false)
-            this.restartButton.setVisible(true)
-            this.exitButton.setVisible(true)
-            this.shadow.setVisible(true)
+            this.pauseButton.setVisible(false);
+            this.pauseMenu.setVisible(true);
         } else {
-            this.pauseButton.setVisible(true)
-            this.playButton.setVisible(false)
-            this.pauseText.setVisible(false)
+            this.pauseButton.setVisible(true);
+            this.playButton.setVisible(false);
+            this.pauseMenu.setVisible(false);
         }
 
         // if game over then show the game over text
         if (this.gameOver) {
-            this.failText.setVisible(true)
+            //this.failText.setVisible(true)
+            this.pauseText.setText("Game Over!");
+            this.pauseMenu.setVisible(true);
 
             this.pauseButton.setTint(0x7f7f7f);
             this.playButton.setTint(0x7f7f7f);
@@ -732,8 +621,6 @@ class Freeplay extends Phaser.Scene {
             this.pauseButton.setTint(0x7f7f7f);
             this.playButton.setTint(0x7f7f7f);
             this.orbitButton.setTint(0x7f7f7f);
-        } else {
-            this.failText.setVisible(false);
         }
 
         // if paused or game over then we can show the restart and exit buttons
