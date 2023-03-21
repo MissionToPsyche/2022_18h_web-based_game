@@ -14,6 +14,8 @@ class CameraManager {
     //class properties
     static cameraHeight = 20480;
     static cameraWidth = 20480;
+    static sceneHeight = 768;
+    static sceneWidth = 1024;
     static mainZoom = 3; //main camera's zoom level
     static followSprite; //sprite main camera follows
     static mainCamera; //main game camera, containing most of the game's visuals
@@ -159,6 +161,10 @@ class CameraManager {
      */
     static getCameraCenter() {
         return new Phaser.Geom.Point(this.mainCameraTarget.x, this.mainCameraTarget.y);
+    }
+
+    static getViewCenter() {
+        return new Phaser.Geom.Point(this.sceneWidth/2, this.sceneHeight/2);
     }
 
     /**
