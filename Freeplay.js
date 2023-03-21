@@ -281,7 +281,7 @@ class Freeplay extends Phaser.Scene {
             if (path.length > 0) {
                 let prog = new Phaser.Curves.Spline(path);
 
-                this.graphics.lineStyle(Constants.HINT_WIDTH_BEFORE, Constants.RED, Constants.HINT_ALPHA_AFTER);
+                this.graphics.lineStyle(Constants.HINT_WIDTH_BEFORE, Constants.ORANGE, Constants.HINT_ALPHA_AFTER);
                 prog.draw(this.graphics, 64);
                 this.graphics.fillStyle(0x00ff00, 1);
             }
