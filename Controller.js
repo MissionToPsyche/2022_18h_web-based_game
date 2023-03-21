@@ -122,7 +122,7 @@ class Controller {
                     this.yAcc = -this.APT;
                     this.totalAcc = -this.APT;
                 }
-                if(DialogManager.get("tutorial") == true && _scene.earthDone == true){
+                if(DialogManager.get("tutorial") == true && this.scene.earthDone == true){
                     this.tutorial.movementTutor(1);
                 }
             }).on('up', () => {
