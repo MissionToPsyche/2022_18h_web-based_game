@@ -52,12 +52,11 @@ class Freeplay extends Phaser.Scene {
         this.load.image('logo', 'img/Psyche_Icon_Color-SVG.svg'); //asset for psyche logo
         this.load.image('play', 'img/icons/play-circle.svg');
         this.load.image('pause', 'img/icons/pause-circle.svg');
-<<<<<<< HEAD
+
         this.load.image('muted', 'img/icons/muted.png');
         this.load.image('notmuted', 'img/icons/notmuted.png');
-=======
+
         this.load.image('button', "img/icons/button.png"); // a default button with no text
->>>>>>> develop
         this.load.image('orbit', 'img/icons/orbit.svg');
         this.load.image('direction', 'img/icons/direction.png'); // an arrow
         this.load.image('exit', 'img/icons/exit.png'); // an exit button
