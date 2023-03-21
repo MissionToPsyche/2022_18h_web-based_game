@@ -254,16 +254,16 @@ class Freeplay extends Phaser.Scene {
         //for probe's gravity lock functionality:
         if (this.player.findingTarget) {
             var target = this.player.newTarget;
-            var path = new Phaser.Geom.Circle(target.x, target.y, target.r).getPoints(false, 0.5);
+            var path = new Phaser.Geom.Circle(target.x, target.y, target.r + 5).getPoints(false, 0.5);
             let ind = new Phaser.Curves.Spline(path);
 
-            this.graphics.lineStyle(1, 0xffffff, 0.5);
+            this.graphics.lineStyle(Constants.HINT_WIDTH_BEFORE, Constants.WHITE, Constants.HINT_ALPHA_BEFORE);
             ind.draw(this.graphics, 64);
             this.graphics.fillStyle(0xffffff, 1);
         }
         else if (this.bodies["psyche_probe"].orbitToggle && !this.bodies["psyche_probe"].inOrbit) {
             let ratio = this.bodies["psyche_probe"].maintainOrbit(this);
-            let subRadius = ratio * this.player.orbitTarget.r;
+            let subRadius = ratio * this.player.orbitTarget.r + (5 * (1 - ratio));
             if (!subRadius) {
                 subRadius = this.player.orbitTarget.r;
             }
@@ -273,16 +273,15 @@ class Freeplay extends Phaser.Scene {
             let ind = new Phaser.Curves.Spline(path);
             let subPoints = path.length * ratio;
 
-            this.graphics.lineStyle(1, 0xffffff, 0.5);
+            this.graphics.lineStyle(Constants.HINT_WIDTH_BEFORE, Constants.WHITE, Constants.HINT_ALPHA_BEFORE);
             ind.draw(this.graphics, 64);
-            this.graphics.fillStyle(0xffffff, 1);
 
             path.splice(Math.floor(subPoints));
 
             if (path.length > 0) {
                 let prog = new Phaser.Curves.Spline(path);
 
-                this.graphics.lineStyle(1, 0xff0000, 0.5);
+                this.graphics.lineStyle(Constants.HINT_WIDTH_BEFORE, Constants.RED, Constants.HINT_ALPHA_AFTER);
                 prog.draw(this.graphics, 64);
                 this.graphics.fillStyle(0x00ff00, 1);
             }
@@ -328,11 +327,6 @@ class Freeplay extends Phaser.Scene {
                     sunAngle += 360;
                 } else if (sunAngle > 360) {
                     sunAngle -= 360;
-                }
-
-                //console.log(body + ": " + sunAngle)
-                if (body == "mars") {
-                    var p = "poo";
                 }
                 for (const idx in this.shade_angles) {
                     const angle = this.shade_angles[idx]

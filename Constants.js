@@ -2,6 +2,7 @@
 const Constants = {
     // colors
     WHITE: 0xFFFFFF,
+    RED: 0xFF0000,
     ORANGE: 0xF47D33,
     DARKBLUE: 0x12031D,
 

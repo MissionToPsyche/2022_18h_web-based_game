@@ -337,9 +337,9 @@ class Probe extends Body {
 
 	updateOrbitRotation() {
 		this.angleOffset += this.controller.getRotation();
-		const relAngle = Math.atan2(this.y - this.orbitTarget.y, this.x - this.orbitTarget.y);
-		const newAngle = relAngle + this.angleOffset;
-		this.rotation = Phaser.Math.Angle.RotateTo(this.rotation, newAngle, 0.05);
+		var relAngle = Math.atan2(this.y - this.orbitTarget.y, this.x - this.orbitTarget.x);
+		var newAngle = relAngle + this.angleOffset;
+		this.rotation = Phaser.Math.Angle.RotateTo(this.rotation, newAngle, 0.5);
 	}
 
 	updateRotationAndVelocity() {
