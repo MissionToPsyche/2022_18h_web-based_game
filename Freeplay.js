@@ -2,9 +2,9 @@
  * Class representing the Phaser 'Scene', which defines our game
  * @extends Phaser.Scene
  */
-class Freeplay extends Phaser.Scene {
-    constructor () {
-        super({key:"Freeplay"});
+class Freeplay extends Simulation {
+    constructor() {
+        super("Freeplay");
         //creating body objects
         this.bodies = {};
         this.json;
@@ -21,7 +21,7 @@ class Freeplay extends Phaser.Scene {
         this.pauseText;
 
         this.takingPhoto = false;
-        this.foundPsycheText; 
+        this.foundPsycheText;
         this.quitPhotoPageButton;
         this.psychePhotos;
         this.photoBackground;
@@ -40,38 +40,9 @@ class Freeplay extends Phaser.Scene {
         this.coverFlags; // array of flags that the player already took photo
     }
 
-    /** Loads all necessary assets for the scene before the simulation runs */
-    preload () {
-        this.load.json('bodies', 'data/bodies.json');
-
-        //loading in all image assets
-        this.load.image('minimap_border', 'img/icons/minimap-border.png'); //border for minimap
-        this.load.image('logo', 'img/Psyche_Icon_Color-SVG.svg'); //asset for psyche logo
-        this.load.image('play', 'img/icons/play-circle.svg');
-        this.load.image('pause', 'img/icons/pause-circle.svg');
-        this.load.image('button', "img/icons/button.png"); // a default button with no text
-        this.load.image('orbit', 'img/icons/orbit.svg');
-        this.load.image('direction', 'img/icons/direction.png'); // an arrow
-        this.load.image('exit', 'img/icons/exit.png'); // an exit button
-        this.load.image('restart', 'img/icons/restart.png'); // a restart button
-
-        //staticly loading all the individual assets for now
-        //**TO DO: change to a more general method of preloading images 
-        this.load.spritesheet('sun', "img/sprites/sun_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
-        this.load.spritesheet('mercury', "img/sprites/mercury_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
-        this.load.spritesheet('venus', "img/sprites/venus_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
-        this.load.spritesheet('earth', "img/sprites/earth_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
-        this.load.spritesheet('moon', "img/sprites/moon_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
-        this.load.spritesheet('mars', "img/sprites/mars_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
-        this.load.spritesheet('jupiter', "img/sprites/jupiter_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
-        this.load.spritesheet('saturn', "img/sprites/saturn_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
-        this.load.spritesheet('uranus', "img/sprites/uranus_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
-        this.load.spritesheet('neptune', "img/sprites/neptune_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
-        this.load.spritesheet('pluto', "img/sprites/pluto_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
-        this.load.spritesheet('psyche', "img/sprites/psyche_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
-        this.load.spritesheet('psyche_probe', "img/sprites/probe_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
-        this.load.spritesheet('psyche_probe_fx', "img/sprites/fx_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
-        this.load.image('psyche_probe_icon', "img/icons/arrow.png");
+    preload() {
+        // load ingame music
+        this.load.audio('ingame_music', 'assets/music/02_Ingame.mp3');
 
         // load the photo of psyche
         this.load.image('psychePhoto1', "img/photos/psyche1.png");
@@ -80,15 +51,6 @@ class Freeplay extends Phaser.Scene {
             let filePath = "img/photos/images/psyche_e_0" + (i + 1) + ".png";
             this.load.image(imageName, filePath);
         }
-
-        // load ingame music
-        this.load.audio('ingame_music', 'assets/music/02_Ingame.mp3');
-
-        // button sfx
-        this.load.audio('menu', 'assets/sfx/misc_menu_4.wav');
-        this.load.audio('negative', 'assets/sfx/negative.wav');
-        this.load.audio('positive', 'assets/sfx/positive.wav');
-
     }
 
     /**
@@ -100,7 +62,7 @@ class Freeplay extends Phaser.Scene {
      * - Generate UI sprites and add them to the scene
      * - Create player controls
      */
-    create () {
+    create() {
         this.graphics = this.add.graphics();
         this.minigraphics = this.add.graphics();
 
@@ -117,7 +79,7 @@ class Freeplay extends Phaser.Scene {
         CameraManager.initializeUICamera(this);
         CameraManager.initializeMiniCamera(this);
 
-        var map_border = this.add.image(880,110,'minimap_border').setScale(0.35);
+        var map_border = this.add.image(880, 110, 'minimap_border').setScale(0.35);
 
         //creating Body objects
         this.json = this.cache.json.get('bodies');
@@ -184,7 +146,7 @@ class Freeplay extends Phaser.Scene {
         //subscribe probe to all other bodies.
         //NOTE** hard coded to psyche probe for now
         for (const body in this.bodies) {
-            if(this.bodies[body].id != "psyche_probe"){
+            if (this.bodies[body].id != "psyche_probe") {
                 this.bodies[body].subscribe(this.bodies["psyche_probe"]);
             }
         }
@@ -195,7 +157,7 @@ class Freeplay extends Phaser.Scene {
         CameraManager.setFollowSprite(this.bodies["earth"]);
 
         //creating UISprites
-        var logo = this.add.image(50,50,'logo').setScale(0.5);
+        var logo = this.add.image(50, 50, 'logo').setScale(0.5);
 
         //adding to UIsprites so main camera ignores them
         CameraManager.addUISprite(logo);
@@ -229,7 +191,7 @@ class Freeplay extends Phaser.Scene {
             for (const body in this.bodies) {
                 this.bodies[body].stop()
             }
-            
+
             return
         }
 
@@ -269,7 +231,7 @@ class Freeplay extends Phaser.Scene {
             }
 
             //creating orbit lock progress indicator
-            var path = new Phaser.Geom.Circle(this.player.orbitTarget.x, this.player.orbitTarget.y, this.player.orbitTarget.r+subRadius).getPoints(false, 0.5); //path of the indicator.
+            var path = new Phaser.Geom.Circle(this.player.orbitTarget.x, this.player.orbitTarget.y, this.player.orbitTarget.r + subRadius).getPoints(false, 0.5); //path of the indicator.
             let ind = new Phaser.Curves.Spline(path);
             let subPoints = path.length * ratio;
 
@@ -285,7 +247,7 @@ class Freeplay extends Phaser.Scene {
                 prog.draw(this.graphics, 64);
                 this.graphics.fillStyle(0x00ff00, 1);
             }
-        } else if (this.bodies["psyche_probe"].inOrbit){
+        } else if (this.bodies["psyche_probe"].inOrbit) {
             //draw the orbit boundries if probe is locked in an orbit
             this.graphics.lineStyle(1, 0xff0000, 0.5);
             this.bodies["psyche_probe"].getOrbitPath('new').draw(this.graphics, 64);
@@ -303,17 +265,17 @@ class Freeplay extends Phaser.Scene {
 
             //draw paths
             var path = this.bodies[body].path;
-            if(path && path.length > 0){
+            if (path && path.length > 0) {
                 this.graphics.lineStyle(1, 0xffffff, 0.5);
                 this.minigraphics.lineStyle(75, 0xffffff, 0.5);
                 let curve = this.bodies[body].getPathCurve();
                 curve.draw(this.graphics, 64);
                 curve.draw(this.minigraphics, 64)
-        
+
                 this.graphics.fillStyle(0x00ff00, 1);
                 this.minigraphics.fillStyle(0x00ff00, 1);
             }
-    
+
             //update body positions
             this.bodies[body].updatePosition(this)
 
@@ -446,7 +408,7 @@ class Freeplay extends Phaser.Scene {
         let psycheY = this.bodies["psyche"].y;
         let strokeSize = this.bodies["psyche"].r + Constants.HINT_DISTANCE;
         this.graphics.lineStyle(Constants.HINT_WIDTH_BEFORE, Constants.WHITE, Constants.HINT_ALPHA_BEFORE);
-        
+
         const segments = 32;
         const angleStep = (2 * Math.PI) / segments;
 
@@ -461,31 +423,14 @@ class Freeplay extends Phaser.Scene {
         }
 
         // draw arcs for the covered target angles
-        if (typeof(this.targetAngles) != "undefined") {
+        if (typeof (this.targetAngles) != "undefined") {
             let arcSize = 180 / this.targetAngles.length;
             for (let i = 0; i < this.targetAngles.length; i++) {
                 if (this.coverFlags[i] == 1) {
-                    this.arcAround(psycheX, psycheY, strokeSize, this.targetAngles[i], arcSize);
+                    GraphicsUtils.arcAround(psycheX, psycheY, strokeSize, this.targetAngles[i], arcSize);
                 }
             }
         }
-    }
-
-    /**
-     * Draw a pie shape
-     * @param {string} x - x coordinate of the center
-     * @param {string} y - y coordinate of the center
-     * @param {string} r - radius of the arc
-     * @param {number} angle - angle of the arc
-     * @param {number} size - the arc will be from angle - size to angle + size
-     */
-    arcAround(x, y, r, angle, size) {
-        this.graphics.lineStyle(Constants.HINT_WIDTH_AFTER, Constants.ORANGE, Constants.HINT_ALPHA_AFTER);
-        this.graphics.beginPath();
-        let startAngle = Phaser.Math.DegToRad(180 + angle - size);
-        let endAngle = Phaser.Math.DegToRad(180 + angle + size);
-        this.graphics.arc(x, y, r, startAngle, endAngle, false);
-        this.graphics.strokePath();
     }
 
     /** Creates the image objects and associated events for the 
@@ -513,30 +458,13 @@ class Freeplay extends Phaser.Scene {
 
         // To darken screen
         const color1 = new Phaser.Display.Color(0, 0, 0);
-        this.shadow = this.add.rectangle(0, 0,2048, 2048, color1.color);
+        this.shadow = this.add.rectangle(0, 0, 2048, 2048, color1.color);
         this.shadow.setAlpha(0.5);
 
         this.pauseMenu.addElement(this.pauseText);
         this.pauseMenu.addButton(this.restartButton.getElements());
         this.pauseMenu.addButton(this.exitButton.getElements());
         this.pauseMenu.addElement(this.shadow);
-
-
-        //create keyboard events. Mostly just sets the tint of the button.
-        /*
-        this.input.keyboard
-            .on('keydown-P', () => {
-                this.playButton.setTint(0xF47D33);
-                this.pauseButton.setTint(0xF47D33);
-            }).on('keyup-P', () => {
-                // disable pause when in the taking photo page
-                if (!this.takingPhoto) {
-                    this.playButton.setTint(0xFFFFFF);
-                    this.pauseButton.setTint(0xFFFFFF);
-                    this.paused = !this.paused;
-                }
-            });
-        */
 
         //create events for the play button
         this.playButton.setInteractive()
@@ -654,24 +582,24 @@ class Freeplay extends Phaser.Scene {
             this.exitButton.setVisible(false)
             this.shadow.setVisible(false)
         }
-        
+
     }
 
     updateTakePhoto() {
         if (!this.takingPhoto) {
-            this.foundPsycheText.setVisible(false);  
+            this.foundPsycheText.setVisible(false);
             this.quitPhotoPageButton.setVisible(false);
             this.hidePsychePhotos();
             this.nearestBodyText.setVisible(false);
-        }  else if (this.gameSuccess) {
-            this.foundPsycheText.setVisible(true);  
+        } else if (this.gameSuccess) {
+            this.foundPsycheText.setVisible(true);
             this.quitPhotoPageButton.setVisible(false);
             this.nearestBodyText.setVisible(false);
         } else {
             this.quitPhotoPageButton.setVisible(true);
         }
     }
-    
+
     /** Creates the button, key, and associated events
      *  For the orbit lock functionality.
      */
@@ -679,19 +607,6 @@ class Freeplay extends Phaser.Scene {
         this.orbitButton = this.add.image(56, 708, 'orbit').setScale(0.5);
         this.orbitButton.setTint(0xF47D33);
         CameraManager.addUISprite(this.orbitButton);
-
-        /*
-        this.input.keyboard
-            .on('keyup-SHIFT', () => {
-                this.bodies["psyche_probe"].orbitToggle = !this.bodies["psyche_probe"].orbitToggle;
-                this.orbitButton.setTint(this.bodies["psyche_probe"].orbitToggle ? 0xF47D33 : 0xFFFFFF);
-                if (!this.bodies["psyche_probe"].inOrbit) { 
-                    this.bodies["psyche_probe"].startOrbitLock(this);
-                } else {
-                    this.bodies["psyche_probe"].stopOrbitLock();
-                }
-            });
-        */
 
         this.orbitButton.setInteractive()
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
@@ -707,7 +622,7 @@ class Freeplay extends Phaser.Scene {
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
                 this.updateOrbitColor(this.bodies["psyche_probe"].orbitToggle ? 'on' : null);
-                if(!this.gameOver && !this.gameSuccess) {
+                if (!this.gameOver && !this.gameSuccess) {
                     this.toggleOrbit();
                 }
             });
@@ -734,7 +649,7 @@ class Freeplay extends Phaser.Scene {
      * Toggles the orbit state of the probe
      */
     toggleOrbit() {
-        if (!this.player.orbitToggle) { 
+        if (!this.player.orbitToggle) {
             this.bodies["psyche_probe"].startOrbitLock(this.player.newTarget);
             this.bodies["psyche_probe"].orbitToggle = true;
         } else {
@@ -744,11 +659,11 @@ class Freeplay extends Phaser.Scene {
     }
 
     takePhoto() {
-        this.photoBorder = this.add.rectangle(Constants.PSYCHE_PHOTO_X, 
-            Constants.PSYCHE_PHOTO_Y, Constants.PHOTO_BACKGROUND_WIDTH + Constants.PHOTO_BORDER, 
+        this.photoBorder = this.add.rectangle(Constants.PSYCHE_PHOTO_X,
+            Constants.PSYCHE_PHOTO_Y, Constants.PHOTO_BACKGROUND_WIDTH + Constants.PHOTO_BORDER,
             Constants.PHOTO_BACKGROUND_HEIGHT + Constants.PHOTO_BORDER, Constants.WHITE);
-        this.photoBackground = this.add.rectangle(Constants.PSYCHE_PHOTO_X, 
-            Constants.PSYCHE_PHOTO_Y, Constants.PHOTO_BACKGROUND_WIDTH, 
+        this.photoBackground = this.add.rectangle(Constants.PSYCHE_PHOTO_X,
+            Constants.PSYCHE_PHOTO_Y, Constants.PHOTO_BACKGROUND_WIDTH,
             Constants.PHOTO_BACKGROUND_HEIGHT, Constants.DARKBLUE);
 
         CameraManager.addUISprite(this.photoBorder);
@@ -757,13 +672,13 @@ class Freeplay extends Phaser.Scene {
         this.psychePhotos = new Array(Constants.MAX_PSYCHE_PHOTO_NUM);
         for (let i = 0; i < Constants.MAX_PSYCHE_PHOTO_NUM; i++) {
             let imageName = "psychePhoto" + i;
-            this.psychePhotos[i] = this.add.image(Constants.PSYCHE_PHOTO_X, 
+            this.psychePhotos[i] = this.add.image(Constants.PSYCHE_PHOTO_X,
                 Constants.PSYCHE_PHOTO_Y, imageName)
                 .setScale(Constants.PSYCHE_PHOTO_SCALE);
             CameraManager.addUISprite(this.psychePhotos[i]);
 
         }
-        
+
         this.hidePsychePhotos();
 
         this.foundPsycheText = this.add.text(Constants.FOUND_PSYCHE_TEXT_X, Constants.FOUND_PSYCHE_TEXT_Y, 'You found Psyche!');
@@ -785,11 +700,11 @@ class Freeplay extends Phaser.Scene {
                 backgroundColor: '#fff',
             })
             .setPadding(Constants.QUIT_PHOTO_PADDING)
-            .setInteractive({useHandCursor: true })
+            .setInteractive({ useHandCursor: true })
             .on('pointerdown', () => {
                 this.takingPhoto = !this.takingPhoto;
                 this.quitPhotoPageButton.setVisible(false);
-                
+
             })
             .setVisible(false);
         CameraManager.addUISprite(this.quitPhotoPageButton);
@@ -835,8 +750,8 @@ class Freeplay extends Phaser.Scene {
                 // now psycheAngle is a positive degree number between 0 and 360
                 // check if psycheAngle covers target angle
                 for (let i = 0; i < this.targetAngles.length; i++) {
-                    if ((Math.abs(psycheAngle - this.targetAngles[i]) <= Constants.ONE_PHOTO_ANGLE) 
-                        || (Math.abs(psycheAngle - this.targetAngles[i] + 360) <= Constants.ONE_PHOTO_ANGLE) 
+                    if ((Math.abs(psycheAngle - this.targetAngles[i]) <= Constants.ONE_PHOTO_ANGLE)
+                        || (Math.abs(psycheAngle - this.targetAngles[i] + 360) <= Constants.ONE_PHOTO_ANGLE)
                         || (Math.abs(psycheAngle - this.targetAngles[i] - 360) <= Constants.ONE_PHOTO_ANGLE)) {
                         this.showPsychePhoto(i);
                         // this photo covers the target angle targetAngles[i], set the flag
@@ -867,7 +782,7 @@ class Freeplay extends Phaser.Scene {
                     this.foundPsycheText.setText("Good job! You successfully\ncovered all Psyche sides!");
                     this.quitPhotoPageButton.setVisible(false);
                 }
-                        
+
             } else {
                 // check which body is in the view and choose the nearest one
                 let currentDistance = 1000; // random big number
@@ -904,7 +819,7 @@ class Freeplay extends Phaser.Scene {
         this.photoBorder.setVisible(false);
         this.photoBackground.setVisible(false);
         for (let i = 0; i < Constants.MAX_PSYCHE_PHOTO_NUM; i++) {
-            if (typeof(this.psychePhotos[i]) != "undefined") {
+            if (typeof (this.psychePhotos[i]) != "undefined") {
                 this.psychePhotos[i].setVisible(false);
             }
         }
@@ -918,7 +833,7 @@ class Freeplay extends Phaser.Scene {
         this.photoBorder.setVisible(true);
         this.photoBackground.setVisible(true);
         for (let i = 0; i < Constants.MAX_PSYCHE_PHOTO_NUM; i++) {
-            if (typeof(this.psychePhotos[i]) != "undefined") {
+            if (typeof (this.psychePhotos[i]) != "undefined") {
                 if (i == idx) {
                     this.psychePhotos[i].setVisible(true);
                 } else {
