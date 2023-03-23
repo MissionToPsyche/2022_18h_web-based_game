@@ -227,7 +227,6 @@ class Freeplay extends Phaser.Scene {
     update() {
         this.updatePauseButton();
         this.updateTakePhoto();
-        this.updateHeadsUpDisplay();
 
         // don't update bodies if paused, game over, or is taking photo
         if (this.paused || this.gameOver || this.gameSuccess || this.takingPhoto) {
@@ -526,74 +525,12 @@ class Freeplay extends Phaser.Scene {
         this.pauseMenu.addButton(this.exitButton.getElements());
         this.pauseMenu.addElement(this.shadow);
 
-        //create keyboard events. Mostly just sets the tint of the button.
-        /*
-        this.input.keyboard
-            .on('keydown-P', () => {
-                this.playButton.setTint(0xF47D33);
-                this.pauseButton.setTint(0xF47D33);
-            }).on('keyup-P', () => {
-                // disable pause when in the taking photo page
-                if (!this.takingPhoto) {
-                    this.playButton.setTint(0xFFFFFF);
-                    this.pauseButton.setTint(0xFFFFFF);
-                    this.paused = !this.paused;
-                }
-            });
-        */
-
-        //create events for the play button
-        this.playButton.setInteractive()
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
-                this.updatePauseColor('hover');
-            })
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OUT, () => {
-                this.updatePauseColor();
-            })
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
-                this.updatePauseColor('pressed');
-                if (!this.gameOver) {
-                    var menu_audio = this.sound.add('menu');
-                    menu_audio.play();
-                }
-            })
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
-                // disable pause when in the taking photo page
-                if (!this.takingPhoto) {
-                    this.updatePauseColor();
-                    this.togglePaused();
-                }
-            })
-
-        //create events for the pause button
-        this.pauseButton.setInteractive()
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
-                this.updatePauseColor('hover');
-            })
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OUT, () => {
-                this.updatePauseColor();
-            })
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
-                this.updatePauseColor('pressed');
-                if (!this.gameOver) {
-                    var menu_audio = this.sound.add('menu');
-                    menu_audio.play();
-                }
-            })
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
-                // disable pause when in the taking photo page
-                if (!this.takingPhoto) {
-                    this.updatePauseColor();
-                    this.togglePaused();
-                }
-            });
-
         //add all the images to the UI camera.
         CameraManager.addUISprite(this.playButton);
         CameraManager.addUISprite(this.pauseButton);
     }
 
-    createHeadsUpDisplay() {this.updateHeadsUpDisplay();
+    createHeadsUpDisplay() {
         this.HUD = new Menu(this);
 
         this.HUD.addElement(this.logo);
@@ -605,21 +542,16 @@ class Freeplay extends Phaser.Scene {
         // we want this control visible at all times, so it is not added to the HUD menu
         //this.HUD.addElement(this.pauseButton);
         //this.HUD.addElement(this.playButton);
-    }
 
-    updateHeadsUpDisplay() {
-        this.input.keyboard
-            .on('keydown-H', () => {
-                this.HUD.setVisible(false);
-            }).on('keyup-H', () => {
-                this.HUD.setVisible(true);
-            });
+        MenuManager.playButtonListener(this, this.playButton);
+        MenuManager.pauseButtonListener(this, this.pauseButton);
     }
 
     /**
      * updates the color of the pause and play buttons based on the given state of the button
      * @param {string} state The state of the button. Can be: hover, pressed or no value for default color
      */
+    /*
     updatePauseColor(state) {
         switch (state) {
             case 'hover':
@@ -635,6 +567,7 @@ class Freeplay extends Phaser.Scene {
                 this.playButton.setTint(0xFFFFFF);
         }
     }
+    */
 
     /**
      * Toggles the pause state of the scene
