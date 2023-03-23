@@ -1,3 +1,5 @@
+const OCR = 500;
+
 /**
  * Class representing a Body
  * Defines the functionality for celestial bodies in the simulation
@@ -23,6 +25,7 @@ class Body extends Phaser.GameObjects.Sprite {
 		} else {
 			this.minimap_icon = new Phaser.GameObjects.Sprite(_scene, _pos.x, _pos.y, _id, _frame);
 		}
+
 		this.id = _id
 		this.mass = _mass
 		this.vel = new Phaser.Math.Vector2(0, 0)
@@ -261,6 +264,8 @@ class Probe extends Body {
 		this.newOrbit = 40;
 		
 		this.orbitTarget = this.scene.bodies["earth"]; //the target of the probe's orbit.
+		this.findingTarget = false;
+		this.newTarget = this.scene.bodies["earth"];
 
 		this.angleOffset = 0;
 
@@ -332,9 +337,9 @@ class Probe extends Body {
 
 	updateOrbitRotation() {
 		this.angleOffset += this.controller.getRotation();
-		const relAngle = Math.atan2(this.y - this.orbitTarget.y, this.x - this.orbitTarget.y);
-		const newAngle = relAngle + this.angleOffset;
-		this.rotation = Phaser.Math.Angle.RotateTo(this.rotation, newAngle, 0.05);
+		var relAngle = Math.atan2(this.y - this.orbitTarget.y, this.x - this.orbitTarget.x);
+		var newAngle = relAngle + this.angleOffset;
+		this.rotation = Phaser.Math.Angle.RotateTo(this.rotation, newAngle, 0.5);
 	}
 
 	updateRotationAndVelocity() {
@@ -390,19 +395,37 @@ class Probe extends Body {
 		if (!this.gravityToggle) {
 			return
 		}
+		if (this.findingTarget) {
+			this.newTarget = this.getClosestBody(this.scene);
+		}
 
-		super.update(f);
+        super.update(f);
+    }
+
+	/**
+	 * Starts the process of the probe locking onto a given body.
+	 * @param {Body} Parent - the scene the probe searches bodies in.
+	 */
+	startOrbitLock(parent) {
+		//poll all planets and get closest planet within range (determined by max orbit)
+		console.log("Starting Orbit Lock")
+		if (parent != null) {
+			console.log("Lock Success!")
+			console.log(parent)
+			//set orbit target and enable orbit lock for second stage
+			this.orbitTarget = parent;
+			this.orbitToggle = true;
+		} else {
+			console.log("Lock Fail...")
+		}
 	}
 
 	/**
-	 * Starts the process of the probe locking onto a body.
-	 * The probe polls all bodies in the given scene and chooses
-	 * the closest one in range, then enters the maintaining state.
+	 * Gets the closest body to the probe in the given scene
 	 * @param {Phaser.Scene} scene - the scene the probe searches bodies in.
+	 * @returns {Body} The closest body
 	 */
-	startOrbitLock(scene) {
-		//poll all planets and get closest planet within range (determined by max orbit)
-		console.log("Starting Orbit Lock")
+	getClosestBody(scene) {
 		var parent;
 		var pr = 2000;
 		var p1;
@@ -427,15 +450,7 @@ class Probe extends Body {
 			}
 		}
 
-		if (parent != null) {
-			console.log("Lock Success!")
-			console.log(parent)
-			//set orbit target and enable orbit lock for second stage
-			this.orbitTarget = parent;
-			this.orbitToggle = true;
-		} else {
-			console.log("Lock Fail...")
-		}
+		return parent;
 	}
 
 	/**
@@ -445,7 +460,7 @@ class Probe extends Body {
 	stopOrbitLock() {
 		this.inOrbit = false;
 		this.orbitToggle = false;
-		this.orbitCounter = 500;
+		this.orbitCounter = OCR;
 		CameraManager.changeCamTarget(this);
 		CameraManager.returnToSetZoom();
 		return;
@@ -477,7 +492,10 @@ class Probe extends Body {
 			this.stopOrbitLock();
 			return;
 		}
-		this.orbitCounter -= 1;
+
+		this.orbitCounter--;
+
+		return 1 - this.orbitCounter/OCR;
 	}
 
 	/**
