@@ -5,16 +5,8 @@
 class Freeplay extends Simulation {
     constructor() {
         super("Freeplay");
-        //creating body objects
-        this.bodies = {};
-        this.json;
-        this.keyToggle = false; //for testing only
+
         this.paused = false;
-        this.path;
-        this.curve;
-        this.points;
-        this.graphics;
-        this.minigraphics;
         this.direction;
         this.gameOver = false;
         this.gameSuccess = false;
@@ -28,21 +20,12 @@ class Freeplay extends Simulation {
         this.photoBorder;
         this.nearestBodyText;
 
-        this.testMenu;
-        this.testButton;
-
-        this.probeAngleOffset = 0;
-
-        this.dirs = ["n", "ne", "e", "se", "s", "sw", "w", "nw", "f", "b"]
-        this.shade_angles = [[67.5, 112.5], [112.5, 157.5], [157.5, 202.5], [202.5, 247.5], [247.5, 292.5], [292.5, 337.5], [337.5, 22.5], [22.5, 67.5]]
-
         this.targetAngles; // array of target angles that the player need to take photo
         this.coverFlags; // array of flags that the player already took photo
     }
 
     preload() {
-        // load ingame music
-        this.load.audio('ingame_music', 'assets/music/02_Ingame.mp3');
+        super.preload()
 
         // load the photo of psyche
         this.load.image('psychePhoto1', "img/photos/psyche1.png");
@@ -63,118 +46,11 @@ class Freeplay extends Simulation {
      * - Create player controls
      */
     create() {
-        this.graphics = this.add.graphics();
-        this.minigraphics = this.add.graphics();
-
-        this.path = { t: 0, vec: new Phaser.Math.Vector2() };
-
-        this.curve = new Phaser.Curves.Spline(this.points);
-
-        //Solar system is 6144x6144
-        this.matter.world.setBounds(0, 0, 20480, 20480);
-        this.playerBounds = 20480;
-
-        //initializing cameras
-        CameraManager.initializeMainCamera(this);
-        CameraManager.initializeUICamera(this);
-        CameraManager.initializeMiniCamera(this);
-
-        var map_border = this.add.image(880, 110, 'minimap_border').setScale(0.35);
-
-        //creating Body objects
-        this.json = this.cache.json.get('bodies');
-        for (var type in this.json) {
-            for (var body of this.json[type]) {
-                let id = body['id'];
-                let mass = body['mass']['value'];
-                let diameter = body['diameter']['value'];
-                let orbit_distance = body['orbit_distance']['value'];
-
-                let collisionGroup1 = this.matter.world.nextGroup(true);
-                let collisionGroup2 = this.matter.world.nextGroup();
-
-                if (type != "probes") {
-                    let parent = this.bodies[body['orbits']];
-                    let angle = body['angle'];
-                    let day_length = body['day_length']['value'];
-
-                    this.bodies[id] = new Satellite(this, id, mass, diameter, parent, angle, orbit_distance, day_length);
-                } else {
-                    this.bodies[id] = new Probe(this, id, mass, diameter);
-                }
-
-                for (const dir of this.dirs) {
-                    const offset = (id == "psyche_probe" ? 14 : 16) * this.dirs.indexOf(dir)
-                    this.anims.create({
-                        key: id + "-" + dir,
-                        frames: this.anims.generateFrameNumbers(id, {
-                            start: offset,
-                            end: offset + (id == "psyche_probe" ? 7 : 9)
-                        }),
-                        frameRate: 12,
-                        repeat: -1
-                    });
-                }
-
-                this.bodies[id].setTexture(id, 0);
-            }
-        }
-
-        const fx = ["thrust", "brake"]
-        this.psyche_probe_fx = this.add.sprite(this.bodies["psyche_probe"].x, this.bodies["psyche_probe"].y, "psyche_probe_fx")
-        this.psyche_probe_fx.setDisplaySize(this.bodies["psyche_probe"].r * 2, this.bodies["psyche_probe"].r * 2)
-            .setSize(this.bodies["psyche_probe"].r * 2, this.bodies["psyche_probe"].r * 2);
-        this.psyche_probe_fx.setDisplayOrigin(7, 5)
-        for (let i = 0; i < 2; i++) {
-            const offset = 6 * i
-            this.psyche_probe_fx.anims.create({
-                key: "psyche_probe_fx-" + fx[i],
-                frames: this.anims.generateFrameNumbers("psyche_probe_fx", { start: offset, end: offset + 5 }),
-                framerate: 12,
-                repeat: -1
-            })
-        }
-        this.psyche_probe_fx.setTexture("psyche_probe_fx", 0);
-
-        CameraManager.addGameSprite(this.psyche_probe_fx)
-        CameraManager.addGameSprite(this.graphics);
-        CameraManager.addMinimapSprite(this.minigraphics);
-        // Make the main camera ignore the player icon.
-        // CameraManager.addUISprite([this.bodies["psyche_probe_icon"]]);
-        //adding graphics to game sprites so that it doesn't show up in UI.
-
-        //subscribe probe to all other bodies.
-        //NOTE** hard coded to psyche probe for now
-        for (const body in this.bodies) {
-            if (this.bodies[body].id != "psyche_probe") {
-                this.bodies[body].subscribe(this.bodies["psyche_probe"]);
-            }
-        }
-        this.bodies["earth"].subscribe(this.bodies["moon"]);
-        //setting probe as the player
-        this.player = this.bodies["psyche_probe"];
-        this.newCamTarget = this.bodies["earth"];
-        CameraManager.setFollowSprite(this.bodies["earth"]);
-
-        //creating UISprites
-        var logo = this.add.image(50, 50, 'logo').setScale(0.5);
-
-        //adding to UIsprites so main camera ignores them
-        CameraManager.addUISprite(logo);
-        CameraManager.addUISprite(map_border);
-
-        this.ingame_music = this.sound.add('ingame_music');
-        if (!this.ingame_music.isPlaying) {
-            this.ingame_music.play({ loop: true });
-        }
+        super.create()
 
         this.createPauseButton();
         this.createOrbitToggle();
         this.takePhoto();
-
-        //creating controller
-        this.controller = new Controller(this, this.bodies["psyche_probe"]);
-        this.bodies["psyche_probe"].setController(this.controller);
     }
 
     /** The scene's main update loop
@@ -290,18 +166,18 @@ class Freeplay extends Simulation {
                 } else if (sunAngle > 360) {
                     sunAngle -= 360;
                 }
-                for (const idx in this.shade_angles) {
-                    const angle = this.shade_angles[idx]
+                for (const idx in Constants.SHADE_ANGLES) {
+                    const angle = Constants.SHADE_ANGLES[idx]
                     if ((angle[0] < sunAngle && sunAngle <= angle[1]) || (angle[0] > angle[1] && (angle[0] < sunAngle || sunAngle <= angle[1]))) {
-                        this.bodies[body].play(this.bodies[body].id + "-" + this.dirs[idx], true);
+                        this.bodies[body].play(this.bodies[body].id + "-" + Constants.DIRECTIONS[idx], true);
                         break;
                     } else if (angle[0] > angle[1] && (angle[0] < sunAngle || sunAngle <= angle[1])) {
-                        this.bodies[body].play(this.bodies[body].id + "-" + this.dirs[idx], true);
+                        this.bodies[body].play(this.bodies[body].id + "-" + Constants.DIRECTIONS[idx], true);
                         break;
                     }
                 }
             } else {
-                const frame = 20;// this.bodies[body].getSpriteFrame(this.dirs[idx]);
+                const frame = 20;
                 this.bodies[body].setFrame(frame);
             }
         }

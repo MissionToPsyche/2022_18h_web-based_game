@@ -51,4 +51,8 @@ const Constants = {
     HINT_ALPHA_AFTER: 0.8,
     HINT_WIDTH_BEFORE: 2,
     HINT_WIDTH_AFTER: 2,
+
+    // sprite shading
+    DIRECTIONS: ["n", "ne", "e", "se", "s", "sw", "w", "nw", "f", "b"],
+    SHADE_ANGLES: [[67.5, 112.5], [112.5, 157.5], [157.5, 202.5], [202.5, 247.5], [247.5, 292.5], [292.5, 337.5], [337.5, 22.5], [22.5, 67.5]]
 }
