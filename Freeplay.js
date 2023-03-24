@@ -41,6 +41,7 @@ class Freeplay extends Phaser.Scene {
 
         this.mutedButton;
         this.notmutedButton;
+        this.isMuted = false;
 
         this.probeStartRotation = 0;
         this.probeEndRotation = 0;
@@ -247,8 +248,10 @@ class Freeplay extends Phaser.Scene {
         // if there was a collision then trigger the failure state and stop the simulation
         if (this.bodies["psyche_probe"].collided && !this.gameOver) {
             this.gameOver = true;
-            var fail_audio = this.sound.add('negative');
-            fail_audio.play();
+            if (!this.isMuted) {
+                var fail_audio = this.sound.add('negative');
+                fail_audio.play();
+            }
         }
 
         this.graphics.clear(); //clear previous itteration's graphics
@@ -530,8 +533,10 @@ class Freeplay extends Phaser.Scene {
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
                 this.updatePauseColor('pressed');
-                var menu_audio = this.sound.add('menu');
-                menu_audio.play();
+                if (!this.isMuted) {
+                    var menu_audio = this.sound.add('menu');
+                    menu_audio.play();
+                }
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
                 // disable pause when in the taking photo page
@@ -551,8 +556,10 @@ class Freeplay extends Phaser.Scene {
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
                 this.updatePauseColor('pressed');
-                var menu_audio = this.sound.add('menu');
-                menu_audio.play();
+                if (!this.isMuted) {
+                    var menu_audio = this.sound.add('menu');
+                    menu_audio.play();
+                }
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
                 // disable pause when in the taking photo page
@@ -684,8 +691,10 @@ class Freeplay extends Phaser.Scene {
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
                 this.updateOrbitColor('on');
-                var menu_audio = this.sound.add('menu');
-                menu_audio.play();
+                if (!this.isMuted) {
+                    var menu_audio = this.sound.add('menu');
+                    menu_audio.play();
+                }
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
                 this.updateOrbitColor(this.bodies["psyche_probe"].orbitToggle ? 'on' : null);
@@ -820,8 +829,10 @@ class Freeplay extends Phaser.Scene {
                             this.foundPsycheText.setText("You have already taken\nphoto of this side, please\ntake photo of other sides.");
                         } else {
                             // taking photo, play positive sfx
-                            var positive_audio = this.sound.add('positive');
-                            positive_audio.play();
+                            if (!this.isMuted) {
+                                var positive_audio = this.sound.add('positive');
+                                positive_audio.play();
+                            }
                             this.coverFlags[i] = 1;
                             this.foundPsycheText.setText("Good job! You just took\nphoto of a new Psyche side!");
                         }
@@ -932,12 +943,11 @@ class Freeplay extends Phaser.Scene {
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
                 // set color to orange and play sound
                 this.notmutedButton.setTint(Constants.ORANGE);
-                let buttonSound = this.sound.add('menu');
-                buttonSound.play();
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
                 // pause background music
                 this.ingame_music.pause();
+                this.isMuted = true;
                 // switch button
                 this.notmutedButton.setVisible(false);
                 this.mutedButton.setVisible(true);
@@ -962,6 +972,7 @@ class Freeplay extends Phaser.Scene {
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
                 // play background music
                 this.ingame_music.resume();
+                this.isMuted = false;
                 // switch button
                 this.mutedButton.setVisible(false);
                 this.notmutedButton.setVisible(true);
