@@ -1,3 +1,4 @@
+/** Class in charge of managing the game's various menus */
 class MenuManager {
 	constructor() {
 		if (this instanceof MenuManager) {
@@ -5,6 +6,11 @@ class MenuManager {
 		}
 	}
 
+    /**
+     * Listener for the restart button, which belongs to the pause menu
+     * @param {Phaser.Scene} _scene - The scene this button belongs to
+     * @param {Phaser.Image} _button - The image that represents this button
+     */
 	static restartButtonListener(_scene, _button) {
 		_button.id.setInteractive()
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
@@ -28,6 +34,11 @@ class MenuManager {
             });
 	}
 
+    /**
+     * Listener for the exit button, which belongs to the pause menu
+     * @param {Phaser.Scene} _scene - The scene this button belongs to
+     * @param {Phaser.Image} _button - The image that represents this button
+     */
 	static exitButtonListener(_scene, _button) {
 		_button.id.setInteractive()
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
@@ -49,6 +60,11 @@ class MenuManager {
             });
 	}
 
+    /**
+     * Listener for the play button, which is associated with the pause menu
+     * @param {Phaser.Scene} _scene - The scene this button belongs to
+     * @param {Phaser.Image} _button - The image that represents this button
+     */
     static playButtonListener(_scene, _button) {
         _button.setInteractive()
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
@@ -73,6 +89,11 @@ class MenuManager {
             });
     }
 
+    /**
+     * Listener for the pause button, which is associated with the pause menu
+     * @param {Phaser.Scene} _scene - The scene this button belongs to
+     * @param {Phaser.Image} _button - The image that represents this button
+     */
     static pauseButtonListener(_scene, _button) {
         _button.setInteractive()
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
@@ -97,23 +118,28 @@ class MenuManager {
             });
     }
 
+    /**
+     * Listener for the orbit button, which belongs to the heads-up display
+     * @param {Phaser.Scene} _scene - The scene this button belongs to
+     * @param {Phaser.Image} _button - The image that represents this button
+     */
     static orbitButtonListener(_scene, _button) {
         _scene.orbitButton.setInteractive()
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
-                MenuManager.updateOrbitColor(_scene, 'hover');
+                this.updateOrbitColor(_scene, 'hover');
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OUT, () => {
-                MenuManager.updateOrbitColor(_scene, _scene.bodies["psyche_probe"].orbitToggle ? 'on' : null);
+                this.updateOrbitColor(_scene, _scene.bodies["psyche_probe"].orbitToggle ? 'on' : null);
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
-                MenuManager.updateOrbitColor(_scene, 'on');
+                this.updateOrbitColor(_scene, 'on');
                 if (!_scene.gameOver) {
                     var menu_audio = _scene.sound.add('menu');
                     menu_audio.play();
                 }
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
-                MenuManager.updateOrbitColor(_scene, _scene.bodies["psyche_probe"].orbitToggle ? 'on' : null);
+                this.updateOrbitColor(_scene, _scene.bodies["psyche_probe"].orbitToggle ? 'on' : null);
                 if(!_scene.gameOver && !_scene.gameSuccess) {
                     _scene.toggleOrbit();
                 }
@@ -131,14 +157,16 @@ class MenuManager {
 
         _scene.restartButtonPosition = new Phaser.Geom.Point(520, 408);
         _scene.restartButton = new Button(_scene, _scene.restartButtonPosition, 'button', 'Restart');
-        MenuManager.restartButtonListener(_scene, _scene.restartButton);
+        this.restartButtonListener(_scene, _scene.restartButton);
 
         _scene.exitButtonPosition = new Phaser.Geom.Point(520, 508);
         _scene.exitButton = new Button(_scene, _scene.exitButtonPosition, 'button', 'Exit');
-        MenuManager.exitButtonListener(_scene, _scene.exitButton);
+        this.exitButtonListener(_scene, _scene.exitButton);
 
         _scene.playButton = _scene.add.image(964, 708, 'play').setScale(0.5)
         _scene.pauseButton = _scene.add.image(964, 708, 'pause').setScale(0.5)
+        this.playButtonListener(_scene, _scene.playButton);
+        this.pauseButtonListener(_scene, _scene.pauseButton);
 
         _scene.playButton.depth = 100;
         _scene.pauseButton.depth = 100;
@@ -160,6 +188,10 @@ class MenuManager {
         CameraManager.addUISprite(_scene.pauseButton);
     }
 
+    /**
+     * Allows us to hide and show the pause menu depending on game state
+     * @param {Phaser.Scene} _scene - The scene this menu belongs to
+     */
     static updatePauseMenu(_scene) {
         // if paused and not game over then we can show the pause text and allow the pause/play buttons to update
         if (_scene.paused && !_scene.gameOver && !_scene.gameSuccess) {
@@ -223,12 +255,6 @@ class MenuManager {
         _scene.HUD.addElement(_scene.mapBorder);
         _scene.HUD.addElement(_scene.orbitButton);
 
-        // we want this control visible at all times, so it is not added to the HUD menu
-        //this.HUD.addElement(this.pauseButton);
-        //this.HUD.addElement(this.playButton);
-
-        this.playButtonListener(_scene, _scene.playButton);
-        this.pauseButtonListener(_scene, _scene.pauseButton);
         this.orbitButtonListener(_scene, _scene.orbitButton);
     }
 
