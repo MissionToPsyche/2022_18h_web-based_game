@@ -26,7 +26,7 @@ class Freeplay extends Phaser.Scene {
         this.psychePhotos;
         this.logo;
         this.orbitButton;
-        this.map_border;
+        this.mapBorder;
         this.photoBackground;
         this.photoBorder;
         this.nearestBodyText;
@@ -120,7 +120,7 @@ class Freeplay extends Phaser.Scene {
         CameraManager.initializeUICamera(this);
         CameraManager.initializeMiniCamera(this);
 
-        this.map_border = this.add.image(880,110,'minimap_border').setScale(0.35);
+        //this.map_border = this.add.image(880,110,'minimap_border').setScale(0.35);
 
         //creating Body objects
         this.json = this.cache.json.get('bodies');
@@ -198,7 +198,7 @@ class Freeplay extends Phaser.Scene {
         CameraManager.setFollowSprite(this.bodies["earth"]);
 
         //creating UISprites
-        this.logo = this.add.image(50,50,'logo').setScale(0.5);
+        //this.logo = this.add.image(50,50,'logo').setScale(0.5);
 
         //adding to UIsprites so main camera ignores them
         //CameraManager.addUISprite(logo);
@@ -214,7 +214,6 @@ class Freeplay extends Phaser.Scene {
         this.bodies["psyche_probe"].setController(this.controller);
 
         MenuManager.createPauseMenu(this);
-        this.createOrbitToggle();
         this.takePhoto();
         MenuManager.createHeadsUpDisplay(this);
     }
@@ -514,68 +513,6 @@ class Freeplay extends Phaser.Scene {
             this.quitPhotoPageButton.setVisible(true);
         }
     }
-    
-    /** Creates the button, key, and associated events
-     *  For the orbit lock functionality.
-     */
-    createOrbitToggle() {
-        this.orbitButton = this.add.image(56, 708, 'orbit').setScale(0.5);
-        this.orbitButton.setTint(0xF47D33);
-        CameraManager.addUISprite(this.orbitButton);
-
-        /*
-        this.input.keyboard
-            .on('keyup-SHIFT', () => {
-                this.bodies["psyche_probe"].orbitToggle = !this.bodies["psyche_probe"].orbitToggle;
-                this.orbitButton.setTint(this.bodies["psyche_probe"].orbitToggle ? 0xF47D33 : 0xFFFFFF);
-                if (!this.bodies["psyche_probe"].inOrbit) { 
-                    this.bodies["psyche_probe"].startOrbitLock(this);
-                } else {
-                    this.bodies["psyche_probe"].stopOrbitLock();
-                }
-            });
-        */
-
-        this.orbitButton.setInteractive()
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
-                MenuManager.updateOrbitColor(_scene, 'hover');
-            })
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OUT, () => {
-                MenuManager.updateOrbitColor(_scene, this.bodies["psyche_probe"].orbitToggle ? 'on' : null);
-            })
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
-                MenuManager.updateOrbitColor(_scene, 'on');
-                if (!this.gameOver) {
-                    var menu_audio = this.sound.add('menu');
-                    menu_audio.play();
-                }
-            })
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
-                MenuManager.updateOrbitColor(_scene, this.bodies["psyche_probe"].orbitToggle ? 'on' : null);
-                if(!this.gameOver && !this.gameSuccess) {
-                    this.toggleOrbit();
-                }
-            });
-    }
-
-    /**
-     * updates the color of the orbit button based on the given state of the button
-     * @param {string} state The state of the button. Can be: 'hover', 'on', or no value for default
-     */
-    /*
-    updateOrbitColor(state) {
-        switch (state) {
-            case 'hover':
-                this.orbitButton.setTint(0xF9A000);
-                break;
-            case 'on':
-                this.orbitButton.setTint(0xF47D33);
-                break;
-            default:
-                this.orbitButton.setTint(0xFFFFFF);
-        }
-    }
-    */
 
     /**
      * Toggles the orbit state of the probe

@@ -97,9 +97,32 @@ class MenuManager {
             });
     }
 
-    /** 
-     * Creates the image objects and associated events for the 
-     * game's pause button 
+    static orbitButtonListener(_scene, _button) {
+        _scene.orbitButton.setInteractive()
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
+                MenuManager.updateOrbitColor(_scene, 'hover');
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OUT, () => {
+                MenuManager.updateOrbitColor(_scene, _scene.bodies["psyche_probe"].orbitToggle ? 'on' : null);
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
+                MenuManager.updateOrbitColor(_scene, 'on');
+                if (!_scene.gameOver) {
+                    var menu_audio = _scene.sound.add('menu');
+                    menu_audio.play();
+                }
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
+                MenuManager.updateOrbitColor(_scene, _scene.bodies["psyche_probe"].orbitToggle ? 'on' : null);
+                if(!_scene.gameOver && !_scene.gameSuccess) {
+                    _scene.toggleOrbit();
+                }
+            });
+    }
+
+    /**
+     * Creates a pause menu in the Phaser scene specified by _scene
+     * @param {Phaser.Scene} _scene - The scene this menu belongs to
      */
     static createPauseMenu(_scene) {
         _scene.pauseMenu = new Menu(_scene);
@@ -131,7 +154,8 @@ class MenuManager {
         _scene.pauseMenu.addButton(_scene.exitButton.getElements());
         _scene.pauseMenu.addElement(_scene.shadow);
 
-        //add all the images to the UI camera.
+        // Since these buttons are not technically part a menu, we need to manually
+        // add all them to the UI camera.
         CameraManager.addUISprite(_scene.playButton);
         CameraManager.addUISprite(_scene.pauseButton);
     }
@@ -181,13 +205,22 @@ class MenuManager {
         }
     }
 
+    /**
+     * Creates a heads-up display in the Phaser scene specified by _scene
+     * @param {Phaser.Scene} _scene - The scene this menu belongs to
+     */
     static createHeadsUpDisplay(_scene) {
         _scene.HUD = new Menu(_scene);
+
+        _scene.logo = _scene.add.image(50,50,'logo').setScale(0.5);
+        _scene.mapBorder = _scene.add.image(880,110,'minimap_border').setScale(0.35);
+        _scene.orbitButton = _scene.add.image(56, 708, 'orbit').setScale(0.5);
+        _scene.orbitButton.setTint(0xF47D33);
 
         _scene.HUD.addElement(_scene.logo);
         _scene.HUD.addElement(_scene.controller.controlText);
         _scene.HUD.addElement(CameraManager.miniCamera);
-        _scene.HUD.addElement(_scene.map_border);
+        _scene.HUD.addElement(_scene.mapBorder);
         _scene.HUD.addElement(_scene.orbitButton);
 
         // we want this control visible at all times, so it is not added to the HUD menu
@@ -196,11 +229,13 @@ class MenuManager {
 
         this.playButtonListener(_scene, _scene.playButton);
         this.pauseButtonListener(_scene, _scene.pauseButton);
+        this.orbitButtonListener(_scene, _scene.orbitButton);
     }
 
     /**
-     * updates the color of the pause and play buttons based on the given state of the button
-     * @param {string} state The state of the button. Can be: hover, pressed or no value for default color
+     * Updates the color of the pause and play buttons based on the given state of the button
+     * @param (Phaser.Scene) _scene - The scene these buttons belong to
+     * @param {string} _state - The state of the button. Can be: hover, pressed or no value for default color
      */
     static updatePauseColor(_scene, _state) {
         switch (_state) {
@@ -219,8 +254,9 @@ class MenuManager {
     }
 
     /**
-     * updates the color of the orbit button based on the given state of the button
-     * @param {string} state The state of the button. Can be: 'hover', 'on', or no value for default
+     * Updates the color of the orbit button based on the given state of the button
+     * @param (Phaser.Scene) _scene - The scene these buttons belong to
+     * @param {string} _state - The state of the button. Can be: 'hover', 'on', or no value for default
      */
     static updateOrbitColor(_scene, _state) {
         switch (_state) {
