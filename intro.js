@@ -130,7 +130,7 @@ class Intro extends Phaser.Scene {
         })
         .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
             this.tutorialButton.setTint(0xFFFFFF);
-            DialogManager.set("tutorial");
+            TutorialManager.activateTutorial();
             this.scene.start('Freeplay');
         })
 

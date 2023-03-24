@@ -18,7 +18,6 @@ class MainMenu extends Phaser.Scene {
         this.load.image('up', 'img/icons/upkey.png'); 
         this.load.image('space', 'img/icons/space.png'); 
         this.load.image('p', 'img/icons/p.png'); 
-        DialogManager.set("mission");
 
         this.load.audio('intro_music', 'assets/music/01_Intro.mp3');
         this.load.audio('load', 'assets/sfx/load.wav');

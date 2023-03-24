@@ -1,61 +1,100 @@
-class tutorialManager {
+class TutorialManager {
 
     /**
      * Represents a tutorial manager
      * @constructor
      */
-    constructor(_scene, _color) {
+
+    constructor() {
+        if (this instanceof TutorialManager) {
+            throw Error('A static class cannot be instantiated.');
+        }
+    }
+
+    static setUp(_scene, _color) {
         this.scene = _scene;
         this.dialogShadow = this.scene.add.rectangle(525, 650,550, 125, _color)
         .setAlpha(0.85);
-        this.dialogTextOG = this.scene.add.text(300,625, "");
         this.dialogText = this.scene.add.text(300,625, "");
-        this.OGtxtdone = false;
         this.movmentTutNum = 1;
         this.movementNotDone = true;
+        this.msgNum = 0;
     }
 
-    loadMsg(num){
+    static mode;
+
+    static tutorialLog = [
+        "Welcome to the Tutorial!\n",
+        "Press the shift button to get out of Orbit.",
+        "Now that you know how to fly, find Psyche without crashing.",
+        "You have found Psyche!\n",
+        "Press the space key in order to take pictures of Psyche.",
+        "Good job! You have finished the tutorial!",
+        "You are orbiting the wrong planet.\n",
+        "You are orbiting Earth again.\n",
+        "Press and hold the up arrow key to go up.",
+        "Press and hold the down arrow key to go down.",
+        "Press and hold the left arrow key to go left.",
+        "Press and hold the right arrow key to go right.",
+        "The longer you press and hold on to the arrow keys the faster you fly.",
+        "Follow the orange arrow to find Psyche."
+    ]
+
+    static activateTutorial(){
+        this.mode = true;
+    }
+    static tutorialActivated(){
+        return this.mode;
+    }
+
+    static loadMsg(num){
         switch(num){
             // When tutorial start.
             case 0:
-                this.typewriteText(this.dialogTextOG,DialogManager.getTutorialDial(0));
+                this.typewriteText(this.dialogText,this.tutorialLog[0], 0);
                 this.scene.time.addEvent({
                     delay: 5000,
                     callback: ()=>{
-                        this.typewriteText(this.dialogTextOG,DialogManager.getTutorialDial(1));
+                        if(this.msgNum == 0){
+                            this.eraseDialogText();
+                            this.typewriteText(this.dialogText,this.tutorialLog[1]);
+                        }
                     },
                     loop: false
                 })
                 break;
             // When player gets out of orbit.
             case 1:
-                this.dialogTextOG.setVisible(false);
-                this.OGtxtdone = true;
-                this.dialogText = this.scene.add.text(300,625, "");
-                this.typewriteText(this.dialogText,DialogManager.getTutorialDial(8));
+                this.msgNum = 1;
+                this.eraseDialogText();
+                if(this.msgNum == 1){
+                    this.typewriteText(this.dialogText,this.tutorialLog[8]);
+                }
                 break;
             // When player done with movement tutorial.
             case 2:
                 if(this.movmentTutNum == 4 && this.movementNotDone){
+                    this.msgNum = 2;
                     this.dialogText.setVisible(false);
                     this.dialogText = this.scene.add.text(300,625, "");
-                        this.typewriteText(this.dialogText,DialogManager.getTutorialDial(12));
+                        this.typewriteText(this.dialogText,this.tutorialLog[12]);
                         this.scene.time.addEvent({
                             delay: 8500,
                             callback: ()=>{
-                                this.dialogText.setVisible(false);
-                                this.dialogText = this.scene.add.text(300,625, "");
-                                this.typewriteText(this.dialogText,DialogManager.getTutorialDial(2));
+                                if(this.msgNum == 2){
+                                    this.eraseDialogText();
+                                    this.typewriteText(this.dialogText,this.tutorialLog[2]);
+                                }
                             },
                             loop: false
                         })
                         this.scene.time.addEvent({
                             delay: 17000,
                             callback: ()=>{
-                                this.dialogText.setVisible(false);
-                                this.dialogText = this.scene.add.text(300,625, "");
-                                this.typewriteText(this.dialogText,DialogManager.getTutorialDial(15));
+                                if(this.msgNum == 2){
+                                    this.eraseDialogText();
+                                    this.typewriteText(this.dialogText,this.tutorialLog[13]);
+                                }
                             },
                             loop: false
                         })
@@ -64,101 +103,96 @@ class tutorialManager {
                 break;
             // When player finds Psyche.
             case 3:
-                this.dialogText.setVisible(false);
-                this.dialogText = this.scene.add.text(300,625, "");
-                    this.typewriteText(this.dialogText,DialogManager.getTutorialDial(3));
-                    this.scene.time.addEvent({
-                        delay: 4000,
-                        callback: ()=>{
-                            this.typewriteText(this.dialogText,DialogManager.getTutorialDial(4));
-                        },
-                        loop: false
-                    })
+                this.msgNum = 3;
+                this.eraseDialogText();
+                    this.typewriteText(this.dialogText,this.tutorialLog[3]);
+                    if(this.msgNum == 3){
+                        this.createMsgDelay(4000, 4, 3);
+                    }
                 break;
-            // When player orbit the wrong planet.
+            // When player done orbiting wrong planet.
             case 4:
-                this.dialogText.setVisible(false);
-                this.dialogText = this.scene.add.text(300,625, "");
-                    this.typewriteText(this.dialogText,DialogManager.getTutorialDial(14));
-                    this.scene.time.addEvent({
-                        delay: 4000,
-                        callback: ()=>{
-                            this.typewriteText(this.dialogText,DialogManager.getTutorialDial(13));
-                        },
-                        loop: false
-                    })
+                this.msgNum = 4;
+                this.eraseDialogText();
+                    this.typewriteText(this.dialogText,this.tutorialLog[13]);
                 break;
             // When player take a picture of Psyche.
             case 5:
-                this.dialogText.setVisible(false);
-                this.dialogText = this.scene.add.text(300,625, "");
-                this.typewriteText(this.dialogText,DialogManager.getTutorialDial(5));
+                this.msgNum = 5;
+                this.eraseDialogText();
+                this.typewriteText(this.dialogText,this.tutorialLog[5]);
                 break;
-            // When player obit a different planet. 
+            // When player orbit a different planet. 
             case 6:
-                this.dialogText.setVisible(false);
-                this.dialogText = this.scene.add.text(300,625, "");
-                this.typewriteText(this.dialogText,DialogManager.getTutorialDial(6));
-                this.scene.time.addEvent({
-                    delay: 4000,
-                    callback: ()=>{
-                        this.typewriteText(this.dialogText,DialogManager.getTutorialDial(1));
-                    },
-                    loop: false
-                })
+                this.msgNum = 6;
+                this.eraseDialogText();
+                this.typewriteText(this.dialogText,this.tutorialLog[6]);
+                this.createMsgDelay(4000, 1, 6);
+                
                 break;
             // When player orbit Earth again.
             case 7:
-                this.dialogText.setVisible(false);
-                this.dialogText = this.scene.add.text(300,625, "");
-                this.typewriteText(this.dialogText,DialogManager.getTutorialDial(7));
-                this.scene.time.addEvent({
-                    delay: 4000,
-                    callback: ()=>{
-                        this.typewriteText(this.dialogText,DialogManager.getTutorialDial(1));
-                    },
-                    loop: false
-                })
+                this.msgNum = 7;
+                this.eraseDialogText();
+                this.typewriteText(this.dialogText,this.tutorialLog[7]);
+                if(this.msgNum == 7){
+                    this.createMsgDelay(4000, 1, 7);
+                }
                 break;
         }
     }
 
-    movementTutor(phase){
+    static eraseDialogText(){
+        this.dialogText.setVisible(false);
+        this.dialogText = this.scene.add.text(300,625, "");
+    }
+
+    static createMsgDelay(delayNum, dialogNum, num){
+        this.scene.time.addEvent({
+            delay: delayNum,
+            callback: ()=>{
+                if(this.msgNum == num){
+                    this.eraseDialogText();
+                    this.typewriteText(this.dialogText,this.tutorialLog[dialogNum]);
+                }
+            },
+            loop: false
+        })
+    }
+
+    static movementTutor(phase){
         if(this.movmentTutNum == phase){
             this.movmentTutNum = this.movmentTutNum + 1;
+            this.msgNum = this.movmentTutNum + 7;
             this.dialogText.setVisible(false);
             this.dialogText = this.scene.add.text(300,625, "");
-            this.typewriteText(this.dialogText,DialogManager.getTutorialDial(this.movmentTutNum + 7));
+            this.typewriteText(this.dialogText,this.tutorialLog[this.movmentTutNum + 7]);
         }
     }
 
-    msgVisibility(visibility){
-        if(visibility && !this.OGtxtdone){
-            this.dialogShadow.setVisible(true);
-            this.dialogTextOG.setVisible(true);
-        } else if(visibility && this.OGtxtdone){
+    static msgVisibility(visibility){
+        if(visibility){
             this.dialogShadow.setVisible(true);
             this.dialogText.setVisible(true);
-        }
-        else{
+        }else{
             this.dialogShadow.setVisible(false);
             this.dialogText.setVisible(false);
-            this.dialogTextOG.setVisible(false);
         }
     }
 
-    typewriteText(label,text){
+    static typewriteText(label,text){
 	    const length = text.length
 	    let i = 0
 	    this.scene.time.addEvent({
 		    callback: () => {
-			    label.text += text[i];
-			    ++i;
-                // Skip t onew line if there are 46 characters.
-                if((i % 46) === 0){
-                    label.text += "\n";
-                    length + 1;
-                }
+                    label.text += text[i];
+                    ++i;
+                    // Skip to new line if there are 46 characters.
+                    if((i % 46) === 0){
+                        label.text += "\n";
+                        length + 1;
+                    }
+                
 		    },
 		    repeat: length - 1,
 		    delay: 100

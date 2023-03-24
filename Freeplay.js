@@ -31,7 +31,7 @@ class Freeplay extends Phaser.Scene {
         this.nearestBodyText;
 
         this.restart;
-        this.done;
+        this.msgDone;
         this.earthDone;
         this.testMenu;
         this.testButton;
@@ -126,8 +126,10 @@ class Freeplay extends Phaser.Scene {
         CameraManager.initializeUICamera(this);
         CameraManager.initializeMiniCamera(this);
 
+        //Make map appear.
         this.map_border = this.add.image(880,110,'minimap_border').setScale(0.35);
-        this.map_border.setVisible(false);
+        this.map_border.setVisible(true);
+        this.changeMap();
 
         //creating Body objects
         this.json = this.cache.json.get('bodies');
@@ -221,18 +223,17 @@ class Freeplay extends Phaser.Scene {
 
         // Create a shaded dialog box
         const color1 = new Phaser.Display.Color(0, 0, 0);
-        this.tutorial = new tutorialManager(this, color1.color);
-        if(DialogManager.get("tutorial") == true){
-            this.tutorial.loadMsg(0);
+        TutorialManager.setUp(this, color1.color);
+        if(TutorialManager.tutorialActivated()){
+            TutorialManager.loadMsg(0);
 
         } else{
-            console.log(1);
-            this.tutorial.msgVisibility(false);
+            TutorialManager.msgVisibility(false);
         }
         this.takePhoto();
 
         //creating controller
-        this.controller = new Controller(this, this.bodies["psyche_probe"], this.tutorial);
+        this.controller = new Controller(this, this.bodies["psyche_probe"]);
         this.bodies["psyche_probe"].setController(this.controller);
     }
 
@@ -325,27 +326,27 @@ class Freeplay extends Phaser.Scene {
             this.graphics.lineStyle(1, 0x0000ff, 0.5);
             this.bodies["psyche_probe"].getOrbitPath('cur').draw(this.graphics, 64);
             this.graphics.fillStyle(0x00ff00, 1);
-            if(DialogManager.get("tutorial") == true && this.bodies["psyche_probe"].orbitTarget.id =="psyche"){
-                if(!this.done){
-                    this.tutorial.loadMsg(3);
+            if(TutorialManager.tutorialActivated() && this.bodies["psyche_probe"].orbitTarget.id =="psyche"){
+                if(!this.msgDone){
+                    TutorialManager.loadMsg(3);
                     // Make sure the dialog doesn't keep on updating.
-                    this.done = true;
+                    this.msgDone = true;
                 }
-            } else if(DialogManager.get("tutorial") == true && 
+            } else if(TutorialManager.tutorialActivated() && 
             (this.bodies["psyche_probe"].orbitTarget.id !="psyche" && 
             this.bodies["psyche_probe"].orbitTarget.id !="earth")){
-                if(!this.done){
-                   this.tutorial.loadMsg(6);
+                if(!this.msgDone){
+                   TutorialManager.loadMsg(6);
                     // Make sure the dialog doesn't keep on updating.
-                    this.done = true;
+                    this.msgDone = true;
                 }
-            } else if(DialogManager.get("tutorial") == true && 
+            } else if(TutorialManager.tutorialActivated() && 
             (this.bodies["psyche_probe"].orbitTarget.id !="psyche" && 
             this.bodies["psyche_probe"].orbitTarget.id =="earth")){
-                if(!this.done && this.earthDone){
-                   this.tutorial.loadMsg(7);
+                if(!this.msgDone && this.earthDone){
+                   TutorialManager.loadMsg(7);
                     // Make sure the dialog doesn't keep on updating.
-                    this.done = true;
+                    this.msgDone = true;
                 }
             }
         }
@@ -685,11 +686,11 @@ class Freeplay extends Phaser.Scene {
             this.pauseMenu.setVisible(false);
         }
 
-        if(DialogManager.get("tutorial") == true && this.gameOver){
+        if(TutorialManager.tutorialActivated() && this.gameOver){
             this.pauseText.setText("Game Over!");
-            this.tutorial.msgVisibility(false);
+            TutorialManager.msgVisibility(false);
             this.time.addEvent({
-                delay: 1000,
+                delay: 1500,
                 callback: ()=>{
                     this.scene.restart();
                     this.paused = false
@@ -701,14 +702,14 @@ class Freeplay extends Phaser.Scene {
         }
 
         // if game over then show the game over text
-        if (this.gameOver && DialogManager.get("tutorial") == false) {
+        if (TutorialManager.tutorialActivated() == false) {
             this.pauseText.setText("Game Over!");
             this.pauseMenu.setVisible(true);
 
             this.pauseButton.setTint(0x7f7f7f);
             this.playButton.setTint(0x7f7f7f);
             this.orbitButton.setTint(0x7f7f7f);
-        } else if (this.gameSuccess && DialogManager.get("tutorial") == false) {
+        } else if (TutorialManager.tutorialActivated() == false) {
             this.pauseButton.setTint(0x7f7f7f);
             this.playButton.setTint(0x7f7f7f);
             this.orbitButton.setTint(0x7f7f7f);
@@ -719,7 +720,7 @@ class Freeplay extends Phaser.Scene {
             this.restartButton.setVisible(true)
             this.exitButton.setVisible(true)
             this.shadow.setVisible(true)
-            this.tutorial.msgVisibility(false);
+            TutorialManager.msgVisibility(false);
             if(this.map_border.visible == true){
                 this.isMapVisible = true;
                 this.updateMap();
@@ -728,8 +729,8 @@ class Freeplay extends Phaser.Scene {
             this.restartButton.setVisible(false)
             this.exitButton.setVisible(false)
             this.shadow.setVisible(false)
-            if(DialogManager.get("tutorial") == true && !this.restart){
-                this.tutorial.msgVisibility(true);
+            if(TutorialManager.tutorialActivated() && !this.restart){
+                TutorialManager.msgVisibility(true);
                 }
             }
             
@@ -770,9 +771,9 @@ class Freeplay extends Phaser.Scene {
             this.foundPsycheText.setVisible(true);  
             this.quitPhotoPageButton.setVisible(false);
             this.nearestBodyText.setVisible(false);
-        } else if(!DialogManager.get("tutorial") == true){
+        } else if(!TutorialManager.tutorialActivated()){
             this.quitPhotoPageButton.setVisible(true);
-        }else if(DialogManager.get("tutorial") == true){
+        } else if(TutorialManager.tutorialActivated()){
             this.takingPhoto = !this.takingPhoto;
         }
     }
@@ -843,16 +844,16 @@ class Freeplay extends Phaser.Scene {
             this.bodies["psyche_probe"].orbitToggle = true;
         } else {
             this.bodies["psyche_probe"].stopOrbitLock();
-            if(DialogManager.get("tutorial") == true){
+            if(TutorialManager.tutorialActivated()){
                 if(this.earthDone == false){
                     this.earthDone = true;
-                    this.tutorial.loadMsg(1);
-                }else{
-                    this.tutorial.loadMsg(4);
+                    TutorialManager.loadMsg(1);
+                } else{
+                    TutorialManager.loadMsg(4);
                 }
             }
             // Makes sure dialog for when orbiting can reappear.
-            this.done = false;
+            this.msgDone = false;
             this.resumeMap();
             this.bodies["psyche_probe"].orbitToggle = false;
         }
@@ -904,10 +905,9 @@ class Freeplay extends Phaser.Scene {
             .on('pointerdown', () => {
                 this.takingPhoto = !this.takingPhoto;
                 this.quitPhotoPageButton.setVisible(false);
-                if(DialogManager.get("tutorial") == true){
-                    this.tutorial.loadMsg(5);
+                if(TutorialManager.tutorialActivated()){
+                    TutorialManager.loadMsg(5);
                 }
-                //this.resumeMap();
             })
             .setVisible(false);
         CameraManager.addUISprite(this.quitPhotoPageButton);
@@ -920,12 +920,6 @@ class Freeplay extends Phaser.Scene {
         // disable spacebar take photo when paused
         if ((!this.paused) && (!this.gameOver) && (!this.gameSuccess)) {
             this.takingPhoto = !this.takingPhoto;
-            //  if(this.map_border.visible == true){
-            //      this.isMapVisible = true;
-            //      this.updateMap();
-            //  } else{
-            //     this.resumeMap();
-            // }
 
             let viewR = Constants.VIEW_R;
             let endRotation = this.bodies["psyche_probe"].rotation + Math.PI;
@@ -992,7 +986,7 @@ class Freeplay extends Phaser.Scene {
                     this.quitPhotoPageButton.setVisible(false);
                 }
                         
-            } else if(!DialogManager.get("tutorial")){
+            } else if(!TutorialManager.tutorialActivated()){
                 // check which body is in the view and choose the nearest one
                 let currentDistance = 1000; // random big number
                 let nearestBody = null;
@@ -1052,6 +1046,7 @@ class Freeplay extends Phaser.Scene {
         }
     }
 }
+
 
 
 

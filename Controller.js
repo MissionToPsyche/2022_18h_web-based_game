@@ -9,10 +9,9 @@ const ControlMethod = {
 
 
 class Controller {
-    constructor(_scene, _player, _tutorial) {
+    constructor(_scene, _player) {
         this.scene = _scene;
         this.player = _player;
-        this.tutorial = _tutorial;
 
         this.controlMethod = ControlMethod.FourWay;
 
@@ -122,8 +121,8 @@ class Controller {
                     this.yAcc = -this.APT;
                     this.totalAcc = -this.APT;
                 }
-                if(DialogManager.get("tutorial") == true && this.scene.earthDone == true){
-                    this.tutorial.movementTutor(1);
+                if(TutorialManager.tutorialActivated() && this.scene.earthDone == true){
+                    TutorialManager.movementTutor(1);
                 }
             }).on('up', () => {
                 this.yAcc = 0;
@@ -137,8 +136,8 @@ class Controller {
                     this.yAcc = this.APT;
                     this.totalAcc = this.APT;
                 }
-                if(DialogManager.get("tutorial") == true){
-                    this.tutorial.movementTutor(2);
+                if(TutorialManager.tutorialActivated()){
+                    TutorialManager.movementTutor(2);
                 }
             }).on('up', () => {
                 this.yAcc = 0;
@@ -153,8 +152,8 @@ class Controller {
                 } else {
                     this.xAcc = -this.APT;
                 }
-                if(DialogManager.get("tutorial") == true){
-                    this.tutorial.movementTutor(3);
+                if(TutorialManager.tutorialActivated()){
+                    TutorialManager.movementTutor(3);
                 }
             }).on('up', () => {
                 this.xAcc = 0;
@@ -169,8 +168,8 @@ class Controller {
                 } else {
                     this.xAcc = this.APT;
                 }
-                if(DialogManager.get("tutorial") == true){
-                    this.tutorial.loadMsg(2);
+                if(TutorialManager.tutorialActivated()){
+                    TutorialManager.loadMsg(2);
                 }
             }).on('up', () => {
                 this.xAcc = 0;
