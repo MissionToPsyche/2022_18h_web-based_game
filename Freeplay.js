@@ -576,7 +576,7 @@ class Freeplay extends Phaser.Scene {
                 // disable pause when in the taking photo page
                 if (!this.takingPhoto) {
                     this.updatePauseColor();
-                    this.paused = !this.paused;
+                    this.togglePaused();
                 }
             });
 
