@@ -688,6 +688,7 @@ class Freeplay extends Phaser.Scene {
 
         if(TutorialManager.tutorialActivated() && this.gameOver){
             this.pauseText.setText("Game Over!");
+            this.pauseText.setVisible(true);
             TutorialManager.msgVisibility(false);
             this.time.addEvent({
                 delay: 1500,
@@ -695,6 +696,7 @@ class Freeplay extends Phaser.Scene {
                     this.scene.restart();
                     this.paused = false
                     this.gameOver = false;
+                    this.ingame_music.stop();
                 },
                 loop: false
             })
@@ -702,14 +704,14 @@ class Freeplay extends Phaser.Scene {
         }
 
         // if game over then show the game over text
-        if (TutorialManager.tutorialActivated() == false) {
+        if (!TutorialManager.tutorialActivated() && this.gameOver) {
             this.pauseText.setText("Game Over!");
             this.pauseMenu.setVisible(true);
 
             this.pauseButton.setTint(0x7f7f7f);
             this.playButton.setTint(0x7f7f7f);
             this.orbitButton.setTint(0x7f7f7f);
-        } else if (TutorialManager.tutorialActivated() == false) {
+        } else if (!TutorialManager.tutorialActivated() && this.gameSuccess) {
             this.pauseButton.setTint(0x7f7f7f);
             this.playButton.setTint(0x7f7f7f);
             this.orbitButton.setTint(0x7f7f7f);
