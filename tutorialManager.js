@@ -27,20 +27,20 @@ class TutorialManager {
     static end;
 
     static tutorialLog = [
-        "Welcome to the Tutorial!\n",
+        "Welcome to the Tutorial!",
         "Press the shift button to get out of Orbit.",
-        "Now that you know how to fly, find Psyche without crashing.",
-        "You have found Psyche!\n",
+        "Now that you know how to fly, find Psyche     without crashing.",
+        "You have found Psyche!",
         "Press the space key in order to take pictures of Psyche.",
         "Good job! You have finished the tutorial!",
-        "You are orbiting the wrong planet.\n",
-        "You are orbiting Earth again.\n",
+        "You are orbiting the wrong planet.",
+        "You are orbiting Earth again.",
         "Press and hold the up arrow key to go up.",
         "Press and hold the down arrow key to go down.",
         "Press and hold the left arrow key to go left.",
         "Press and hold the right arrow key to go right.",
         "The longer you press and hold on to the arrow keys the faster you fly.",
-        "Follow the orange arrow to find Psyche."
+        "Follow the orange arrow to find Psyche.  When near press shift to enter orbit."
     ]
 
     static activateTutorial(activate){
@@ -126,12 +126,6 @@ class TutorialManager {
                 this.msgNum = 4;
                 this.eraseDialogText();
                     this.typewriteText(this.dialogText,this.tutorialLog[13]);
-                break;
-            // When player take a picture of Psyche.
-            case 5:
-                this.msgNum = 5;
-                this.eraseDialogText();
-                this.typewriteText(this.dialogText,this.tutorialLog[5]);
                 break;
             // When player orbit a different planet. 
             case 6:

@@ -675,11 +675,12 @@ class Freeplay extends Phaser.Scene {
      */
     updatePauseButton() {
         // if paused and not game over then we can show the pause text and allow the pause/play buttons to update
-        if (this.paused && !this.gameOver && !this.gameSuccess && !TutorialManager.tutorialActivated()) {
+        if (this.paused && !this.gameOver && !this.gameSuccess && !TutorialManager.getEndTutorial()) {
             this.pauseText.setVisible(true);
             this.playButton.setVisible(true);
             this.pauseButton.setVisible(false);
             this.pauseMenu.setVisible(true);
+        // Disable pause button if end of tutorial.
          } else if(TutorialManager.getEndTutorial()) {
             this.pauseButton.setVisible(false);
             this.playButton.setVisible(false);
@@ -721,7 +722,7 @@ class Freeplay extends Phaser.Scene {
         }
 
         // if paused or game over then we can show the restart and exit buttons
-        if (!this.restart && (this.paused || this.gameOver || this.gameSuccess)) {
+        if (!this.restart && !TutorialManager.getEndTutorial() && (this.paused || this.gameOver || this.gameSuccess)) {
             this.restartButton.setVisible(true)
             this.exitButton.setVisible(true)
             this.shadow.setVisible(true)
@@ -910,9 +911,6 @@ class Freeplay extends Phaser.Scene {
             .on('pointerdown', () => {
                 this.takingPhoto = !this.takingPhoto;
                 this.quitPhotoPageButton.setVisible(false);
-                if(TutorialManager.tutorialActivated()){
-                    TutorialManager.loadMsg(5);
-                }
             })
             .setVisible(false);
         CameraManager.addUISprite(this.quitPhotoPageButton);
@@ -923,7 +921,7 @@ class Freeplay extends Phaser.Scene {
      */
     photoKeyEvent() {
         // disable spacebar take photo when paused
-        if ((!this.paused) && (!this.gameOver) && (!this.gameSuccess)) {
+        if ((!this.paused) && (!this.gameOver) && (!this.gameSuccess) && (!TutorialManager.getEndTutorial())) {
             this.takingPhoto = !this.takingPhoto;
 
             let viewR = Constants.VIEW_R;
