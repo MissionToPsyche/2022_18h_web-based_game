@@ -16,7 +16,7 @@ class TutorialManager {
         this.dialogShadow = this.scene.add.rectangle(525, 650,550, 125, _color)
         .setAlpha(0.85);
         this.dialogText = this.scene.add.text(300,625, "");
-        this.movmentTutNum = 1;
+        this.movementTutNum = 1;
         this.movementNotDone = true;
         this.msgNum = 0;
         this.key1 = _scene.load.audio('key1', 'assets/sfx/key1.wav');
@@ -56,7 +56,7 @@ class TutorialManager {
         switch(num){
             // When tutorial start.
             case 0:
-                this.typewriteText(this.dialogText,this.tutorialLog[0], 0);
+                this.typewriteText(this.dialogText,this.tutorialLog[0]);
                 this.scene.time.addEvent({
                     delay: 5000,
                     callback: ()=>{
@@ -78,7 +78,7 @@ class TutorialManager {
                 break;
             // When player done with movement tutorial.
             case 2:
-                if(this.movmentTutNum == 4 && this.movementNotDone){
+                if(this.movementTutNum == 4 && this.movementNotDone){
                     this.msgNum = 2;
                     this.dialogText.setVisible(false);
                     this.dialogText = this.scene.add.text(300,625, "");
@@ -166,12 +166,12 @@ class TutorialManager {
     }
 
     static movementTutor(phase){
-        if(this.movmentTutNum == phase){
-            this.movmentTutNum = this.movmentTutNum + 1;
-            this.msgNum = this.movmentTutNum + 7;
+        if(this.movementTutNum == phase){
+            this.movementTutNum = this.movementTutNum + 1;
+            this.msgNum = this.movementTutNum + 7;
             this.dialogText.setVisible(false);
             this.dialogText = this.scene.add.text(300,625, "");
-            this.typewriteText(this.dialogText,this.tutorialLog[this.movmentTutNum + 7]);
+            this.typewriteTextMovement(this.dialogText,this.tutorialLog[this.movementTutNum + 7], this.movementTutNum + 7);
         }
     }
 
@@ -185,6 +185,31 @@ class TutorialManager {
         }
     }
 
+    // This is affect for text that may overlapp one another due to movement controls.
+    static typewriteTextMovement(label,text, num){
+	    const length = text.length
+	    let i = 0
+	    this.scene.time.addEvent({
+		    callback: () => {
+                if(this.msgNum == num){
+                    label.text += text[i];
+                    ++i;
+                    if((text[i] != "\n" || text[i] != " ")){
+                        this.playTypefx();
+                    }
+                    // Skip to new line if there are 46 characters.
+                    if((i % 46) === 0){
+                        label.text += "\n";
+                        length + 1;
+                    }
+                }
+                
+		    },
+		    repeat: length - 1,
+		    delay: 100
+	    })
+    }
+
     static typewriteText(label,text){
 	    const length = text.length
 	    let i = 0
@@ -192,10 +217,10 @@ class TutorialManager {
 		    callback: () => {
                     label.text += text[i];
                     ++i;
-                    // Skip to new line if there are 46 characters.
-                    if(text[i] != "\n" || text[i] != " "){
+                    if((text[i] != "\n" || text[i] != " ")){
                         this.playTypefx();
                     }
+                    // Skip to new line if there are 46 characters.
                     if((i % 46) === 0){
                         label.text += "\n";
                         length + 1;
@@ -211,7 +236,10 @@ class TutorialManager {
         // Storage for sound keys. 
         const soundKeys = ['key1', 'key2', 'key3', 'key4', 'key5'];
         var rand = this.getRandomInt(5)
-        this.scene.sound.add(soundKeys[rand]).play();
+        // When game state is paused ,the sound will also stop.
+        if(this.dialogText.visible == true){
+            this.scene.sound.add(soundKeys[rand]).play();
+        }
     }
 
     static getRandomInt(max) {

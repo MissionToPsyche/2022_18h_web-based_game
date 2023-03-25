@@ -907,9 +907,6 @@ class Freeplay extends Phaser.Scene {
             .on('pointerdown', () => {
                 this.takingPhoto = !this.takingPhoto;
                 this.quitPhotoPageButton.setVisible(false);
-                if(TutorialManager.tutorialActivated()){
-                    TutorialManager.loadMsg(5);
-                }
             })
             .setVisible(false);
         CameraManager.addUISprite(this.quitPhotoPageButton);
