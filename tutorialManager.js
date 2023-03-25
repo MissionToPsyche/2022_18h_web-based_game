@@ -19,14 +19,12 @@ class TutorialManager {
         this.movmentTutNum = 1;
         this.movementNotDone = true;
         this.msgNum = 0;
-        this.key1 = _scene.load.audio('key1', 'assets/sfx/key1.wav');
-        this.key2 = _scene.load.audio('key2', 'assets/sfx/key2.wav');
-        this.key3 = _scene.load.audio('key3', 'assets/sfx/key3.wav');
-        this.key4 = _scene.load.audio('key4', 'assets/sfx/key4.wav');
-        this.key5 = _scene.load.audio('key5', 'assets/sfx/key5.wav');
+        this.createEndMenu();
+        this.end = false;
     }
 
     static mode;
+    static end;
 
     static tutorialLog = [
         "Welcome to the Tutorial!\n",
@@ -45,11 +43,19 @@ class TutorialManager {
         "Follow the orange arrow to find Psyche."
     ]
 
-    static activateTutorial(){
-        this.mode = true;
+    static activateTutorial(activate){
+        this.mode = activate;
     }
     static tutorialActivated(){
         return this.mode;
+    }
+
+    static setEndTutorial(){
+        this.end = true;
+    }
+
+    static getEndTutorial(){
+        return this.end;
     }
 
     static loadMsg(num){
@@ -193,9 +199,6 @@ class TutorialManager {
                     label.text += text[i];
                     ++i;
                     // Skip to new line if there are 46 characters.
-                    if(text[i] != "\n" || text[i] != " "){
-                        this.playTypefx();
-                    }
                     if((i % 46) === 0){
                         label.text += "\n";
                         length + 1;
@@ -207,15 +210,29 @@ class TutorialManager {
 	    })
     }
 
-    static playTypefx(){
-        // Storage for sound keys. 
-        const soundKeys = ['key1', 'key2', 'key3', 'key4', 'key5'];
-        var rand = this.getRandomInt(5)
-        this.scene.sound.add(soundKeys[rand]).play();
-    }
+    static createEndMenu(){
+        this.endMenu = new Menu(this.scene);
 
-    static getRandomInt(max) {
-        return Math.floor(Math.random() * max);
+        this.endText = this.scene.add.text(525, 300, 'Tutorial Completed').setOrigin(0.5).setFontSize(80);
+        this.endText.depth = 100;
+
+        this.startButtonPosition = new Phaser.Geom.Point(520, 408);
+        this.startButton = new Button(this.scene, this.startButtonPosition, 'button', 'Start Mission');
+        //create events for the start mission button
+        MenuManager.restartButtonListener(this.scene, this.startButton);
+
+        this.exitButtonPosition = new Phaser.Geom.Point(520, 508);
+        this.exitButton = new Button(this.scene, this.exitButtonPosition, 'button', 'Exit');
+        MenuManager.exitButtonListener(this.scene, this.exitButton);
+
+        // To darken screen
+        const color1 = new Phaser.Display.Color(0, 0, 0);
+        this.shadow = this.scene.add.rectangle(0, 0,2048, 2048, color1.color).setAlpha(0.5);
+
+        this.endMenu.addElement(this.endText);
+        this.endMenu.addButton(this.startButton.getElements());
+        this.endMenu.addButton(this.exitButton.getElements());
+        this.endMenu.addElement(this.shadow);
     }
 
     

@@ -253,7 +253,7 @@ class Freeplay extends Phaser.Scene {
         this.updateTakePhoto();
 
         // don't update bodies if paused, game over, or is taking photo
-        if (this.paused || this.gameOver || this.gameSuccess || this.takingPhoto) {
+        if (this.paused || this.gameOver || this.gameSuccess || this.takingPhoto || TutorialManager.getEndTutorial()) {
             for (const body in this.bodies) {
                 this.bodies[body].stop()
             }
@@ -675,11 +675,14 @@ class Freeplay extends Phaser.Scene {
      */
     updatePauseButton() {
         // if paused and not game over then we can show the pause text and allow the pause/play buttons to update
-        if (this.paused && !this.gameOver && !this.gameSuccess) {
-            this.pauseText.setVisible(true)
-            this.playButton.setVisible(true)
+        if (this.paused && !this.gameOver && !this.gameSuccess && !TutorialManager.tutorialActivated()) {
+            this.pauseText.setVisible(true);
+            this.playButton.setVisible(true);
             this.pauseButton.setVisible(false);
             this.pauseMenu.setVisible(true);
+         } else if(TutorialManager.getEndTutorial()) {
+            this.pauseButton.setVisible(false);
+            this.playButton.setVisible(false);
         } else {
             this.pauseButton.setVisible(true);
             this.playButton.setVisible(false);
@@ -986,6 +989,13 @@ class Freeplay extends Phaser.Scene {
                     this.gameSuccess = true;
                     this.foundPsycheText.setText("Good job! You successfully\ncovered all Psyche sides!");
                     this.quitPhotoPageButton.setVisible(false);
+                } else if(TutorialManager.tutorialActivated()){
+                    // Once the player take one picture of Psyche, show the ending of tutorial.
+                    TutorialManager.setEndTutorial();
+                    TutorialManager.activateTutorial(false);
+                    TutorialManager.msgVisibility(false);
+                    TutorialManager.endMenu.setVisible(true);
+                    this.takingPhoto = !this.takingPhoto;
                 }
                         
             } else if(!TutorialManager.tutorialActivated()){
