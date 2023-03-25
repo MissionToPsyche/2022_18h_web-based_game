@@ -19,6 +19,11 @@ class TutorialManager {
         this.movmentTutNum = 1;
         this.movementNotDone = true;
         this.msgNum = 0;
+        this.key1 = _scene.load.audio('key1', 'assets/sfx/key1.wav');
+        this.key2 = _scene.load.audio('key2', 'assets/sfx/key2.wav');
+        this.key3 = _scene.load.audio('key3', 'assets/sfx/key3.wav');
+        this.key4 = _scene.load.audio('key4', 'assets/sfx/key4.wav');
+        this.key5 = _scene.load.audio('key5', 'assets/sfx/key5.wav');
     }
 
     static mode;
@@ -188,6 +193,9 @@ class TutorialManager {
                     label.text += text[i];
                     ++i;
                     // Skip to new line if there are 46 characters.
+                    if(text[i] != "\n" || text[i] != " "){
+                        this.playTypefx();
+                    }
                     if((i % 46) === 0){
                         label.text += "\n";
                         length + 1;
@@ -197,6 +205,17 @@ class TutorialManager {
 		    repeat: length - 1,
 		    delay: 100
 	    })
+    }
+
+    static playTypefx(){
+        // Storage for sound keys. 
+        const soundKeys = ['key1', 'key2', 'key3', 'key4', 'key5'];
+        var rand = this.getRandomInt(5)
+        this.scene.sound.add(soundKeys[rand]).play();
+    }
+
+    static getRandomInt(max) {
+        return Math.floor(Math.random() * max);
     }
 
     
