@@ -14,6 +14,8 @@ class CameraManager {
     //class properties
     static cameraHeight = 20480;
     static cameraWidth = 20480;
+    static sceneHeight = 768;
+    static sceneWidth = 1024;
     static mainZoom = 3; //main camera's zoom level
     static followSprite; //sprite main camera follows
     static mainCamera; //main game camera, containing most of the game's visuals
@@ -84,7 +86,7 @@ class CameraManager {
      */
     static setCameraZoom(zoom) {
         this.mainZoom = zoom;
-        this.mainCamera.zoomTo(zoom);
+        this.mainCamera.zoomTo(zoom, 2000, 'Linear', true);
     }
 
     /**
@@ -97,14 +99,14 @@ class CameraManager {
         //need to find what the fraction of the zoom
         //is based on the camera's viewport size
         var zoom = this.mainCamera.height / size;
-        this.mainCamera.zoomTo(zoom);
+        this.mainCamera.zoomTo(zoom, 2000, 'Quad.easeIn', true);
     }
 
     /**
      * returns the main camera to it's set zoom value.
      */
     static returnToSetZoom() {
-        this.mainCamera.zoomTo(this.mainZoom);
+        this.mainCamera.zoomTo(this.mainZoom, 2000, 'Quad.easeOut', true);
     }
 
     /**
@@ -148,6 +150,10 @@ class CameraManager {
      */
     static getCameraCenter() {
         return new Phaser.Geom.Point(this.mainCameraTarget.x, this.mainCameraTarget.y);
+    }
+
+    static getViewCenter() {
+        return new Phaser.Geom.Point(this.sceneWidth/2, this.sceneHeight/2);
     }
 
     /**
