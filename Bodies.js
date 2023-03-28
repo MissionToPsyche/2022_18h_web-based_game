@@ -18,7 +18,7 @@ class Body extends Phaser.GameObjects.Sprite {
 	 * @param {Phaser.Textures.Frame} _frame - The frame this Body will be added to
 	 * @param {string} _icon - the name of this body's minimap Icon
 	 */
-	constructor (_scene, _pos, _id, _mass, _diameter, _frame, _icon) {
+	constructor(_scene, _pos, _id, _mass, _diameter, _frame, _icon) {
 		super(_scene, _pos.x, _pos.y, _id, _frame);
 		if (_icon != null) {
 			this.minimap_icon = new Phaser.GameObjects.Sprite(_scene, _pos.x, _pos.y, _icon, _frame);
@@ -38,7 +38,7 @@ class Body extends Phaser.GameObjects.Sprite {
 		this.collided = false;
 
 		this.setDisplaySize(this.r * 2, this.r * 2)
-			.setSize(this.r * 2, this.r *2);
+			.setSize(this.r * 2, this.r * 2);
 		this.minimap_icon.setDisplaySize(md, md)
 			.setSize(md, md);
 
@@ -107,7 +107,7 @@ class Body extends Phaser.GameObjects.Sprite {
 			//also check if it's not within the planet so the probe isn't flung out of existance.
 			if (r <= this.listenRadius && r > this.r) {
 				//create vector f in direction of the listening body
-                const f = new Phaser.Math.Vector2(this.x - listener.x, this.y - listener.y);
+				const f = new Phaser.Math.Vector2(this.x - listener.x, this.y - listener.y);
 				//set direction vector to the length of the force applied by gravity between
 				//the two bodies, resulting in the force vector between the two bodies
 				f.setLength(calcGravity(listener.mass, this.mass, r));
@@ -174,7 +174,7 @@ class Satellite extends Body {
 			this.parent = _parent;
 		}
 
-		if (typeof(this.parent) != "undefined" && this.parent.x != 0) {
+		if (typeof (this.parent) != "undefined" && this.parent.x != 0) {
 			this.x = this.parent.x + this.distance * Math.cos(this.theta);
 			this.y = this.parent.y + this.distance * Math.sin(this.theta);
 			this.vel = orbitVelocity(this, this.parent, this.theta); //set initial orbit velocity.
@@ -187,7 +187,7 @@ class Satellite extends Body {
 	 * Return points on path as a curve
 	 * @return {Phaser.Curves.Spline} Points on the path of this satellite
 	 */
-	getPathCurve () {
+	getPathCurve() {
 		return new Phaser.Curves.Spline(this.path);
 	}
 
@@ -204,7 +204,7 @@ class Satellite extends Body {
 		}
 
 		this.path.push(new Phaser.Math.Vector2(this.x, this.y));
-		if (this.path.length > Math.min(Math.pow(this.mass, 1/4) * 600, (this.distance * Phaser.Math.PI2)/2)) {
+		if (this.path.length > Math.min(Math.pow(this.mass, 1 / 4) * 600, (this.distance * Phaser.Math.PI2) / 2)) {
 			this.path.splice(0, 1)
 		}
 	}
@@ -245,7 +245,7 @@ class Probe extends Body {
 	 * @param {number} _diameter - The diameter of this probe
 	 * @param {Phaser.Textures.Frame} - The Frame this probe will be added to
 	 */
-	constructor (_scene, _id, _mass, _diameter, _frame) {
+	constructor(_scene, _id, _mass, _diameter, _frame) {
 		super(_scene, CameraManager.getCenter(), _id, _mass, _diameter, _frame, _id + "_icon");
 		// the initial state of gravity system
 		// if the gravify is on at the beginning of the game, the Probe will have a 
@@ -262,7 +262,7 @@ class Probe extends Body {
 		this.minOrbit = 40;
 		this.currentOrbit = 40;
 		this.newOrbit = 40;
-		
+
 		this.orbitTarget = this.scene.bodies["earth"]; //the target of the probe's orbit.
 		this.findingTarget = false;
 		this.newTarget = this.scene.bodies["earth"];
@@ -274,14 +274,14 @@ class Probe extends Body {
 			.setSize(this.r * 200, this.r * 200);
 
 		//set camera zoom for initial state
-		var totalSize = (this.currentOrbit * 2 + this.r * 2 ) * 1.1;
+		var totalSize = (this.currentOrbit * 2 + this.r * 2) * 1.1;
 		CameraManager.zoomToSize(totalSize);
 
 		//deploy the probe near earth so that it doesn't immediately collide
 		this.x = this.scene.bodies["earth"].x - 35;
 		this.y = this.scene.bodies["earth"].y;
 
-		this.rotation = Math.atan2(this.y - this.orbitTarget.y, this.x - this.orbitTarget.x) - Math.PI/4; //initial rotation faces orbited planet
+		this.rotation = Math.atan2(this.y - this.orbitTarget.y, this.x - this.orbitTarget.x) - Math.PI / 4; //initial rotation faces orbited planet
 		this.minimap_icon.rotation = this.rotation;
 
 		this.controller;
@@ -399,8 +399,8 @@ class Probe extends Body {
 			this.newTarget = this.getClosestBody(this.scene);
 		}
 
-        super.update(f);
-    }
+		super.update(f);
+	}
 
 	/**
 	 * Starts the process of the probe locking onto a given body.
@@ -488,7 +488,7 @@ class Probe extends Body {
 			this.inOrbit = true;
 			this.currentOrbit = this.orbitTarget.r + r;
 			CameraManager.changeCamTarget(this.orbitTarget);
-			this.setOrbitRadius (this.orbitTarget.r);
+			this.setOrbitRadius(this.orbitTarget.r);
 			console.log("Maintaining Lock success!");
 			return;
 		} else if (!scene.cameras.main.worldView.contains(this.orbitTarget.x, this.orbitTarget.y)) {
@@ -499,7 +499,7 @@ class Probe extends Body {
 
 		this.orbitCounter--;
 
-		return 1 - this.orbitCounter/OCR;
+		return 1 - this.orbitCounter / OCR;
 	}
 
 	/**
@@ -519,7 +519,7 @@ class Probe extends Body {
 		}
 		this.orbitChangeCounter = duration;
 		//change zoom level so that planet and probe are visable
-		var totalSize = (this.newOrbit * 2 + this.r * 2 ) * 1.1;
+		var totalSize = (this.newOrbit * 2 + this.r * 2) * 1.1;
 		CameraManager.zoomToSize(totalSize);
 	}
 
@@ -547,7 +547,7 @@ class Probe extends Body {
 	 */
 	getOrbitPath(newOrCur) {
 		var radius = 0;
-		if (newOrCur == 'new'){
+		if (newOrCur == 'new') {
 			radius = this.newOrbit;
 		} else if (newOrCur == 'cur') {
 			radius = this.currentOrbit;
@@ -556,74 +556,74 @@ class Probe extends Body {
 		return new Phaser.Curves.Spline(orbitPath);
 	}
 
-    /**
-     * Get the distance from the probe to a body
-     * @param {string} the id of the body
-     * @return {number} the distance between the probe and a body
-     */
-    getDistance(bodyId) {
-    	if (typeof(this.scene.bodies[bodyId].x) == undefined) {
-    		return -1;
-    	} else {
-    		let bodyX = this.scene.bodies[bodyId].x;
-    		let bodyY = this.scene.bodies[bodyId].y;
-    		return Math.sqrt((this.x - bodyX) * (this.x - bodyX) + (this.y - bodyY) * (this.y - bodyY));
-    	}
+	/**
+	 * Get the distance from the probe to a body
+	 * @param {string} the id of the body
+	 * @return {number} the distance between the probe and a body
+	 */
+	getDistance(bodyId) {
+		if (typeof (this.scene.bodies[bodyId].x) == undefined) {
+			return -1;
+		} else {
+			let bodyX = this.scene.bodies[bodyId].x;
+			let bodyY = this.scene.bodies[bodyId].y;
+			return Math.sqrt((this.x - bodyX) * (this.x - bodyX) + (this.y - bodyY) * (this.y - bodyY));
+		}
 
-    }
+	}
 
-    /**
-     * Get the horizontal distance between the probe and psyche
-     * @return {number} the horizontal distancee between the probe and psyche
-     */
-    getPsycheDirectionX() {
-    	let psycheX = this.scene.bodies["psyche"].x;
-    	return (psycheX - this.x) / this.getDistance("psyche");
-    }
+	/**
+	 * Get the horizontal distance between the probe and psyche
+	 * @return {number} the horizontal distancee between the probe and psyche
+	 */
+	getPsycheDirectionX() {
+		let psycheX = this.scene.bodies["psyche"].x;
+		return (psycheX - this.x) / this.getDistance("psyche");
+	}
 
-    /**
-     * Get the vertical distance between the probe and psyche
-     * @return {number} The vertical distance between the probe and psyche
-     */
-    getPsycheDirectionY() {
-    	let psycheY = this.scene.bodies["psyche"].y;
-    	return (psycheY - this.y) / this.getDistance("psyche");
-    }
+	/**
+	 * Get the vertical distance between the probe and psyche
+	 * @return {number} The vertical distance between the probe and psyche
+	 */
+	getPsycheDirectionY() {
+		let psycheY = this.scene.bodies["psyche"].y;
+		return (psycheY - this.y) / this.getDistance("psyche");
+	}
 
-    /**
-     * Check if a body is in the view of the probe.
-     * @param {string} the index of the body
-     * @param {number} radius of the view
-     * @param {number} start rotation of the view in radius
-     * @param {number} end rotation of the view in radius
-     * @return {boolean}
-     */
-    isInView(idx, r, startRotation, endRotation) {
-    	let targetX = this.scene.bodies[idx].x;
-    	let targetY = this.scene.bodies[idx].y;
-    	let distance = Math.sqrt((this.x - targetX) * (this.x - targetX) + (this.y - targetY) * (this.y - targetY));
-    	
-    	// check if target body is too far
-    	if (distance > r) {
-    		return false;
-    	}
+	/**
+	 * Check if a body is in the view of the probe.
+	 * @param {string} the index of the body
+	 * @param {number} radius of the view
+	 * @param {number} start rotation of the view in radius
+	 * @param {number} end rotation of the view in radius
+	 * @return {boolean}
+	 */
+	isInView(idx, r, startRotation, endRotation) {
+		let targetX = this.scene.bodies[idx].x;
+		let targetY = this.scene.bodies[idx].y;
+		let distance = Math.sqrt((this.x - targetX) * (this.x - targetX) + (this.y - targetY) * (this.y - targetY));
 
-    	// get the angle of the target body
-    	let targetCos = (targetX - this.x) / distance;
-    	let targetSin = (targetY - this.y) / distance;
-    	let angle = Math.acos(targetCos);
-    	if (targetSin < 0) {
-    		angle = Math.PI * 2 - angle;
-    	}
+		// check if target body is too far
+		if (distance > r) {
+			return false;
+		}
 
-    	// check if angle is in the startRotation end Rotation range
-    	if (endRotation < (Math.PI * 3 / 2)) {
-    		// startRotation endRotation range is [endRotation, startRotation]
-    		return (angle >= endRotation) && (angle <= startRotation);
-    	} else {
-    		// range is [endRotation, 2pi] union [0, startRotation]
-    		return (angle >= endRotation) || (angle <= startRotation);
-    	}
+		// get the angle of the target body
+		let targetCos = (targetX - this.x) / distance;
+		let targetSin = (targetY - this.y) / distance;
+		let angle = Math.acos(targetCos);
+		if (targetSin < 0) {
+			angle = Math.PI * 2 - angle;
+		}
+
+		// check if angle is in the startRotation end Rotation range
+		if (endRotation < (Math.PI * 3 / 2)) {
+			// startRotation endRotation range is [endRotation, startRotation]
+			return (angle >= endRotation) && (angle <= startRotation);
+		} else {
+			// range is [endRotation, 2pi] union [0, startRotation]
+			return (angle >= endRotation) || (angle <= startRotation);
+		}
 	}
 
 	/**
