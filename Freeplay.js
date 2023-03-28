@@ -4,10 +4,9 @@
  */
 class Freeplay extends Simulation {
     constructor() {
-        super("Freeplay", ["mercury", "venus", "earth", "mars", "jupiter", "saturn", "uranus", "neptune", "pluto", "psyche"]);
+        super("Freeplay", ["psyche"]);
 
         this.pauseText;
-        this.direction;
         this.foundPsycheText;
         this.quitPhotoPageButton;
         this.psychePhotos;
@@ -287,10 +286,8 @@ class Freeplay extends Simulation {
     toggleOrbit() {
         if (!this.player.orbitToggle) {
             this.bodies["psyche_probe"].startOrbitLock(this.player.newTarget);
-            this.bodies["psyche_probe"].orbitToggle = true;
         } else {
             this.bodies["psyche_probe"].stopOrbitLock();
-            this.bodies["psyche_probe"].orbitToggle = false;
         }
     }
 
@@ -356,7 +353,7 @@ class Freeplay extends Simulation {
 
             let viewR = Constants.VIEW_R;
 
-            // check if pyche is in the view
+            // check if psyche is in the view
             let viewAngle = this.bodies["psyche_probe"].viewAngle("psyche", viewR)
             if (viewAngle != -1) {
                 this.foundPsycheText.setVisible(true);

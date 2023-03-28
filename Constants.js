@@ -16,6 +16,7 @@ const Constants = {
     VIEW_R: 100, // radius of probe's view
 
     MAX_PSYCHE_PHOTO_NUM: 4, // max number of psyche to show
+    BODY_FRAMES: 10,
 
     // position and scale of psyche photo
     PSYCHE_PHOTO_X: 500,
