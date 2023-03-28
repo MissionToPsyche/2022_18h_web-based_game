@@ -62,6 +62,12 @@ class Simulation extends Phaser.Scene {
         this.load.audio('positive', 'assets/sfx/positive.wav');
 
         this.load.audio('ingame_music', 'assets/music/02_Ingame.mp3');
+
+        for (let i = 0; i < Constants.MAX_PSYCHE_PHOTO_NUM; i++) {
+            let imageName = "psychePhoto" + i;
+            let filePath = "img/photos/images/psyche_e_0" + (i + 1) + ".png";
+            this.load.image(imageName, filePath);
+        }
     }
 
     create() {

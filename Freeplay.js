@@ -18,18 +18,6 @@ class Freeplay extends Simulation {
         this.coverFlags; // array of flags that the player already took photo
     }
 
-    preload() {
-        super.preload()
-
-        // load the photo of psyche
-        this.load.image('psychePhoto1', "img/photos/psyche1.png");
-        for (let i = 0; i < Constants.MAX_PSYCHE_PHOTO_NUM; i++) {
-            let imageName = "psychePhoto" + i;
-            let filePath = "img/photos/images/psyche_e_0" + (i + 1) + ".png";
-            this.load.image(imageName, filePath);
-        }
-    }
-
     /**
      * Assembles the game within the scene
      * - Using information from data/bodies.json, Generate all bodies and add them to the scene
