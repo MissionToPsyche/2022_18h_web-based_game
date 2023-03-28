@@ -127,7 +127,7 @@ class Freeplay extends Phaser.Scene {
                     let angle = body['angle'];
                     let day_length = body['day_length']['value'];
 
-                    this.bodies[id] = new Satellite(this, id, mass, diameter, parent, angle, orbit_distance, day_length);
+                    this.bodies[id] = new Satellite(this, id, id, mass, diameter, parent, angle, orbit_distance, day_length);
 
                     for (const dir of this.dirs) {
                         const offset = 16 * this.dirs.indexOf(dir)
@@ -153,9 +153,55 @@ class Freeplay extends Phaser.Scene {
 
                     this.bodies[id].play(id + "-f");
                 } else {
-                    this.bodies[id] = new Probe(this, id, mass, diameter);
+                    this.bodies[id] = new Probe(this, id, id, mass, diameter);
                 }
             }
+        }
+
+        //now to create the asteroid field
+        const astNum = 100;
+        for(var i = 0; i < astNum; i++){
+            let id = "asteroid" + i;
+            let img_id = "asteroid";
+            let mass = (Math.random() * 15);
+            let diameter = (Math.random() * (40 - 10)) + 10;
+            let orbit_distance = Math.floor(Math.random() * (3000 - 2500)) + 2500;
+            
+
+            let collisionGroup1 = this.matter.world.nextGroup(true);
+            let collisionGroup2 = this.matter.world.nextGroup();
+
+            let parent = this.bodies["sun"];
+            let angle = (Math.random() * (Math.PI * 2));
+            let day_length = (Math.random() * 10 + 1);
+
+            this.bodies[id] = new Satellite(this, id, img_id, mass, diameter, parent, angle, orbit_distance, day_length);
+            console.log(this.bodies[id].id);
+            console.log(orbit_distance);
+
+            for (const dir of this.dirs) {
+                const offset = 16 * this.dirs.indexOf(dir)
+                this.anims.create({
+                    key: img_id + "-" + dir,
+                    frames: this.anims.generateFrameNumbers(img_id, {
+                        frames: [offset + 0,
+                        offset + 1,
+                        offset + 2,
+                        offset + 3,
+                        offset + 4,
+                        offset + 5,
+                        offset + 6,
+                        offset + 7,
+                        offset + 8,
+                        offset + 9]
+                    }),
+                    frameRate: 12,
+                    repeat: -1
+                });
+            }
+            this.bodies[id].play(img_id + "-f");
+
+            console.log(this.bodies[id].x + ", " + this.bodies[id].y);
         }
 
         CameraManager.addGameSprite(this.graphics);
@@ -387,7 +433,7 @@ class Freeplay extends Phaser.Scene {
                     sunAngle -= 360;
                 }
 
-                console.log(body + ": " + sunAngle)
+                //console.log(body + ": " + sunAngle)
                 if (body == "mars") {
                     var p = "poo";
                 }
@@ -395,11 +441,11 @@ class Freeplay extends Phaser.Scene {
                     const angle = this.shade_angles[idx]
                     if (angle[0] < sunAngle && sunAngle <= angle[1]) {
                         this.bodies[body].play(this.bodies[body].id + "-" + this.dirs[idx], true);
-                        console.log(this.bodies[body].id + "-" + this.dirs[idx])
+                        //console.log(this.bodies[body].id + "-" + this.dirs[idx])
                         break;
                     } else if (angle[0] > angle[1] && (angle[0] < sunAngle || sunAngle <= angle[1])) {
                         this.bodies[body].play(this.bodies[body].id + "-" + this.dirs[idx], true);
-                        console.log(this.bodies[body].id + "-" + this.dirs[idx])
+                        //console.log(this.bodies[body].id + "-" + this.dirs[idx])
                         break;
                     }
                 }

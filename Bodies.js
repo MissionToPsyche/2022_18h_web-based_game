@@ -11,19 +11,21 @@ class Body extends Phaser.GameObjects.Sprite {
 	 * @param {Phaser.Scene} _scene - The Scene this Body will be added to
 	 * @param {Phaser.Geom.Point} _pos - The starting position of this body
 	 * @param {string} _id - The id of this Body
+	 * @param {string} _img_id - the id of the image or spritesheet for this entity
 	 * @param {number} _mass - The mass of this Body
 	 * @param {number} _diameter - The diameter of this Body
 	 * @param {Phaser.Textures.Frame} _frame - The frame this Body will be added to
 	 * @param {string} _icon - the name of this body's minimap Icon
 	 */
-	constructor (_scene, _pos, _id, _mass, _diameter, _frame, _icon) {
-		super(_scene, _pos.x, _pos.y, _id, _frame);
+	constructor (_scene, _pos, _id, _img_id, _mass, _diameter, _frame, _icon) {
+		super(_scene, _pos.x, _pos.y, _img_id, _frame);
 		if (_icon != null) {
 			this.minimap_icon = new Phaser.GameObjects.Sprite(_scene, _pos.x, _pos.y, _icon, _frame);
 		} else {
 			this.minimap_icon = new Phaser.GameObjects.Sprite(_scene, _pos.x, _pos.y, _id, _frame);
 		}
-		this.id = _id
+		this.name = _id
+		this.id = _img_id
 		this.mass = _mass
 		this.vel = new Phaser.Math.Vector2(0, 0)
 		this.r = _diameter / 2
@@ -38,6 +40,8 @@ class Body extends Phaser.GameObjects.Sprite {
 			.setSize(this.r * 2, this.r *2);
 		this.minimap_icon.setDisplaySize(md, md)
 			.setSize(md, md);
+		this.minimap_icon.x = this.x;
+		this.minimap_icon.y = this.y;
 
 		//add the body and the minimap sprite to the scene:
 		_scene.add.existing(this);
@@ -150,6 +154,7 @@ class Satellite extends Body {
 	 * @constructor
 	 * @param {Phaser.Scene} _scene - The Scene this Satellite will be added to
 	 * @param {string} _id - The id of this Satellite
+	 * @param {string} _img_id - the id of the image or spritesheet for this entity
 	 * @param {number} _mass - The mass of this Satellite
 	 * @param {number} _diameter - The diameter of this Satellite
 	 * @param {Body} _parent - The parent Body for this Satellite
@@ -157,8 +162,8 @@ class Satellite extends Body {
 	 * @param {number} _distance - The distance between the Satellite and its parent Body
 	 * @param {Phaser.Textures.Frame} - The Frame this Satellite will be added to
 	 */
-	constructor(_scene, _id, _mass, _diameter, _parent, _angle, _distance, _day_length, _frame) {
-		super(_scene, CameraManager.getCenter(), _id, _mass, _diameter, _frame);
+	constructor(_scene, _id, _img_id, _mass, _diameter, _parent, _angle, _distance, _day_length, _frame) {
+		super(_scene, CameraManager.getCenter(), _id, _img_id, _mass, _diameter, _frame);
 		this.scene = _scene;
 		this.distance = _distance;
 		this.path = [];
@@ -242,8 +247,8 @@ class Probe extends Body {
 	 * @param {number} _diameter - The diameter of this probe
 	 * @param {Phaser.Textures.Frame} - The Frame this probe will be added to
 	 */
-	constructor (_scene, _id, _mass, _diameter, _frame) {
-		super(_scene, CameraManager.getCenter(), _id, _mass, _diameter, _frame, _id + "_icon");
+	constructor (_scene, _id, img_id, _mass, _diameter, _frame) {
+		super(_scene, CameraManager.getCenter(), _id, img_id, _mass, _diameter, _frame, _id + "_icon");
 		// the initial state of gravity system
 		// if the gravify is on at the beginning of the game, the Probe will have a 
 		// initial velocity when starting from the earth

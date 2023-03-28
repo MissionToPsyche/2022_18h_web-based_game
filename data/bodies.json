@@ -178,7 +178,7 @@
                 "magnitude": 1
             },
             "orbit_distance": {
-                "value": 2800,
+                "value": 3800,
                 "unit": "px",
                 "magnitude": 1
             }
@@ -204,7 +204,7 @@
                 "magnitude": 1
             },
             "orbit_distance": {
-                "value": 3800,
+                "value": 4800,
                 "unit": "px",
                 "magnitude": 1
             }
@@ -230,7 +230,7 @@
                 "magnitude": 1
             },
             "orbit_distance": {
-                "value": 4800,
+                "value": 5800,
                 "unit": "px",
                 "magnitude": 1
             }
@@ -256,7 +256,7 @@
                 "magnitude": 1
             },
             "orbit_distance": {
-                "value": 4400,
+                "value": 5400,
                 "unit": "px",
                 "magnitude": 1
             }
@@ -282,7 +282,7 @@
                 "magnitude": 1
             },
             "orbit_distance": {
-                "value": 5200,
+                "value": 6200,
                 "unit": "px",
                 "magnitude": 1
             }
@@ -309,32 +309,6 @@
             },
             "orbit_distance": {
                 "value": 2320,
-                "unit": "px",
-                "magnitude": 1
-            }
-        },
-        {
-            "id": "asteroid",
-            "name": "asteroid",
-            "orbits": "sun",
-            "angle": 3.0,
-            "day_length": {
-                "value": 3.195,
-                "unit": "hr",
-                "magnitude": 1
-            },
-            "mass": {
-                "value": 6,
-                "unit": "px",
-                "magnitude": 1
-            },
-            "diameter": {
-                "value": 30,
-                "unit": "px",
-                "magnitude": 1
-            },
-            "orbit_distance": {
-                "value": 2200,
                 "unit": "px",
                 "magnitude": 1
             }
