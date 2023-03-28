@@ -6,13 +6,8 @@ class Freeplay extends Simulation {
     constructor() {
         super("Freeplay");
 
-        this.paused = false;
-        this.direction;
-        this.gameOver = false;
-        this.gameSuccess = false;
         this.pauseText;
-
-        this.takingPhoto = false;
+        this.direction;
         this.foundPsycheText;
         this.quitPhotoPageButton;
         this.psychePhotos;
@@ -59,35 +54,12 @@ class Freeplay extends Simulation {
      * - Enforces the pause feature, only allowing bodies to move if the game is not paused
      */
     update() {
-        this.updatePauseButton();
-        this.updateTakePhoto();
-
-        // don't update bodies if paused, game over, or is taking photo
-        if (this.paused || this.gameOver || this.gameSuccess || this.takingPhoto) {
-            for (const body in this.bodies) {
-                this.bodies[body].stop()
-            }
-
+        if (!super.update()) {
+            // this means the game is either paused or over
             return
         }
 
-        // check to see if the probe collided with anything
-        // if there was a collision then trigger the failure state and stop the simulation
-        if (this.bodies["psyche_probe"].collided && !this.gameOver) {
-            this.gameOver = true;
-            var fail_audio = this.sound.add('negative');
-            fail_audio.play();
-        }
-
-        this.graphics.clear(); //clear previous itteration's graphics
-        this.minigraphics.clear();
-
-        //if the camera is changing it's follow target,
-        //slowly move to the position of target before targeting it
-        //to prevent sudded camera jerks.
-        if (CameraManager.isCamChanging()) {
-            CameraManager.checkDoneChanging();
-        }
+        
 
         //for probe's gravity lock functionality:
         if (this.player.findingTarget) {

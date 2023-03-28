@@ -9,7 +9,16 @@ class Simulation extends Phaser.Scene {
         this.player = null;
         this.controller = null;
 
+        this.paused = false;
+        this.gameOver = false;
+        this.gameSuccess = false;
+        this.takingPhoto = false;
+
         this.psyche_probe_fx = null;
+    }
+
+    active() {
+        return !(this.paused || this.gameOver || this.gameSuccess || this.takingPhoto);
     }
 
     /** Loads all necessary assets for the scene before the simulation runs */
@@ -58,6 +67,37 @@ class Simulation extends Phaser.Scene {
         this.initializeMusic();
         this.initializeBodies();
         this.initializeProbe();
+    }
+
+    update() {
+        this.updatePauseButton();
+        this.updateTakePhoto();
+
+        // stop the body animations and movement if game is over or paused
+        if (!this.active()) {
+            for (const body in this.bodies) {
+                this.bodies[body].stop()
+            }
+        } else {
+            // fail if collided
+            if (this.bodies["psyche_probe"].collided && !this.gameOver) {
+                this.gameOver = true;
+                var fail_audio = this.sound.add('negative');
+                fail_audio.play();
+            }
+
+            // clear previous iteration's graphics
+            this.graphics.clear();
+            this.minigraphics.clear();
+
+            // prevent sudded camera jerks
+            if (CameraManager.isCamChanging()) {
+                CameraManager.checkDoneChanging();
+            }
+
+        }
+
+        return this.active()
     }
 
     initializeGraphics() {
@@ -130,9 +170,10 @@ class Simulation extends Phaser.Scene {
         this.psyche_probe_fx.setTexture("psyche_probe_fx", 0);
         CameraManager.addGameSprite(this.psyche_probe_fx)
 
-        for (const body in this.bodies) {
-            if (this.bodies[body].id != "psyche_probe") {
-                this.bodies[body].subscribe(this.bodies["psyche_probe"]);
+        for (var _body in this.bodies) {
+            const body = this.bodies[_body];
+            if (body.id != "psyche_probe") {
+                body.subscribe(this.bodies["psyche_probe"]);
             }
         }
 
