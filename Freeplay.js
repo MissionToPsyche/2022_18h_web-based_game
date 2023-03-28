@@ -4,7 +4,7 @@
  */
 class Freeplay extends Simulation {
     constructor() {
-        super("Freeplay");
+        super("Freeplay", ["mercury", "venus", "earth", "mars", "jupiter", "saturn", "uranus", "neptune", "pluto", "psyche"]);
 
         this.pauseText;
         this.direction;

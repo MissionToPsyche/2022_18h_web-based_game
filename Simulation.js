@@ -1,8 +1,9 @@
 class Simulation extends Phaser.Scene {
-    constructor(gamemode) {
+    constructor(gamemode, targets) {
         super({ key: gamemode });
 
         this.bodies = {};
+        this.valid_targets = targets;
         this.graphics = null;
         this.minigraphics = null;
 
@@ -75,8 +76,9 @@ class Simulation extends Phaser.Scene {
 
         // stop the body animations and movement if game is over or paused
         if (!this.active()) {
-            for (const body in this.bodies) {
-                this.bodies[body].stop()
+            for (var _body in this.bodies) {
+                const body = this.bodies[_body];
+                body.stop()
             }
         } else {
             // fail if collided

@@ -432,14 +432,18 @@ class Probe extends Body {
 		var p2;
 		var r = 0;
 		for (const scenebody in scene.bodies) {
-			var body = scene.bodies[scenebody]
-			if(!scene.cameras.main.worldView.contains(body.x, body.y)) {
-				continue; //if body isn't on screen, don't bother checking.
+			var body = scene.bodies[scenebody];
+			
+			if (!scene.cameras.main.worldView.contains(body.x, body.y)) {
+				continue; // if body isn't on screen, don't bother checking.
 			} else if (body == this) {
-				continue; //if body is this probe, don't consider it.
+				continue; // if body is this probe, don't consider it.
+			} else if (!scene.valid_targets.includes(body.id)) {
+				continue; // if body is not a valid target, skip it.
 			} else {
 				console.log(body.id + " On screen!");
 			}
+			
 			p1 = new Phaser.Geom.Point(this.x, this.y);
 			p2 = new Phaser.Geom.Point(body.x, body.y);
 			r = Phaser.Math.Distance.BetweenPoints(p1, p2);
