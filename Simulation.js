@@ -1,9 +1,10 @@
 class Simulation extends Phaser.Scene {
-    constructor(gamemode, targets) {
+    constructor(gamemode, targets, starting) {
         super({ key: gamemode });
 
         this.bodies = {};
         this.valid_targets = targets;
+        this.starting = starting;
         this.indicators = {};
         this.graphics = null;
         this.minigraphics = null;
@@ -162,7 +163,7 @@ class Simulation extends Phaser.Scene {
         }
 
         this.bodies["earth"].subscribe(this.bodies["moon"]);
-        CameraManager.setFollowSprite(this.bodies["earth"]);
+        CameraManager.setFollowSprite(this.bodies[this.starting]);
     }
 
     initializeProbe() {
@@ -192,6 +193,8 @@ class Simulation extends Phaser.Scene {
         }
 
         this.player = this.bodies["psyche_probe"];
+        this.player.orbitTarget = this.bodies[this.starting];
+        this.player.newTarget = this.bodies[this.starting];
         this.controller = new Controller(this, this.player);
         this.player.setController(this.controller);
     }
