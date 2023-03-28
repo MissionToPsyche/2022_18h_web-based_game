@@ -433,7 +433,7 @@ class Probe extends Body {
 		var r = 0;
 		for (const scenebody in scene.bodies) {
 			var body = scene.bodies[scenebody];
-			
+
 			if (!scene.cameras.main.worldView.contains(body.x, body.y)) {
 				continue; // if body isn't on screen, don't bother checking.
 			} else if (body == this) {
@@ -443,7 +443,7 @@ class Probe extends Body {
 			} else {
 				console.log(body.id + " On screen!");
 			}
-			
+
 			p1 = new Phaser.Geom.Point(this.x, this.y);
 			p2 = new Phaser.Geom.Point(body.x, body.y);
 			r = Phaser.Math.Distance.BetweenPoints(p1, p2);
@@ -573,24 +573,6 @@ class Probe extends Body {
 	}
 
 	/**
-	 * Get the horizontal distance between the probe and psyche
-	 * @return {number} the horizontal distancee between the probe and psyche
-	 */
-	getPsycheDirectionX() {
-		let psycheX = this.scene.bodies["psyche"].x;
-		return (psycheX - this.x) / this.getDistance("psyche");
-	}
-
-	/**
-	 * Get the vertical distance between the probe and psyche
-	 * @return {number} The vertical distance between the probe and psyche
-	 */
-	getPsycheDirectionY() {
-		let psycheY = this.scene.bodies["psyche"].y;
-		return (psycheY - this.y) / this.getDistance("psyche");
-	}
-
-	/**
 	 * Check if a body is in the view of the probe.
 	 * @param {string} the index of the body
 	 * @param {number} radius of the view
@@ -632,5 +614,9 @@ class Probe extends Body {
 	 */
 	setController(_controller) {
 		this.controller = _controller;
+	}
+
+	getController() {
+		return this.controller;
 	}
 }

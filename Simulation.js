@@ -4,6 +4,7 @@ class Simulation extends Phaser.Scene {
 
         this.bodies = {};
         this.valid_targets = targets;
+        this.indicators = {};
         this.graphics = null;
         this.minigraphics = null;
 
@@ -71,9 +72,6 @@ class Simulation extends Phaser.Scene {
     }
 
     update() {
-        this.updatePauseButton();
-        this.updateTakePhoto();
-
         // stop the body animations and movement if game is over or paused
         if (!this.active()) {
             for (var _body in this.bodies) {
@@ -97,9 +95,17 @@ class Simulation extends Phaser.Scene {
                 CameraManager.checkDoneChanging();
             }
 
+            this.updateOrbit();
+            this.updateBodies();
+            this.updateProbe();
+
+            for (var target of this.valid_targets) {
+                this.updateTargetIndicator(target);
+                this.drawHint(target);
+            }
         }
 
-        return this.active()
+        return this.active();
     }
 
     initializeGraphics() {
@@ -145,7 +151,7 @@ class Simulation extends Phaser.Scene {
                     this.bodies[id] = new Satellite(this, id, mass, diameter, parent, angle, orbit_distance, day_length);
                 }
 
-                this.createAnimations(id)
+                this.createAnimations(id);
             }
         }
 
@@ -170,7 +176,7 @@ class Simulation extends Phaser.Scene {
         }
 
         this.psyche_probe_fx.setTexture("psyche_probe_fx", 0);
-        CameraManager.addGameSprite(this.psyche_probe_fx)
+        CameraManager.addGameSprite(this.psyche_probe_fx);
 
         for (var _body in this.bodies) {
             const body = this.bodies[_body];
@@ -199,5 +205,223 @@ class Simulation extends Phaser.Scene {
         }
 
         this.bodies[id].setTexture(id, 0);
+    }
+
+    drawOrbitIndicator(path, line_width, color, alpha) {
+        if (!path) {
+            return
+        }
+
+        const indicator = new Phaser.Curves.Spline(path);
+
+        this.graphics.lineStyle(line_width, color, alpha);
+        indicator.draw(this.graphics, 64);
+    }
+
+    updateOrbit() {
+        if (this.player.findingTarget && this.player.newTarget) {
+            var target = this.player.newTarget;
+            var path = new Phaser.Geom.Circle(target.x, target.y, target.r + 5).getPoints(false, 0.5);
+            this.drawOrbitIndicator(path, Constants.HINT_WIDTH_BEFORE, Constants.WHITE, Constants.HINT_ALPHA_BEFORE);
+        } else if (this.bodies["psyche_probe"].orbitToggle && !this.bodies["psyche_probe"].inOrbit) {
+            const ratio = this.bodies["psyche_probe"].maintainOrbit(this);
+            let subRadius = ratio * this.player.orbitTarget.r + (5 * (1 - ratio));
+            if (!subRadius) {
+                subRadius = this.player.orbitTarget.r;
+            }
+
+            //creating orbit lock progress indicator
+            var path = new Phaser.Geom.Circle(this.player.orbitTarget.x, this.player.orbitTarget.y, this.player.orbitTarget.r + subRadius).getPoints(false, 0.5); //path of the indicator.
+            this.drawOrbitIndicator(path, Constants.HINT_WIDTH_BEFORE, Constants.WHITE, Constants.HINT_ALPHA_BEFORE);
+            let subPoints = path.length * ratio;
+            path.splice(Math.floor(subPoints));
+
+            if (path.length > 0) {
+                this.drawOrbitIndicator(path, Constants.HINT_WIDTH_AFTER, Constants.ORANGE, Constants.HINT_ALPHA_AFTER);
+            }
+        } else if (this.bodies["psyche_probe"].inOrbit) {
+            var path = this.bodies["psyche_probe"].getOrbitPath('cur').getPoints(false, 0.5);
+            this.drawOrbitIndicator(path, 1, Constants.WHITE, Constants.HINT_ALPHA_AFTER);
+        }
+    }
+
+    drawOrbitPath(body) {
+        const path = body.path;
+        if (path && path.length > 0) {
+            this.graphics.lineStyle(1, 0xffffff, 0.5);
+            this.minigraphics.lineStyle(75, 0xffffff, 0.5);
+            const curve = body.getPathCurve();
+            curve.draw(this.graphics, 64);
+            curve.draw(this.minigraphics, 64)
+        }
+    }
+
+    updateBodies() {
+        for (var _body in this.bodies) {
+            const body = this.bodies[_body];
+
+            // apply gravity
+            body.notify()
+
+            // draw orbit path
+            this.drawOrbitPath(body)
+
+            // update body positions
+            body.updatePosition(this)
+
+            if (body.id != "psyche_probe") {
+                var p1 = new Phaser.Geom.Point(this.bodies["sun"].x, this.bodies["sun"].y);
+                var p2 = new Phaser.Geom.Point(body.x, body.y);
+                let sunAngle = Math.atan2(p2.y - p1.y, p2.x - p1.x);
+                sunAngle = Phaser.Math.RadToDeg(sunAngle)
+
+                if (sunAngle < 0) {
+                    sunAngle += 360;
+                } else if (sunAngle > 360) {
+                    sunAngle -= 360;
+                }
+
+                for (const idx in Constants.SHADE_ANGLES) {
+                    const angle = Constants.SHADE_ANGLES[idx]
+                    if ((angle[0] < sunAngle && sunAngle <= angle[1]) || (angle[0] > angle[1] && (angle[0] < sunAngle || sunAngle <= angle[1]))) {
+                        body.play(body.id + "-" + Constants.DIRECTIONS[idx], true);
+                        break;
+                    }
+                }
+            } else {
+                const frame = 20;
+                body.setFrame(frame);
+            }
+        }
+    }
+
+    updateProbe() {
+        const controller = this.player.getController();
+
+        this.psyche_probe_fx.setRotation(this.bodies["psyche_probe"].rotation);
+        this.psyche_probe_fx.setPosition(this.bodies["psyche_probe"].x, this.bodies["psyche_probe"].y);
+
+        if (controller.up_pressed()) {
+            this.psyche_probe_fx.setVisible(true);
+            this.psyche_probe_fx.play("psyche_probe_fx-thrust", true);
+        } else if ((controller.left_pressed() || controller.right_pressed() || controller.down_pressed()) && controller.controlMethod == ControlMethod.FourWay) {
+            this.psyche_probe_fx.setVisible(true);
+            this.psyche_probe_fx.play("psyche_probe_fx-thrust", true);
+        } else if (controller.down_pressed() && controller.controlMethod == ControlMethod.Tank) {
+            this.psyche_probe_fx.setVisible(true);
+            this.psyche_probe_fx.play("psyche_probe_fx-brake", true);
+        } else {
+            this.psyche_probe_fx.setVisible(false);
+            this.psyche_probe_fx.stop();
+        }
+
+        let centerX = this.bodies["psyche_probe"].x;
+        let centerY = this.bodies["psyche_probe"].y;
+        let viewR = 100;
+        this.graphics.fillStyle(0xFFFFFF, 0.3);
+
+        let endRotation = this.bodies["psyche_probe"].rotation + (3 * Math.PI / 4);
+        if (endRotation > 2 * Math.PI) {
+            endRotation -= (2 * Math.PI);
+        }
+        let startRotation = endRotation + (Math.PI / 2);
+        if (startRotation > 2 * Math.PI) {
+            startRotation -= (2 * Math.PI);
+        }
+
+        this.graphics.slice(centerX, centerY, viewR, startRotation, endRotation, true);
+        this.graphics.fillPath();
+    }
+
+    updateTargetIndicator(target) {
+        const probe = this.bodies["psyche_probe"]
+        let distance = probe.getDistance(target);
+
+        let arrowDistance = 100;
+        let width = 1024;
+        let height = 768;
+        let targetX = (this.bodies[target].x - probe.x) / distance;
+        let targetY = (this.bodies[target].y - probe.y) / distance;
+
+        let directionX = width / 2 + targetX * arrowDistance;
+        let directionY = height / 2 + targetY * arrowDistance;
+
+        // calculate the rotation of the arrow image
+        let directionAngle = Math.asin(targetY);
+        if (targetX < 0) {
+            directionAngle = Math.PI - directionAngle;
+        }
+
+        let indicator = this.indicators[target]
+        if (typeof (indicator) == "undefined") {
+            indicator = this.add.image(directionX, directionY, 'direction').setScale(0.3);
+            CameraManager.addUISprite(indicator);
+            // make the direction indicator not on top of other page such as pause menu
+            indicator.depth = -1;
+            this.indicators[target] = indicator;
+        }
+
+        if (probe.orbitToggle) {
+            // earth is not the center, edit direction
+            let centerX = CameraManager.getCameraCenter().x;
+            let centerY = CameraManager.getCameraCenter().y;
+
+            let offsetX = centerX - probe.x;
+            let offsetY = centerY - probe.y;
+
+            let zoom = CameraManager.getMainCameraZoom();
+
+            offsetX *= zoom;
+            offsetY *= zoom;
+
+            directionX -= offsetX;
+            directionY -= offsetY;
+        }
+
+        // set the correct position and angle of the arrow to point to psyche
+        indicator.setPosition(directionX, directionY);
+        indicator.rotation = directionAngle;
+
+        // decrease opacity when near psyche
+        if (distance < 90) {
+            indicator.alpha = (distance - 50) / 50;
+        } else {
+            indicator.alpha = 0.8;
+        }
+    }
+
+    drawHint(target) {
+        const body = this.bodies[target]
+        if (typeof (body) == "undefined") {
+            return;
+        }
+
+        let targetX = body.x;
+        let targetY = body.y;
+        let strokeSize = body.r + Constants.HINT_DISTANCE;
+        this.graphics.lineStyle(Constants.HINT_WIDTH_BEFORE, Constants.WHITE, Constants.HINT_ALPHA_BEFORE);
+
+        const segments = 32;
+        const angleStep = (2 * Math.PI) / segments;
+
+        for (let i = 0; i < segments; i += 2) {
+            let startX = Math.cos(i * angleStep) * strokeSize + targetX;
+            let startY = Math.sin(i * angleStep) * strokeSize + targetY;
+            let endX = Math.cos((i + 1) * angleStep) * strokeSize + targetX;
+            let endY = Math.sin((i + 1) * angleStep) * strokeSize + targetY;
+
+            this.graphics.lineStyle(Constants.HINT_WIDTH_BEFORE, Constants.WHITE, Constants.HINT_ALPHA_BEFORE);
+            this.graphics.lineBetween(startX, startY, endX, endY);
+        }
+
+        // draw arcs for the covered target angles
+        if (typeof (this.targetAngles) != "undefined") {
+            let arcSize = 180 / this.targetAngles.length;
+            for (let i = 0; i < this.targetAngles.length; i++) {
+                if (this.coverFlags[i] == 1) {
+                    arcAround(targetX, targetY, strokeSize, this.targetAngles[i], arcSize, this.graphics);
+                }
+            }
+        }
     }
 }
