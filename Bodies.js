@@ -580,14 +580,14 @@ class Probe extends Body {
 	 * @param {number} end rotation of the view in radius
 	 * @return {boolean}
 	 */
-	isInView(idx, r, startRotation, endRotation) {
+	viewAngle(idx, r) {
 		let targetX = this.scene.bodies[idx].x;
 		let targetY = this.scene.bodies[idx].y;
 		let distance = Math.sqrt((this.x - targetX) * (this.x - targetX) + (this.y - targetY) * (this.y - targetY));
 
 		// check if target body is too far
 		if (distance > r) {
-			return false;
+			return -1;
 		}
 
 		// get the angle of the target body
@@ -598,14 +598,7 @@ class Probe extends Body {
 			angle = Math.PI * 2 - angle;
 		}
 
-		// check if angle is in the startRotation end Rotation range
-		if (endRotation < (Math.PI * 3 / 2)) {
-			// startRotation endRotation range is [endRotation, startRotation]
-			return (angle >= endRotation) && (angle <= startRotation);
-		} else {
-			// range is [endRotation, 2pi] union [0, startRotation]
-			return (angle >= endRotation) || (angle <= startRotation);
-		}
+		return angle;
 	}
 
 	/**

@@ -355,25 +355,12 @@ class Freeplay extends Simulation {
             this.takingPhoto = !this.takingPhoto;
 
             let viewR = Constants.VIEW_R;
-            let endRotation = this.bodies["psyche_probe"].rotation + Math.PI;
-            if (endRotation > 2 * Math.PI) {
-                endRotation -= (2 * Math.PI);
-            }
-            let startRotation = endRotation + Phaser.Math.DegToRad(90);
-            if (startRotation > 2 * Math.PI) {
-                startRotation -= (2 * Math.PI);
-            }
 
             // check if pyche is in the view
-            if (this.bodies["psyche_probe"].isInView("psyche", viewR, startRotation, endRotation)) {
+            let viewAngle = this.bodies["psyche_probe"].viewAngle("psyche", viewR)
+            if (viewAngle != -1) {
                 this.foundPsycheText.setVisible(true);
-
-                // Psyche is in the view, check the side
-                let psycheAngle = Math.asin(this.bodies["psyche_probe"].getPsycheDirectionY());
-                if (this.bodies["psyche_probe"].getPsycheDirectionX() < 0) {
-                    psycheAngle = Math.PI - psycheAngle;
-                }
-                psycheAngle = Phaser.Math.RadToDeg(psycheAngle);
+                let psycheAngle = Phaser.Math.RadToDeg(viewAngle);
 
                 if (psycheAngle < 0) {
                     psycheAngle += 360;
@@ -424,7 +411,12 @@ class Freeplay extends Simulation {
                 let currentDistance = 1000; // random big number
                 let nearestBody = null;
                 for (var body in this.bodies) {
-                    if (this.bodies["psyche_probe"].isInView(body, viewR, startRotation, endRotation)) {
+                    if (body == "psyche_probe") {
+                        continue;
+                    }
+
+                    let viewAngle = this.bodies["psyche_probe"].viewAngle(body, viewR)
+                    if (viewAngle != -1) {
                         // this body is in probe's view, keep the distance
                         let thisBodyDistance = this.bodies["psyche_probe"].getDistance(body);
                         if (thisBodyDistance < currentDistance) {
