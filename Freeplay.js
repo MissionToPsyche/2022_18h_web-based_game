@@ -303,7 +303,7 @@ class Freeplay extends Simulation {
             let arcSize = 180 / this.targetAngles.length;
             for (let i = 0; i < this.targetAngles.length; i++) {
                 if (this.coverFlags[i] == 1) {
-                    GraphicsUtils.arcAround(psycheX, psycheY, strokeSize, this.targetAngles[i], arcSize);
+                    arcAround(psycheX, psycheY, strokeSize, this.targetAngles[i], arcSize, this.graphics);
                 }
             }
         }
