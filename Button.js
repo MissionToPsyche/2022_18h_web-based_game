@@ -8,7 +8,7 @@ class Button extends Phaser.GameObjects.Sprite {
 			.setScale(0.5)
 			.setDepth(100)
 			.setVisible(0);
-		this.text = _scene.add.text(_pos.x, _pos.y, _text, { fontSize: '26px', color: '#000000' })
+		this.text = _scene.add.text(_pos.x, _pos.y, _text, { fontFamily: 'CustomFont2', fontSize: '26px', color: '#000000' })
 			.setOrigin(0.5)
 			.setDepth(100)
 			.setVisible(0);
