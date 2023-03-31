@@ -22,7 +22,7 @@ class Body extends Phaser.GameObjects.Sprite {
 		if (_icon != null) {
 			this.minimap_icon = new Phaser.GameObjects.Sprite(_scene, _pos.x, _pos.y, _icon, _frame);
 		} else {
-			this.minimap_icon = new Phaser.GameObjects.Sprite(_scene, _pos.x, _pos.y, _id, _frame);
+			this.minimap_icon = new Phaser.GameObjects.Sprite(_scene, _pos.x, _pos.y, _img_id, _frame);
 		}
 		this.name = _id
 		this.id = _img_id
