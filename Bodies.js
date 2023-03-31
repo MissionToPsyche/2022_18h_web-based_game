@@ -52,6 +52,16 @@ class Body extends Phaser.GameObjects.Sprite {
 	}
 
 	/**
+	 * Changes the size of the icon on 
+	 * the minimap by a percent of it's normal icon size
+	 */
+	changeMiniIconSize(size) {
+		var md = (this.r * 2) * size;
+		this.minimap_icon.setDisplaySize(md, md)
+			.setSize(md, md);
+	}
+
+	/**
 	 * Updates the position of the body by the body's
 	 * velocity.
 	 */

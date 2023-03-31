@@ -199,9 +199,9 @@ class Freeplay extends Phaser.Scene {
                     repeat: -1
                 });
             }
-            this.bodies[id].play(img_id + "-f");
 
-            console.log(this.bodies[id].x + ", " + this.bodies[id].y);
+            this.bodies[id].play(img_id + "-f");
+            this.bodies[id].changeMiniIconSize(6);
         }
 
         CameraManager.addGameSprite(this.graphics);
