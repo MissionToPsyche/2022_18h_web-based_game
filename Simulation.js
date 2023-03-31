@@ -11,13 +11,20 @@ class Simulation extends Phaser.Scene {
 
         this.player = null;
         this.controller = null;
+        this.exitPhotoButton = null;
 
         this.paused = false;
         this.gameOver = false;
         this.gameSuccess = false;
         this.takingPhoto = false;
+        this.target_photos = {};
+        this.covered_angles = {};
 
         this.psyche_probe_fx = null;
+        this.photoBackground = null;
+        this.photoBorder = null;
+        this.foundTargetText = null;
+        this.nearestBodyText = null;
     }
 
     active() {
@@ -64,9 +71,9 @@ class Simulation extends Phaser.Scene {
 
         this.load.audio('ingame_music', 'assets/music/02_Ingame.mp3');
 
-        for (let i = 0; i < Constants.MAX_PSYCHE_PHOTO_NUM; i++) {
-            let imageName = "psychePhoto" + i;
-            let filePath = "img/photos/images/psyche_e_0" + (i + 1) + ".png";
+        for (let i = 0; i < Constants.BODY_FRAMES - 2; i++) {
+            let imageName = "psyche_photo_" + i;
+            let filePath = "img/photos/images/psyche_" + i + ".png";
             this.load.image(imageName, filePath);
         }
     }
@@ -76,6 +83,7 @@ class Simulation extends Phaser.Scene {
         this.initializeMusic();
         this.initializeBodies();
         this.initializeProbe();
+        this.initializePhotos();
     }
 
     update() {
@@ -87,7 +95,7 @@ class Simulation extends Phaser.Scene {
             }
         } else {
             // fail if collided
-            if (this.bodies["psyche_probe"].collided && !this.gameOver) {
+            if (this.bodies[Constants.PROBE].collided && !this.gameOver) {
                 this.gameOver = true;
                 var fail_audio = this.sound.add('negative');
                 fail_audio.play();
@@ -168,9 +176,9 @@ class Simulation extends Phaser.Scene {
 
     initializeProbe() {
         const fx = ["thrust", "brake"]
-        this.psyche_probe_fx = this.add.sprite(this.bodies["psyche_probe"].x, this.bodies["psyche_probe"].y, "psyche_probe_fx")
-        this.psyche_probe_fx.setDisplaySize(this.bodies["psyche_probe"].r * 2, this.bodies["psyche_probe"].r * 2)
-            .setSize(this.bodies["psyche_probe"].r * 2, this.bodies["psyche_probe"].r * 2);
+        this.psyche_probe_fx = this.add.sprite(this.bodies[Constants.PROBE].x, this.bodies[Constants.PROBE].y, "psyche_probe_fx")
+        this.psyche_probe_fx.setDisplaySize(this.bodies[Constants.PROBE].r * 2, this.bodies[Constants.PROBE].r * 2)
+            .setSize(this.bodies[Constants.PROBE].r * 2, this.bodies[Constants.PROBE].r * 2);
         this.psyche_probe_fx.setDisplayOrigin(7, 5)
         for (let i = 0; i < 2; i++) {
             const offset = 6 * i
@@ -187,26 +195,119 @@ class Simulation extends Phaser.Scene {
 
         for (var _body in this.bodies) {
             const body = this.bodies[_body];
-            if (body.id != "psyche_probe") {
-                body.subscribe(this.bodies["psyche_probe"]);
+            if (body.id != Constants.PROBE) {
+                body.subscribe(this.bodies[Constants.PROBE]);
             }
         }
 
-        this.player = this.bodies["psyche_probe"];
+        this.player = this.bodies[Constants.PROBE];
         this.player.orbitTarget = this.bodies[this.starting];
         this.player.newTarget = this.bodies[this.starting];
         this.controller = new Controller(this, this.player);
         this.player.setController(this.controller);
     }
 
+    initializePhotos() {
+        this.photoBorder = this.add.rectangle(Constants.PHOTO_X,
+            Constants.PHOTO_Y, Constants.PHOTO_BACKGROUND_WIDTH + Constants.PHOTO_BORDER,
+            Constants.PHOTO_BACKGROUND_HEIGHT + Constants.PHOTO_BORDER, Constants.WHITE);
+        this.photoBackground = this.add.rectangle(Constants.PHOTO_X,
+            Constants.PHOTO_Y, Constants.PHOTO_BACKGROUND_WIDTH,
+            Constants.PHOTO_BACKGROUND_HEIGHT, Constants.DARKBLUE);
+
+        CameraManager.addUISprite(this.photoBorder);
+        CameraManager.addUISprite(this.photoBackground);
+
+        for (var idx in this.valid_targets) {
+            var target = this.valid_targets[idx]
+            this.target_photos[target] = new Array(Constants.BODY_FRAMES);
+            for (var i = 0; i < Constants.BODY_FRAMES; i++) {
+                let imageName = target + "_photo_" + i;
+                let image = this.add.image(Constants.PHOTO_X, Constants.PHOTO_Y, imageName)
+                    .setScale(Constants.PHOTO_SCALE);
+                this.target_photos[target][i] = image;
+                CameraManager.addUISprite(image);
+            }
+        }
+
+        this.foundTargetText = this.add.text(Constants.FOUND_TARGET_TEXT_X, Constants.FOUND_TARGET_TEXT_Y, 'You found Psyche!');
+        this.foundTargetText.setFontSize(Constants.THIRD_FONT_SIZE);
+        this.foundTargetText.depth = 1000; // larger than 100
+        this.nearestBodyText = this.add.text(Constants.NEAREST_BODY_TEXT_X, Constants.NEAREST_BODY_TEXT_Y, ' ');
+        this.nearestBodyText.setFontSize(Constants.SECOND_FONT_SIZE);
+        CameraManager.addUISprite(this.foundTargetText);
+        CameraManager.addUISprite(this.nearestBodyText);
+
+        // TODO: can let the player to choose difficulty
+        // here default is to take photo of the psyche from four sides
+        const targetAngles = Constants.FOUR_SIDES;
+
+        this.valid_targets.forEach(target => {
+            this.covered_angles[target] = Array.from({ length: targetAngles.length }, () => false);
+        });
+
+        this.exitButtonPosition = new Phaser.Geom.Point(Constants.QUIT_PHOTO_X, Constants.QUIT_PHOTO_Y);
+        this.exitPhotoButton = new Button(this, { x: Constants.QUIT_PHOTO_X, y: Constants.QUIT_PHOTO_Y }, "button", "Back to Game")
+        MenuManager.exitPhotoListener(this, this.exitPhotoButton);
+        CameraManager.addUISprite(this.exitPhotoButton);
+
+        this.hideTargetPhotos();
+    }
+
+    /**
+     * hide all the psyche photos.
+     */
+    hideTargetPhotos() {
+        this.photoBorder.setVisible(false);
+        this.photoBackground.setVisible(false);
+        this.exitPhotoButton.setVisible(false);
+        this.foundTargetText.setVisible(false);
+        this.nearestBodyText.setVisible(false);
+
+        for (var _target in this.target_photos) {
+            var target = this.target_photos[_target]
+            for (var idx in target) {
+                if (typeof (target[idx]) != "undefined") {
+                    target[idx].setVisible(false);
+                }
+            }
+        }
+    }
+
+    /**
+     * show the psyche photo at a specific index. 
+     * @param {number} idx - index of the psyche photo.
+     */
+    showTargetPhoto(target, idx) {
+        this.photoBorder.setVisible(true);
+        this.photoBackground.setVisible(true);
+
+        this.target_photos[target][idx].setVisible(true);
+    }
+
+    updateTakePhoto() {
+        if (!this.takingPhoto) {
+            this.foundTargetText.setVisible(false);
+            this.exitPhotoButton.setVisible(false);
+            this.hideTargetPhotos();
+            this.nearestBodyText.setVisible(false);
+        } else if (this.gameSuccess) {
+            this.foundTargetText.setVisible(true);
+            this.exitPhotoButton.setVisible(false);
+            this.nearestBodyText.setVisible(false);
+        } else {
+            this.exitPhotoButton.setVisible(true);
+        }
+    }
+
     createAnimations(id) {
         for (const dir of Constants.DIRECTIONS) {
-            const offset = (id == "psyche_probe" ? 14 : 16) * Constants.DIRECTIONS.indexOf(dir)
+            const offset = (id == Constants.PROBE ? 14 : 16) * Constants.DIRECTIONS.indexOf(dir)
             this.anims.create({
                 key: id + "-" + dir,
                 frames: this.anims.generateFrameNumbers(id, {
                     start: offset,
-                    end: offset + (id == "psyche_probe" ? 7 : 9)
+                    end: offset + (id == Constants.PROBE ? 7 : 9)
                 }),
                 frameRate: 12,
                 repeat: -1
@@ -232,8 +333,8 @@ class Simulation extends Phaser.Scene {
             var target = this.player.newTarget;
             var path = new Phaser.Geom.Circle(target.x, target.y, target.r + 5).getPoints(false, 0.5);
             this.drawOrbitIndicator(path, Constants.HINT_WIDTH_BEFORE, Constants.WHITE, Constants.HINT_ALPHA_BEFORE);
-        } else if (this.bodies["psyche_probe"].orbitToggle && !this.bodies["psyche_probe"].inOrbit) {
-            const ratio = this.bodies["psyche_probe"].maintainOrbit(this);
+        } else if (this.bodies[Constants.PROBE].orbitToggle && !this.bodies[Constants.PROBE].inOrbit) {
+            const ratio = this.bodies[Constants.PROBE].maintainOrbit(this);
             let subRadius = ratio * this.player.orbitTarget.r + (5 * (1 - ratio));
             if (!subRadius) {
                 subRadius = this.player.orbitTarget.r;
@@ -248,8 +349,8 @@ class Simulation extends Phaser.Scene {
             if (path.length > 0) {
                 this.drawOrbitIndicator(path, Constants.HINT_WIDTH_AFTER, Constants.ORANGE, Constants.HINT_ALPHA_AFTER);
             }
-        } else if (this.bodies["psyche_probe"].inOrbit) {
-            var path = this.bodies["psyche_probe"].getOrbitPath('cur').getPoints(false, 0.5);
+        } else if (this.bodies[Constants.PROBE].inOrbit) {
+            var path = this.bodies[Constants.PROBE].getOrbitPath('cur').getPoints(false, 0.5);
             this.drawOrbitIndicator(path, 1, Constants.WHITE, Constants.HINT_ALPHA_AFTER);
         }
     }
@@ -278,7 +379,7 @@ class Simulation extends Phaser.Scene {
             // update body positions
             body.updatePosition(this)
 
-            if (body.id != "psyche_probe") {
+            if (body.id != Constants.PROBE) {
                 var p1 = new Phaser.Geom.Point(this.bodies["sun"].x, this.bodies["sun"].y);
                 var p2 = new Phaser.Geom.Point(body.x, body.y);
                 let sunAngle = Math.atan2(p2.y - p1.y, p2.x - p1.x);
@@ -307,8 +408,8 @@ class Simulation extends Phaser.Scene {
     updateProbe() {
         const controller = this.player.getController();
 
-        this.psyche_probe_fx.setRotation(this.bodies["psyche_probe"].rotation);
-        this.psyche_probe_fx.setPosition(this.bodies["psyche_probe"].x, this.bodies["psyche_probe"].y);
+        this.psyche_probe_fx.setRotation(this.bodies[Constants.PROBE].rotation);
+        this.psyche_probe_fx.setPosition(this.bodies[Constants.PROBE].x, this.bodies[Constants.PROBE].y);
 
         if (controller.up_pressed()) {
             this.psyche_probe_fx.setVisible(true);
@@ -324,12 +425,12 @@ class Simulation extends Phaser.Scene {
             this.psyche_probe_fx.stop();
         }
 
-        let centerX = this.bodies["psyche_probe"].x;
-        let centerY = this.bodies["psyche_probe"].y;
+        let centerX = this.bodies[Constants.PROBE].x;
+        let centerY = this.bodies[Constants.PROBE].y;
         let viewR = 100;
         this.graphics.fillStyle(0xFFFFFF, 0.3);
 
-        let endRotation = this.bodies["psyche_probe"].rotation + (3 * Math.PI / 4);
+        let endRotation = this.bodies[Constants.PROBE].rotation + (3 * Math.PI / 4);
         if (endRotation > 2 * Math.PI) {
             endRotation -= (2 * Math.PI);
         }
@@ -343,7 +444,7 @@ class Simulation extends Phaser.Scene {
     }
 
     updateTargetIndicator(target) {
-        const probe = this.bodies["psyche_probe"]
+        const probe = this.bodies[Constants.PROBE]
         let distance = probe.getDistance(target);
 
         let arrowDistance = 100;
@@ -424,13 +525,124 @@ class Simulation extends Phaser.Scene {
         }
 
         // draw arcs for the covered target angles
-        if (typeof (this.targetAngles) != "undefined") {
-            let arcSize = 180 / this.targetAngles.length;
-            for (let i = 0; i < this.targetAngles.length; i++) {
-                if (this.coverFlags[i] == 1) {
-                    arcAround(targetX, targetY, strokeSize, this.targetAngles[i], arcSize, this.graphics);
+        const angles = this.covered_angles[body.id]
+        if (typeof (angles) != "undefined") {
+            let arcSize = 180 / angles.length;
+            for (let i = 0; i < angles.length; i++) {
+                if (angles[i]) {
+                    arcAround(targetX, targetY, strokeSize, Constants.FOUR_SIDES[i], arcSize, this.graphics);
                 }
             }
         }
     }
+
+
+
+    /**
+     * Event for when the photo key is pressed
+     */
+    photoKeyEvent() {
+        // disable spacebar take photo when paused
+        if ((!this.paused) && (!this.gameOver) && (!this.gameSuccess)) {
+            this.takingPhoto = !this.takingPhoto;
+
+            let viewR = Constants.VIEW_R;
+
+            let target_in_view = false;
+            for (var _target in this.valid_targets) {
+                var target = this.valid_targets[_target];
+                const viewAngle = this.bodies[Constants.PROBE].viewAngle(target, viewR);
+
+                let targetAngle = viewAngle;
+                if (viewAngle != -1) {
+                    target_in_view = true;
+                    this.foundTargetText.setVisible(true);
+                    targetAngle = Phaser.Math.RadToDeg(viewAngle);
+
+                    if (targetAngle < 0) {
+                        targetAngle += 360;
+                    } else if (targetAngle > 360) {
+                        targetAngle -= 360;
+                    }
+                } else {
+                    continue;
+                }
+
+                let angles = this.covered_angles[target];
+                for (let i = 0; i < angles.length; i++) {
+                    if ((Math.abs(targetAngle - Constants.FOUR_SIDES[i]) <= Constants.ONE_PHOTO_ANGLE)
+                        || (Math.abs(targetAngle - Constants.FOUR_SIDES[i] + 360) <= Constants.ONE_PHOTO_ANGLE)
+                        || (Math.abs(targetAngle - Constants.FOUR_SIDES[i] - 360) <= Constants.ONE_PHOTO_ANGLE)) {
+                        this.showTargetPhoto(target, i);
+                        // this photo covers the target angle targetAngles[i], set the flag
+                        if (this.covered_angles[target][i]) {
+                            this.foundTargetText.setText("You have already taken\nphoto of this side, please\ntake photo of other sides.");
+                        } else {
+                            // taking photo, play positive sfx
+                            var positive_audio = this.sound.add('positive');
+                            positive_audio.play();
+                            this.covered_angles[target][i] = true;
+                            this.foundTargetText.setText("Good job! You just took\nphoto of a new " + target + " side!");
+                        }
+                    }
+                }
+
+                // check sides covered
+                let sidesCovered = 0;
+                angles = this.covered_angles[target];
+                for (let i = 0; i < angles.length; i++) {
+                    if (angles[i]) {
+                        sidesCovered++;
+                    }
+                }
+                console.log("now " + sidesCovered + " of " + angles.length + " sides covered");
+
+                if (sidesCovered == angles.length) {
+                    this.foundTargetText.setText("Good job! You successfully\ncovered all " + target + " sides!");
+                    this.exitPhotoButton.setVisible(false);
+                }
+
+                break;
+            }
+
+            if (!target_in_view) {
+                let currentDistance = 10000; // random big number
+                let nearestBody = null;
+                for (var body in this.bodies) {
+                    if (body == Constants.PROBE || this.valid_targets.includes(body)) {
+                        continue;
+                    }
+
+                    let viewAngle = this.bodies[Constants.PROBE].viewAngle(body, viewR)
+                    if (viewAngle != -1) {
+                        // this body is in probe's view, keep the distance
+                        let thisBodyDistance = this.bodies[Constants.PROBE].getDistance(body);
+                        if (thisBodyDistance < currentDistance) {
+                            currentDistance = thisBodyDistance;
+                            nearestBody = body;
+                        }
+                    }
+                }
+
+                let nearestInfo = "";
+                if (nearestBody != null) {
+                    nearestInfo = "You found the ";
+                    nearestInfo += toTitleCase(nearestBody);
+                    nearestInfo += ", \nbut you should try \nto find one of your targets.";
+                }
+
+                this.nearestBodyText.setText(nearestInfo);
+                this.nearestBodyText.setVisible(true);
+            }
+        }
+    }
+}
+
+function toTitleCase(str) {
+    return str.replace(
+        /\w\S*/g,
+        function (txt) {
+            return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+        }
+    );
 }

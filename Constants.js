@@ -19,9 +19,9 @@ const Constants = {
     BODY_FRAMES: 10,
 
     // position and scale of psyche photo
-    PSYCHE_PHOTO_X: 500,
-    PSYCHE_PHOTO_Y: 430,
-    PSYCHE_PHOTO_SCALE: 10,
+    PHOTO_X: 500,
+    PHOTO_Y: 430,
+    PHOTO_SCALE: 10,
 
     // psyche photo background
     PHOTO_BACKGROUND_WIDTH: 600,
@@ -29,8 +29,8 @@ const Constants = {
     PHOTO_BORDER: 10,
 
     // found psyche text
-    FOUND_PSYCHE_TEXT_X: 100,
-    FOUND_PSYCHE_TEXT_Y: 250,
+    FOUND_TARGET_TEXT_X: 100,
+    FOUND_TARGET_TEXT_Y: 250,
     // nearest body text
     NEAREST_BODY_TEXT_X: 100,
     NEAREST_BODY_TEXT_Y: 250,
@@ -42,7 +42,7 @@ const Constants = {
     LARGEST_SIDES: 360, // size of the array coverPsyche
 
     // array of angles that player choose to cover the psyche
-    FOUR_SIDES: new Array(0, 90, 180, 270),
+    FOUR_SIDES: [0, 90, 180, 270],
 
     ONE_PHOTO_ANGLE: 45, // one photo covers [angle - 45, angle + 45] of the psyche
 
@@ -55,5 +55,7 @@ const Constants = {
 
     // sprite shading
     DIRECTIONS: ["n", "ne", "e", "se", "s", "sw", "w", "nw", "f", "b"],
-    SHADE_ANGLES: [[67.5, 112.5], [112.5, 157.5], [157.5, 202.5], [202.5, 247.5], [247.5, 292.5], [292.5, 337.5], [337.5, 22.5], [22.5, 67.5]]
+    SHADE_ANGLES: [[67.5, 112.5], [112.5, 157.5], [157.5, 202.5], [202.5, 247.5], [247.5, 292.5], [292.5, 337.5], [337.5, 22.5], [22.5, 67.5]],
+
+    PROBE: "psyche_probe"
 }

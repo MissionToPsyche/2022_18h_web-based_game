@@ -1,12 +1,31 @@
 class MenuManager {
-	constructor() {
-		if (this instanceof MenuManager) {
-			throw Error('A static class cannot be instantiated.');
-		}
-	}
+    constructor() {
+        if (this instanceof MenuManager) {
+            throw Error('A static class cannot be instantiated.');
+        }
+    }
 
-	static restartButtonListener(_scene, _button) {
-		_button.id.setInteractive()
+    static exitPhotoListener(_scene, _button) {
+        _button.id.setInteractive()
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
+                _button.id.setTint(0xF9A000);
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OUT, () => {
+                _button.id.setTint(0xFFFFFF);
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
+                _button.id.setTint(0xF47D33);
+                _button.menu_audio.play();
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
+                _button.id.setTint(0xFFFFFF);
+                _scene.takingPhoto = !_scene.takingPhoto;
+                _button.setVisible(false);
+            });
+    }
+
+    static restartButtonListener(_scene, _button) {
+        _button.id.setInteractive()
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
                 _button.id.setTint(0xF9A000);
             })
@@ -26,10 +45,10 @@ class MenuManager {
                 // Make the direction icon show up again.
                 _scene.direction = undefined;
             });
-	}
+    }
 
-	static exitButtonListener(_scene, _button) {
-		_button.id.setInteractive()
+    static exitButtonListener(_scene, _button) {
+        _button.id.setInteractive()
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
                 _button.id.setTint(0xF9A000);
             })
@@ -47,22 +66,22 @@ class MenuManager {
                 _scene.paused = false;
                 _scene.gameOver = false;
             });
-	}
+    }
 
-	static testListener(_button) {
-		_button.id.setInteractive()
-	        .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
-	            _button.id.setTint(0xF9A000);
-	        })
-	        .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OUT, () => {
-	            _button.id.setTint(0xFFFFFF);
-	        })
-	        .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
-	            _button.id.setTint(0xF47D33);
-	            _button.menu_audio.play();
-	        })
-	        .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
-	            _button.id.setTint(0xFFFFFF);
-	        });
-	}
+    static testListener(_button) {
+        _button.id.setInteractive()
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
+                _button.id.setTint(0xF9A000);
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OUT, () => {
+                _button.id.setTint(0xFFFFFF);
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
+                _button.id.setTint(0xF47D33);
+                _button.menu_audio.play();
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
+                _button.id.setTint(0xFFFFFF);
+            });
+    }
 }

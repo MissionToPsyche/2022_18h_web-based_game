@@ -4,18 +4,9 @@
  */
 class Freeplay extends Simulation {
     constructor() {
-        super("Freeplay", ["psyche"]);
+        super("Freeplay", ["earth", "moon", "psyche"], "earth");
 
         this.pauseText;
-        this.foundPsycheText;
-        this.quitPhotoPageButton;
-        this.psychePhotos;
-        this.photoBackground;
-        this.photoBorder;
-        this.nearestBodyText;
-
-        this.targetAngles; // array of target angles that the player need to take photo
-        this.coverFlags; // array of flags that the player already took photo
     }
 
     /**
@@ -32,7 +23,6 @@ class Freeplay extends Simulation {
 
         this.createPauseButton();
         this.createOrbitToggle();
-        this.takePhoto();
     }
 
     /** The scene's main update loop
@@ -44,10 +34,7 @@ class Freeplay extends Simulation {
         this.updatePauseButton();
         this.updateTakePhoto();
 
-        if (!super.update()) {
-            // this means the game is either paused or over
-            return
-        }
+        super.update()
     }
 
     /**
@@ -208,20 +195,7 @@ class Freeplay extends Simulation {
 
     }
 
-    updateTakePhoto() {
-        if (!this.takingPhoto) {
-            this.foundPsycheText.setVisible(false);
-            this.quitPhotoPageButton.setVisible(false);
-            this.hidePsychePhotos();
-            this.nearestBodyText.setVisible(false);
-        } else if (this.gameSuccess) {
-            this.foundPsycheText.setVisible(true);
-            this.quitPhotoPageButton.setVisible(false);
-            this.nearestBodyText.setVisible(false);
-        } else {
-            this.quitPhotoPageButton.setVisible(true);
-        }
-    }
+
 
     /** Creates the button, key, and associated events
      *  For the orbit lock functionality.
@@ -236,7 +210,7 @@ class Freeplay extends Simulation {
                 this.updateOrbitColor('hover');
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OUT, () => {
-                this.updateOrbitColor(this.bodies["psyche_probe"].orbitToggle ? 'on' : null);
+                this.updateOrbitColor(this.bodies[Constants.PROBE].orbitToggle ? 'on' : null);
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
                 this.updateOrbitColor('on');
@@ -244,7 +218,7 @@ class Freeplay extends Simulation {
                 menu_audio.play();
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
-                this.updateOrbitColor(this.bodies["psyche_probe"].orbitToggle ? 'on' : null);
+                this.updateOrbitColor(this.bodies[Constants.PROBE].orbitToggle ? 'on' : null);
                 if (!this.gameOver && !this.gameSuccess) {
                     this.toggleOrbit();
                 }
@@ -273,186 +247,9 @@ class Freeplay extends Simulation {
      */
     toggleOrbit() {
         if (!this.player.orbitToggle) {
-            this.bodies["psyche_probe"].startOrbitLock(this.player.newTarget);
+            this.bodies[Constants.PROBE].startOrbitLock(this.player.newTarget);
         } else {
-            this.bodies["psyche_probe"].stopOrbitLock();
-        }
-    }
-
-    takePhoto() {
-        this.photoBorder = this.add.rectangle(Constants.PSYCHE_PHOTO_X,
-            Constants.PSYCHE_PHOTO_Y, Constants.PHOTO_BACKGROUND_WIDTH + Constants.PHOTO_BORDER,
-            Constants.PHOTO_BACKGROUND_HEIGHT + Constants.PHOTO_BORDER, Constants.WHITE);
-        this.photoBackground = this.add.rectangle(Constants.PSYCHE_PHOTO_X,
-            Constants.PSYCHE_PHOTO_Y, Constants.PHOTO_BACKGROUND_WIDTH,
-            Constants.PHOTO_BACKGROUND_HEIGHT, Constants.DARKBLUE);
-
-        CameraManager.addUISprite(this.photoBorder);
-        CameraManager.addUISprite(this.photoBackground);
-
-        this.psychePhotos = new Array(Constants.MAX_PSYCHE_PHOTO_NUM);
-        for (let i = 0; i < Constants.MAX_PSYCHE_PHOTO_NUM; i++) {
-            let imageName = "psychePhoto" + i;
-            this.psychePhotos[i] = this.add.image(Constants.PSYCHE_PHOTO_X,
-                Constants.PSYCHE_PHOTO_Y, imageName)
-                .setScale(Constants.PSYCHE_PHOTO_SCALE);
-            CameraManager.addUISprite(this.psychePhotos[i]);
-
-        }
-
-        this.hidePsychePhotos();
-
-        this.foundPsycheText = this.add.text(Constants.FOUND_PSYCHE_TEXT_X, Constants.FOUND_PSYCHE_TEXT_Y, 'You found Psyche!');
-        this.foundPsycheText.setFontSize(Constants.THIRD_FONT_SIZE);
-        this.foundPsycheText.depth = 1000; // larger than 100
-        this.nearestBodyText = this.add.text(Constants.NEAREST_BODY_TEXT_X, Constants.NEAREST_BODY_TEXT_Y, ' ');
-        this.nearestBodyText.setFontSize(Constants.SECOND_FONT_SIZE);
-        CameraManager.addUISprite(this.foundPsycheText);
-
-        // TODO: can let the player to choose difficulty
-        // here default is to take photo of the psyche from four sides
-        this.targetAngles = Constants.FOUR_SIDES;
-        this.coverFlags = new Array(this.targetAngles.length).fill(0);
-
-        this.quitPhotoPageButton = this.add.text(Constants.QUIT_PHOTO_X, Constants.QUIT_PHOTO_Y, 'Back to game')
-            .setFontSize(Constants.THIRD_FONT_SIZE)
-            .setStyle({
-                color: '#111',
-                backgroundColor: '#fff',
-            })
-            .setPadding(Constants.QUIT_PHOTO_PADDING)
-            .setInteractive({ useHandCursor: true })
-            .on('pointerdown', () => {
-                this.takingPhoto = !this.takingPhoto;
-                this.quitPhotoPageButton.setVisible(false);
-
-            })
-            .setVisible(false);
-        CameraManager.addUISprite(this.quitPhotoPageButton);
-    }
-
-    /**
-     * Event for when the photo key is pressed
-     */
-    photoKeyEvent() {
-        // disable spacebar take photo when paused
-        if ((!this.paused) && (!this.gameOver) && (!this.gameSuccess)) {
-            this.takingPhoto = !this.takingPhoto;
-
-            let viewR = Constants.VIEW_R;
-
-            // check if psyche is in the view
-            let viewAngle = this.bodies["psyche_probe"].viewAngle("psyche", viewR)
-            if (viewAngle != -1) {
-                this.foundPsycheText.setVisible(true);
-                let psycheAngle = Phaser.Math.RadToDeg(viewAngle);
-
-                if (psycheAngle < 0) {
-                    psycheAngle += 360;
-                }
-
-                if (psycheAngle > 360) {
-                    psycheAngle -= 360;
-                }
-
-                // now psycheAngle is a positive degree number between 0 and 360
-                // check if psycheAngle covers target angle
-                for (let i = 0; i < this.targetAngles.length; i++) {
-                    if ((Math.abs(psycheAngle - this.targetAngles[i]) <= Constants.ONE_PHOTO_ANGLE)
-                        || (Math.abs(psycheAngle - this.targetAngles[i] + 360) <= Constants.ONE_PHOTO_ANGLE)
-                        || (Math.abs(psycheAngle - this.targetAngles[i] - 360) <= Constants.ONE_PHOTO_ANGLE)) {
-                        this.showPsychePhoto(i);
-                        // this photo covers the target angle targetAngles[i], set the flag
-                        if (this.coverFlags[i] == 1) {
-                            this.foundPsycheText.setText("You have already taken\nphoto of this side, please\ntake photo of other sides.");
-                        } else {
-                            // taking photo, play positive sfx
-                            var positive_audio = this.sound.add('positive');
-                            positive_audio.play();
-                            this.coverFlags[i] = 1;
-                            this.foundPsycheText.setText("Good job! You just took\nphoto of a new Psyche side!");
-                        }
-                    }
-                }
-
-                // check sides covered
-                let sidesCovered = 0;
-                for (let i = 0; i < this.coverFlags.length; i++) {
-                    if (this.coverFlags[i] == 1) {
-                        sidesCovered++;
-                    }
-                }
-                console.log("now " + sidesCovered + " of " + this.coverFlags.length + " sides covered");
-
-                if (sidesCovered == this.coverFlags.length) {
-                    // covered all sides
-                    this.gameSuccess = true;
-                    this.foundPsycheText.setText("Good job! You successfully\ncovered all Psyche sides!");
-                    this.quitPhotoPageButton.setVisible(false);
-                }
-
-            } else {
-                // check which body is in the view and choose the nearest one
-                let currentDistance = 1000; // random big number
-                let nearestBody = null;
-                for (var body in this.bodies) {
-                    if (body == "psyche_probe") {
-                        continue;
-                    }
-
-                    let viewAngle = this.bodies["psyche_probe"].viewAngle(body, viewR)
-                    if (viewAngle != -1) {
-                        // this body is in probe's view, keep the distance
-                        let thisBodyDistance = this.bodies["psyche_probe"].getDistance(body);
-                        if (thisBodyDistance < currentDistance) {
-                            currentDistance = thisBodyDistance;
-                            nearestBody = body;
-                        }
-                    }
-                }
-
-                let nearestInfo = "";
-                if (nearestBody != null) {
-                    nearestInfo = "You found the ";
-                    nearestInfo += nearestBody.charAt(0).toUpperCase();
-                    nearestInfo += nearestBody.slice(1);
-                    nearestInfo += ", \nbut you should try \nto find the Psyche.";
-                }
-
-                this.nearestBodyText.setText(nearestInfo);
-                this.nearestBodyText.setVisible(true);
-            }
-        }
-    }
-
-    /**
-     * hide all the psyche photos.
-     */
-    hidePsychePhotos() {
-        this.photoBorder.setVisible(false);
-        this.photoBackground.setVisible(false);
-        for (let i = 0; i < Constants.MAX_PSYCHE_PHOTO_NUM; i++) {
-            if (typeof (this.psychePhotos[i]) != "undefined") {
-                this.psychePhotos[i].setVisible(false);
-            }
-        }
-    }
-
-    /**
-     * show the psyche photo at a specific index. 
-     * @param {number} idx - index of the psyche photo.
-     */
-    showPsychePhoto(idx) {
-        this.photoBorder.setVisible(true);
-        this.photoBackground.setVisible(true);
-        for (let i = 0; i < Constants.MAX_PSYCHE_PHOTO_NUM; i++) {
-            if (typeof (this.psychePhotos[i]) != "undefined") {
-                if (i == idx) {
-                    this.psychePhotos[i].setVisible(true);
-                } else {
-                    this.psychePhotos[i].setVisible(false);
-                }
-            }
+            this.bodies[Constants.PROBE].stopOrbitLock();
         }
     }
 }
