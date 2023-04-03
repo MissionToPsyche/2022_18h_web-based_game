@@ -32,7 +32,6 @@ class Freeplay extends Simulation {
      */
     update() {
         this.updatePauseButton();
-        this.updateTakePhoto();
 
         super.update()
     }

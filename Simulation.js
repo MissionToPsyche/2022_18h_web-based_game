@@ -118,6 +118,8 @@ class Simulation extends Phaser.Scene {
                 this.updateTargetIndicator(target);
                 this.drawHint(target);
             }
+
+            this.updateTakePhoto();
         }
 
         return this.active();
@@ -600,6 +602,13 @@ class Simulation extends Phaser.Scene {
                 if (sidesCovered == angles.length) {
                     this.foundTargetText.setText("Good job! You successfully\ncovered all " + target + " sides!");
                     this.exitPhotoButton.setVisible(false);
+                }
+
+                const allCovered = Object.values(this.covered_angles).every(body => body.every(angle => angle));
+                if (allCovered) {
+                    this.foundTargetText.setText("Congratulations! You win!");
+                    this.drawHint(target);
+                    this.gameSuccess = true;
                 }
 
                 break;
