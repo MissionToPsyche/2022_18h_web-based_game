@@ -1,9 +1,11 @@
 const Freeplay = new Simulation(
     gamemode = "Freeplay",
     targets = [
+        "sun",
         "mercury",
         "mars",
         "earth",
+        "moon",
         "venus",
         "jupiter",
         "saturn",
@@ -17,6 +19,11 @@ const Freeplay = new Simulation(
 const PsycheMission = new Simulation(
     "PsycheMission",
     ["psyche"],
+    "earth"
+)
+const GasGiants = new Simulation(
+    "GasGiants",
+    ["jupiter", "saturn", "uranus", "neptune"],
     "earth"
 )
 
@@ -39,7 +46,7 @@ var config = {
         }
     },
     //defining game scenes
-    scene: [MainMenu, PsycheMission]
+    scene: [MainMenu, PsycheMission, Freeplay, GasGiants]
 }
 
 var game = new Phaser.Game(config);
