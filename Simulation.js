@@ -72,11 +72,16 @@ class Simulation extends Phaser.Scene {
 
         this.load.audio('ingame_music', 'assets/music/02_Ingame.mp3');
 
-        for (let i = 0; i < Constants.BODY_FRAMES - 2; i++) {
-            let imageName = "psyche_photo_" + i;
-            let filePath = "img/photos/images/psyche_" + i + ".png";
-            this.load.image(imageName, filePath);
+        for (var target of this.valid_targets) {
+            for (var dir of Constants.DIRECTIONS) {
+                for (let i = 1; i <= Constants.BODY_FRAMES; i++) {
+                    let imageName = target + "_" + dir + "_" + String(Constants.BODY_FRAMES % i).padStart(2, "0");
+                    let filePath = "img/photos/images/" + imageName + ".png";
+                    this.load.image(imageName, filePath);
+                }
+            }
         }
+
     }
 
     /**
@@ -244,13 +249,17 @@ class Simulation extends Phaser.Scene {
 
         for (var idx in this.valid_targets) {
             var target = this.valid_targets[idx]
-            this.target_photos[target] = new Array(Constants.BODY_FRAMES);
-            for (var i = 0; i < Constants.BODY_FRAMES; i++) {
-                let imageName = target + "_photo_" + i;
-                let image = this.add.image(Constants.PHOTO_X, Constants.PHOTO_Y, imageName)
-                    .setScale(Constants.PHOTO_SCALE);
-                this.target_photos[target][i] = image;
-                CameraManager.addUISprite(image);
+            this.target_photos[target] = {};
+
+            for (var dir of Constants.DIRECTIONS) {
+                this.target_photos[target][dir] = new Array(Constants.BODY_FRAMES);
+                for (var i = 1; i <= Constants.BODY_FRAMES; i++) {
+                    let imageName = target + "_" + dir + "_" + String(Constants.BODY_FRAMES % i).padStart(2, "0");
+                    let image = this.add.image(Constants.PHOTO_X, Constants.PHOTO_Y, imageName)
+                        .setScale(Constants.PHOTO_SCALE);
+                    this.target_photos[target][dir][i - 1] = image;
+                    CameraManager.addUISprite(image);
+                }
             }
         }
 
@@ -290,9 +299,11 @@ class Simulation extends Phaser.Scene {
 
         for (var _target in this.target_photos) {
             var target = this.target_photos[_target]
-            for (var idx in target) {
-                if (typeof (target[idx]) != "undefined") {
-                    target[idx].setVisible(false);
+            for (var dir of Constants.DIRECTIONS) {
+                for (var idx in target[dir]) {
+                    if (typeof (target[dir][idx]) != "undefined") {
+                        target[dir][idx].setVisible(false);
+                    }
                 }
             }
         }
@@ -302,11 +313,12 @@ class Simulation extends Phaser.Scene {
      * show the psyche photo at a specific index. 
      * @param {number} idx - index of the psyche photo.
      */
-    showTargetPhoto(target, idx) {
+    showTargetPhoto(target, dir, idx) {
         this.photoBorder.setVisible(true);
         this.photoBackground.setVisible(true);
 
-        this.target_photos[target][idx].setVisible(true);
+        const indices = getIndicesAtInterval(Array(Constants.BODY_FRAMES), 4);
+        this.target_photos[target][dir][indices[idx]].setVisible(true);
     }
 
     updateTakePhoto() {
@@ -601,7 +613,8 @@ class Simulation extends Phaser.Scene {
                     if ((Math.abs(targetAngle - Constants.FOUR_SIDES[i]) <= Constants.ONE_PHOTO_ANGLE)
                         || (Math.abs(targetAngle - Constants.FOUR_SIDES[i] + 360) <= Constants.ONE_PHOTO_ANGLE)
                         || (Math.abs(targetAngle - Constants.FOUR_SIDES[i] - 360) <= Constants.ONE_PHOTO_ANGLE)) {
-                        this.showTargetPhoto(target, i);
+                        const dir = this.bodies[target].anims.currentAnim.key.split("-")[1];
+                        this.showTargetPhoto(target, dir, i);
                         // this photo covers the target angle targetAngles[i], set the flag
                         if (this.covered_angles[target][i]) {
                             this.foundTargetText.setText("You have already taken\nphoto of this side, please\ntake photo of other sides.");
@@ -896,4 +909,12 @@ function toTitleCase(str) {
             return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
         }
     );
+}
+
+function getIndicesAtInterval(arr, interval) {
+    const result = [];
+    for (let i = 0; i < arr.length; i += interval) {
+        result.push(i % arr.length);
+    }
+    return result;
 }
