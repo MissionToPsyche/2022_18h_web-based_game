@@ -566,6 +566,10 @@ class Simulation extends Phaser.Scene {
      * Event for when the photo key is pressed
      */
     photoKeyEvent() {
+        if (!this.player.inOrbit) {
+            return;
+        }
+
         // disable spacebar take photo when paused
         if ((!this.paused) && (!this.gameOver) && (!this.gameSuccess)) {
             this.takingPhoto = !this.takingPhoto;
