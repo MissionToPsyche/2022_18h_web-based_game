@@ -487,6 +487,7 @@ class Freeplay extends Phaser.Scene {
         this.graphics.arc(x, y, r, startAngle, endAngle, false);
         this.graphics.strokePath();
     }
+    
 
     /** Creates the image objects and associated events for the 
      *  game's pause button 
@@ -494,13 +495,14 @@ class Freeplay extends Phaser.Scene {
     createPauseButton() {
         this.pauseMenu = new Menu(this);
 
-        this.pauseText = this.add.text(525, 300, 'Pause').setOrigin(0.5).setFontSize(120);
+        this.pauseText = this.add.text(525, 300, 'Pause', { fontFamily: 'CustomFont' }).setOrigin(0.5).setFontSize(100)
+        .setStroke('#e6851e', 16).setShadow(2, 2, "#333333", 2, true, true);
 
-        this.restartButtonPosition = new Phaser.Geom.Point(520, 408);
+        this.restartButtonPosition = new Phaser.Geom.Point(520, 428);
         this.restartButton = new Button(this, this.restartButtonPosition, 'button', 'Restart');
         MenuManager.restartButtonListener(this, this.restartButton);
 
-        this.exitButtonPosition = new Phaser.Geom.Point(520, 508);
+        this.exitButtonPosition = new Phaser.Geom.Point(520, 528);
         this.exitButton = new Button(this, this.exitButtonPosition, 'button', 'Exit');
         MenuManager.exitButtonListener(this, this.exitButton);
 
