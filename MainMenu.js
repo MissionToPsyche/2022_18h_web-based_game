@@ -39,24 +39,18 @@ class MainMenu extends Phaser.Scene {
     }
 
     createTitle() {
-        /*
-        var journey = this.add.image(512, 24, 'title_journey').setScale(0.0);
-        var to = this.add.image(512, 24, 'title_to').setScale(0.0);
-        var psyche = this.add.image(515, 24, 'title_psyche').setScale(0.0);
-        CameraManager.addUISprite(journey);
-        CameraManager.addUISprite(to);
-        CameraManager.addUISprite(psyche);
-        */
-
         var title1 = this.add.text(Constants.TITLE_BEFORE_X, Constants.TITLE_BEFORE_Y, 'Tour', { fontFamily: 'CustomFont' })
             .setScale(Constants.TITLE_BEFORE_SCALE).setOrigin(Constants.TITLE_BEFORE_ORIGIN)
-            .setFontSize(Constants.FIFTH_FONT_SIZE).setStroke(Constants.STR_ORANGE, Constants.TITLE_STROKE_WIDTH);
+            .setFontSize(Constants.FIFTH_FONT_SIZE).setStroke(Constants.STR_ORANGE, Constants.TITLE_STROKE_WIDTH)
+            .setShadow(Constants.TITLE_SHADOW_OFFSET, Constants.TITLE_SHADOW_OFFSET, Constants.STR_DARKGRAY, Constants.TITLE_SHADOW_BLUR, true, true);
         var title2 = this.add.text(Constants.TITLE_BEFORE_X, Constants.TITLE_BEFORE_Y, 'de', { fontFamily: 'CustomFont' })
             .setScale(Constants.TITLE_BEFORE_SCALE).setOrigin(Constants.TITLE_BEFORE_ORIGIN)
-            .setFontSize(Constants.FIFTH_FONT_SIZE).setStroke(Constants.STR_ORANGE, Constants.TITLE_STROKE_WIDTH);
+            .setFontSize(Constants.FIFTH_FONT_SIZE).setStroke(Constants.STR_ORANGE, Constants.TITLE_STROKE_WIDTH)
+            .setShadow(Constants.TITLE_SHADOW_OFFSET, Constants.TITLE_SHADOW_OFFSET, Constants.STR_DARKGRAY, Constants.TITLE_SHADOW_BLUR, true, true);
         var title3 = this.add.text(Constants.TITLE_BEFORE_X, Constants.TITLE_BEFORE_Y, 'Space', { fontFamily: 'CustomFont' })
             .setScale(Constants.TITLE_BEFORE_SCALE).setOrigin(Constants.TITLE_BEFORE_ORIGIN)
-            .setFontSize(Constants.FIFTH_FONT_SIZE).setStroke(Constants.STR_ORANGE, Constants.TITLE_STROKE_WIDTH);
+            .setFontSize(Constants.FIFTH_FONT_SIZE).setStroke(Constants.STR_ORANGE, Constants.TITLE_STROKE_WIDTH)
+            .setShadow(Constants.TITLE_SHADOW_OFFSET, Constants.TITLE_SHADOW_OFFSET, Constants.STR_DARKGRAY, Constants.TITLE_SHADOW_BLUR, true, true);
         CameraManager.addUISprite(title1);
         CameraManager.addUISprite(title2);
         CameraManager.addUISprite(title3);

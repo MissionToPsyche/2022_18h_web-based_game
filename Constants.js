@@ -7,6 +7,7 @@ const Constants = {
     DARKBLUE: 0x12031D,
 
     STR_ORANGE: "#F47D33",
+    STR_DARKGRAY: "#333333",
 
     // font sizes
     FIRST_FONT_SIZE: 80,
@@ -45,6 +46,8 @@ const Constants = {
     TITLE3_DELAY: 1250, 
     TITLE3_DURATION: 450,
     TITLE3_Y: 302,
+    TITLE_SHADOW_OFFSET: 2,
+    TITLE_SHADOW_BLUR: 2,
 
     // position and scale of psyche photo
     PSYCHE_PHOTO_X: 500,
