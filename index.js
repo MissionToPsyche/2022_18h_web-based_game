@@ -5,6 +5,7 @@ var config = {
     width: 1024,
     height: 768,
     backgroundColor: '#12031d',
+    pixelArt: true,
     physics: {
         //setting physics to "matter" an engine capable of a lot of body sim tools
         default: 'matter', 
@@ -16,7 +17,7 @@ var config = {
         }
     },
     //defining game scenes
-    scene: [ Freeplay ]
+    scene: [MainMenu, Freeplay]
 }
 
 var game = new Phaser.Game(config);
