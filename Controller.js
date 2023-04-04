@@ -189,6 +189,31 @@ class Controller {
     getControlMethod() {
         return this.controlMethod
     }
+    /**
+     * Gets the control method currently being used by the game controller.
+     * @returns {string} representing control method.
+     */
+    getControlMethodStr(){
+        if (this.controlMethod == ControlMethod.Tank) {
+            return 'tank';
+        } else {
+            return 'fourway';
+        }
+    }
+
+    /**
+     * Sets the control method currently being used by the game controller.
+     * @param {String} representing control method.
+     */
+    setControlMethod(control) {
+        if (control == 'tank') {
+            this.controlMethod = ControlMethod.Tank;
+            this.controlText.setText("Controls: Tank in Space");
+        } else {
+            this.controlMethod = ControlMethod.FourWay;
+            this.controlText.setText("Controls: 4-Way");
+        }
+    }
 
     /**
      * Gets the current rotation from controller input

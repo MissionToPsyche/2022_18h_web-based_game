@@ -494,18 +494,63 @@ class Freeplay extends Phaser.Scene {
     createPauseButton() {
         this.pauseMenu = new Menu(this);
 
-        this.pauseText = this.add.text(525, 300, 'Pause').setOrigin(0.5).setFontSize(120);
+        this.pauseText = this.add.text(525, 250, 'Pause').setOrigin(0.5).setFontSize(120);
+        this.controlText = this.add.text(525, 525, 'Movement Controls:').setOrigin(0.5).setFontSize(50);
 
-        this.restartButtonPosition = new Phaser.Geom.Point(520, 408);
+        this.restartButtonPosition = new Phaser.Geom.Point(520, 358);
         this.restartButton = new Button(this, this.restartButtonPosition, 'button', 'Restart');
         MenuManager.restartButtonListener(this, this.restartButton);
 
-        this.exitButtonPosition = new Phaser.Geom.Point(520, 508);
+        this.exitButtonPosition = new Phaser.Geom.Point(520, 458);
         this.exitButton = new Button(this, this.exitButtonPosition, 'button', 'Exit');
         MenuManager.exitButtonListener(this, this.exitButton);
 
         this.playButton = this.add.image(964, 708, 'play').setScale(0.5)
         this.pauseButton = this.add.image(964, 708, 'pause').setScale(0.5)
+
+        this.fourWayButtonPosition = new Phaser.Geom.Point(400, 608);
+        this.fourWayButton = new Button(this, this.fourWayButtonPosition, 'button', '4-Way');
+
+        this.fourWayButton.getButton().setTint(0xF47D33);
+
+        //create events for the 4-way control button
+        this.fourWayButton.getButton().setInteractive()
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
+                this.updateControlColor(this.fourWayButton.getButton(), 'fourway', 'hover');
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OUT, () => {
+                this.updateControlColor(this.fourWayButton.getButton(), 'fourway');
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
+                this.updateControlColor(this.fourWayButton.getButton(), 'fourway', 'pressed');
+                var menu_audio = this.sound.add('menu');
+                menu_audio.play();
+                this.controller.setControlMethod('fourway');
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
+                this.tankButton.getButton().setTint(0xFFFFFF);
+            });
+
+        this.tankButtonPosition = new Phaser.Geom.Point(650, 608);
+        this.tankButton = new Button(this, this.tankButtonPosition, 'button', 'tank');
+
+        //create events for the tank control button
+        this.tankButton.getButton().setInteractive()
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
+                this.updateControlColor(this.tankButton.getButton(), 'tank', 'hover');
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OUT, () => {
+                this.updateControlColor(this.tankButton.getButton(), 'tank');
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
+                this.updateControlColor(this.tankButton.getButton(), 'tank', 'pressed');
+                var menu_audio = this.sound.add('menu');
+                menu_audio.play();
+                this.controller.setControlMethod('tank');
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
+                this.fourWayButton.getButton().setTint(0xFFFFFF);
+            });
 
         this.playButton.depth = 100;
         this.pauseButton.depth = 100;
@@ -516,7 +561,10 @@ class Freeplay extends Phaser.Scene {
         this.shadow = this.add.rectangle(0, 0,2048, 2048, color1.color);
         this.shadow.setAlpha(0.5);
 
+        this.pauseMenu.addButton(this.fourWayButton.getElements());
+        this.pauseMenu.addButton(this.tankButton.getElements());
         this.pauseMenu.addElement(this.pauseText);
+        this.pauseMenu.addElement(this.controlText);
         this.pauseMenu.addButton(this.restartButton.getElements());
         this.pauseMenu.addButton(this.exitButton.getElements());
         this.pauseMenu.addElement(this.shadow);
@@ -602,6 +650,29 @@ class Freeplay extends Phaser.Scene {
             default:
                 this.pauseButton.setTint(0xFFFFFF);
                 this.playButton.setTint(0xFFFFFF);
+        }
+    }
+
+    /**
+     * updates the color of the control setting buttons based on the given state of the button
+     * @param {string} state The state of the button. Can be: hover, pressed or no value for default color
+     * @param {object} btn the button to be modified.
+     * @param {string} mode the movement method that relates to the button.
+     */
+    updateControlColor(btn,mode,state) {
+        switch (state) {
+            case 'hover':
+                btn.setTint(0xF9A000);
+                break;
+            case 'pressed':
+                btn.setTint(0xF47D33);
+                break;
+            default:
+                if(this.controller.getControlMethodStr() != mode){
+                    btn.setTint(0xFFFFFF);
+                } else{
+                    btn.setTint(0xF47D33);
+                }
         }
     }
 
