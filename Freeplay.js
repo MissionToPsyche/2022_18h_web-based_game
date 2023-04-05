@@ -615,14 +615,11 @@ class Freeplay extends Phaser.Scene {
 
     createParallaxBackground() {
         this.backgroundLayer1 = this.add.image(0, 0, 'parallax_stars_layer1')
-            .setOrigin(0.5)
-            .setDepth(10);
+            .setOrigin(0.5);
         this.backgroundLayer2 = this.add.image(0, 0, 'parallax_stars_layer2')
-            .setOrigin(0.5)
-            .setDepth(10);
+            .setOrigin(0.5);
         this.backgroundLayer3 = this.add.image(0, 0, 'parallax_stars_layer3')
-            .setOrigin(0.5)
-            .setDepth(10);
+            .setOrigin(0.5);
         this.backgroundLayer1.setVisible(true);
         this.backgroundLayer2.setVisible(true);
         this.backgroundLayer3.setVisible(true);
