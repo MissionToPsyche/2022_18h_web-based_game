@@ -116,6 +116,9 @@ class Freeplay extends Phaser.Scene {
         CameraManager.initializeMainCamera(this);
         CameraManager.initializeUICamera(this);
         CameraManager.initializeMiniCamera(this);
+        LayerManager.setScene(this);
+        LayerManager.addLayer();
+        LayerManager.addLayer();
 
         var map_border = this.add.image(880,110,'minimap_border').setScale(0.35);
 
@@ -155,6 +158,9 @@ class Freeplay extends Phaser.Scene {
                 }
 
                 this.bodies[id].setTexture(id, 0);
+                CameraManager.addGameSprite(this.bodies[id]);
+                LayerManager.addToLayer(0, this.bodies[id]);
+                this.bodies[id].setDepth(50)
             }
         }
 
@@ -382,7 +388,7 @@ class Freeplay extends Phaser.Scene {
             this.direction = this.add.image(directionX, directionY, 'direction').setScale(0.3);
             CameraManager.addUISprite(this.direction);
             // make the direction indicator not on top of other page such as pause menu
-            this.direction.depth = -1;
+            this.direction.setDepth(51);
         }
 
         if (this.bodies["psyche_probe"].orbitToggle) {
@@ -507,9 +513,9 @@ class Freeplay extends Phaser.Scene {
         this.playButton = this.add.image(964, 708, 'play').setScale(0.5)
         this.pauseButton = this.add.image(964, 708, 'pause').setScale(0.5)
 
-        this.playButton.depth = 100;
-        this.pauseButton.depth = 100;
-        this.pauseText.depth = 100;
+        this.playButton.setDepth(100);
+        this.pauseButton.setDepth(100);
+        this.pauseText.setDepth(100);
 
         // To darken screen
         const color1 = new Phaser.Display.Color(0, 0, 0);
@@ -768,7 +774,7 @@ class Freeplay extends Phaser.Scene {
 
         this.foundPsycheText = this.add.text(Constants.FOUND_PSYCHE_TEXT_X, Constants.FOUND_PSYCHE_TEXT_Y, 'You found Psyche!');
         this.foundPsycheText.setFontSize(Constants.THIRD_FONT_SIZE);
-        this.foundPsycheText.depth = 1000; // larger than 100
+        this.foundPsycheText.setDepth(1000); // larger than 100
         this.nearestBodyText = this.add.text(Constants.NEAREST_BODY_TEXT_X, Constants.NEAREST_BODY_TEXT_Y, ' ');
         this.nearestBodyText.setFontSize(Constants.SECOND_FONT_SIZE);
         CameraManager.addUISprite(this.foundPsycheText);
