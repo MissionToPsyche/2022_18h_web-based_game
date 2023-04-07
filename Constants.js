@@ -2,6 +2,7 @@
 const Constants = {
     // colors
     WHITE: 0xFFFFFF,
+    RED: 0xFF0000,
     ORANGE: 0xF47D33,
     DARKBLUE: 0x12031D,
 
@@ -55,4 +56,7 @@ const Constants = {
     MUTE_X: 964,
     MUTE_Y: 620,
     MUTE_SCALE: 0.5,
+
+    //standard offsets
+    ROTATION_OFFSET: (3/4)*Math.PI
 }

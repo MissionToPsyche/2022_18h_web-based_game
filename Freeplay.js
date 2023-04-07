@@ -265,8 +265,39 @@ class Freeplay extends Phaser.Scene {
         }
 
         //for probe's gravity lock functionality:
-        if (this.bodies["psyche_probe"].orbitToggle && !this.bodies["psyche_probe"].inOrbit) {
-            this.bodies["psyche_probe"].maintainOrbit(this);
+        if (this.player.findingTarget) {
+            var target = this.player.newTarget;
+            var path = new Phaser.Geom.Circle(target.x, target.y, target.r + 5).getPoints(false, 0.5);
+            let ind = new Phaser.Curves.Spline(path);
+
+            this.graphics.lineStyle(Constants.HINT_WIDTH_BEFORE, Constants.WHITE, Constants.HINT_ALPHA_BEFORE);
+            ind.draw(this.graphics, 64);
+            this.graphics.fillStyle(0xffffff, 1);
+        }
+        else if (this.bodies["psyche_probe"].orbitToggle && !this.bodies["psyche_probe"].inOrbit) {
+            let ratio = this.bodies["psyche_probe"].maintainOrbit(this);
+            let subRadius = ratio * this.player.orbitTarget.r + (5 * (1 - ratio));
+            if (!subRadius) {
+                subRadius = this.player.orbitTarget.r;
+            }
+
+            //creating orbit lock progress indicator
+            var path = new Phaser.Geom.Circle(this.player.orbitTarget.x, this.player.orbitTarget.y, this.player.orbitTarget.r+subRadius).getPoints(false, 0.5); //path of the indicator.
+            let ind = new Phaser.Curves.Spline(path);
+            let subPoints = path.length * ratio;
+
+            this.graphics.lineStyle(Constants.HINT_WIDTH_BEFORE, Constants.WHITE, Constants.HINT_ALPHA_BEFORE);
+            ind.draw(this.graphics, 64);
+
+            path.splice(Math.floor(subPoints));
+
+            if (path.length > 0) {
+                let prog = new Phaser.Curves.Spline(path);
+
+                this.graphics.lineStyle(Constants.HINT_WIDTH_BEFORE, Constants.ORANGE, Constants.HINT_ALPHA_AFTER);
+                prog.draw(this.graphics, 64);
+                this.graphics.fillStyle(0x00ff00, 1);
+            }
         } else if (this.bodies["psyche_probe"].inOrbit){
             //draw the orbit boundries if probe is locked in an orbit
             this.graphics.lineStyle(1, 0xff0000, 0.5);
@@ -310,7 +341,6 @@ class Freeplay extends Phaser.Scene {
                 } else if (sunAngle > 360) {
                     sunAngle -= 360;
                 }
-
                 for (const idx in this.shade_angles) {
                     const angle = this.shade_angles[idx]
                     if ((angle[0] < sunAngle && sunAngle <= angle[1]) || (angle[0] > angle[1] && (angle[0] < sunAngle || sunAngle <= angle[1]))) {
@@ -565,7 +595,7 @@ class Freeplay extends Phaser.Scene {
                 // disable pause when in the taking photo page
                 if (!this.takingPhoto) {
                     this.updatePauseColor();
-                    this.paused = !this.paused;
+                    this.togglePaused();
                 }
             });
 
@@ -725,11 +755,12 @@ class Freeplay extends Phaser.Scene {
      * Toggles the orbit state of the probe
      */
     toggleOrbit() {
-        this.bodies["psyche_probe"].orbitToggle = !this.bodies["psyche_probe"].orbitToggle;
-        if (!this.bodies["psyche_probe"].inOrbit) { 
-            this.bodies["psyche_probe"].startOrbitLock(this);
+        if (!this.player.orbitToggle) { 
+            this.bodies["psyche_probe"].startOrbitLock(this.player.newTarget);
+            this.bodies["psyche_probe"].orbitToggle = true;
         } else {
             this.bodies["psyche_probe"].stopOrbitLock();
+            this.bodies["psyche_probe"].orbitToggle = false;
         }
     }
 
