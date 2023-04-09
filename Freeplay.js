@@ -20,6 +20,8 @@ class Freeplay extends Phaser.Scene {
         this.gameSuccess = false;
         this.pauseText;
 
+        this.optionOpen = false;
+
         this.takingPhoto = false;
         this.foundPsycheText; 
         this.quitPhotoPageButton;
@@ -207,6 +209,7 @@ class Freeplay extends Phaser.Scene {
         }
 
         this.createPauseButton();
+        this.createOptionMenu();
         this.createOrbitToggle();
         this.takePhoto();
 
@@ -487,28 +490,35 @@ class Freeplay extends Phaser.Scene {
         this.graphics.arc(x, y, r, startAngle, endAngle, false);
         this.graphics.strokePath();
     }
-
     /** Creates the image objects and associated events for the 
-     *  game's pause button 
+     *  game's more option menu 
      */
-    createPauseButton() {
-        this.pauseMenu = new Menu(this);
+    createOptionMenu(){
+        this.optionMenu = new Menu(this);
+        this.controlText = this.add.text(525, 458, 'Movement Controls:').setOrigin(0.5).setFontSize(50);
 
-        this.pauseText = this.add.text(525, 250, 'Pause').setOrigin(0.5).setFontSize(120);
-        this.controlText = this.add.text(525, 525, 'Movement Controls:').setOrigin(0.5).setFontSize(50);
+        this.backButtonPosition = new Phaser.Geom.Point(520, 668);
+        this.backButton = new Button(this, this.backButtonPosition, 'button', 'Back');
 
-        this.restartButtonPosition = new Phaser.Geom.Point(520, 358);
-        this.restartButton = new Button(this, this.restartButtonPosition, 'button', 'Restart');
-        MenuManager.restartButtonListener(this, this.restartButton);
+        //create events for the back button
+        this.backButton.getButton().setInteractive()
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
+                this.updateToggleColor('hover');
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OUT, () => {
+                this.updateToggleColor();
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
+                this.updateToggleColor('pressed');
+                var menu_audio = this.sound.add('menu');
+                menu_audio.play();
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
+                this.pauseMenu.setVisible(true);
+                this.optionMenu.setVisible(false);
+            })
 
-        this.exitButtonPosition = new Phaser.Geom.Point(520, 458);
-        this.exitButton = new Button(this, this.exitButtonPosition, 'button', 'Exit');
-        MenuManager.exitButtonListener(this, this.exitButton);
-
-        this.playButton = this.add.image(964, 708, 'play').setScale(0.5)
-        this.pauseButton = this.add.image(964, 708, 'pause').setScale(0.5)
-
-        this.fourWayButtonPosition = new Phaser.Geom.Point(400, 608);
+        this.fourWayButtonPosition = new Phaser.Geom.Point(400, 541);
         this.fourWayButton = new Button(this, this.fourWayButtonPosition, 'button', '4-Way');
 
         this.fourWayButton.getButton().setTint(0xF47D33);
@@ -531,7 +541,7 @@ class Freeplay extends Phaser.Scene {
                 this.tankButton.getButton().setTint(0xFFFFFF);
             });
 
-        this.tankButtonPosition = new Phaser.Geom.Point(650, 608);
+        this.tankButtonPosition = new Phaser.Geom.Point(650, 541);
         this.tankButton = new Button(this, this.tankButtonPosition, 'button', 'tank');
 
         //create events for the tank control button
@@ -552,6 +562,61 @@ class Freeplay extends Phaser.Scene {
                 this.fourWayButton.getButton().setTint(0xFFFFFF);
             });
 
+        // To darken screen
+        const color1 = new Phaser.Display.Color(0, 0, 0);
+        this.shadow = this.add.rectangle(0, 0,2048, 2048, color1.color);
+        this.shadow.setAlpha(0.5);
+
+        this.optionMenu.addButton(this.fourWayButton.getElements());
+        this.optionMenu.addButton(this.tankButton.getElements());
+        this.optionMenu.addButton(this.backButton.getElements());
+        this.optionMenu.addElement(this.controlText);
+        this.optionMenu.addElement(this.shadow);
+
+    }
+
+    /** Creates the image objects and associated events for the 
+     *  game's pause button 
+     */
+    createPauseButton() {
+        this.pauseMenu = new Menu(this);
+
+        this.pauseText = this.add.text(525, 250, 'Pause').setOrigin(0.5).setFontSize(120);
+
+        this.restartButtonPosition = new Phaser.Geom.Point(520, 358);
+        this.restartButton = new Button(this, this.restartButtonPosition, 'button', 'Restart');
+        MenuManager.restartButtonListener(this, this.restartButton);
+
+        this.exitButtonPosition = new Phaser.Geom.Point(520, 458);
+        this.exitButton = new Button(this, this.exitButtonPosition, 'button', 'Exit');
+        MenuManager.exitButtonListener(this, this.exitButton);
+
+        this.optionButtonPosition = new Phaser.Geom.Point(520, 558);
+        this.optionButton = new Button(this, this.optionButtonPosition, 'button', 'More..');
+
+        //create events for the option button
+        this.optionButton.getButton().setInteractive()
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
+                this.updateToggleColor('hover');
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OUT, () => {
+                this.updateToggleColor();
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
+                this.updateToggleColor('pressed');
+                var menu_audio = this.sound.add('menu');
+                menu_audio.play();
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
+                this.pauseMenu.setVisible(false);
+                this.optionMenu.setVisible(true);
+                // flag for when the option menu is open.
+                this.optionOpen = true;
+            })
+
+        this.playButton = this.add.image(964, 708, 'play').setScale(0.5)
+        this.pauseButton = this.add.image(964, 708, 'pause').setScale(0.5)
+
         this.playButton.depth = 100;
         this.pauseButton.depth = 100;
         this.pauseText.depth = 100;
@@ -561,12 +626,10 @@ class Freeplay extends Phaser.Scene {
         this.shadow = this.add.rectangle(0, 0,2048, 2048, color1.color);
         this.shadow.setAlpha(0.5);
 
-        this.pauseMenu.addButton(this.fourWayButton.getElements());
-        this.pauseMenu.addButton(this.tankButton.getElements());
         this.pauseMenu.addElement(this.pauseText);
-        this.pauseMenu.addElement(this.controlText);
         this.pauseMenu.addButton(this.restartButton.getElements());
         this.pauseMenu.addButton(this.exitButton.getElements());
+        this.pauseMenu.addButton(this.optionButton.getElements());
         this.pauseMenu.addElement(this.shadow);
 
 
@@ -604,6 +667,7 @@ class Freeplay extends Phaser.Scene {
                 if (!this.takingPhoto) {
                     this.updatePauseColor();
                     this.togglePaused();
+                    this.optionOpen = false;
                 }
             })
 
@@ -630,10 +694,30 @@ class Freeplay extends Phaser.Scene {
 
         //add all the images to the UI camera.
         CameraManager.addUISprite(this.playButton);
-        CameraManager.addUISprite(this.pauseButton);
+        CameraManager.addUISprite(this.pauseButton);     
     }
 
     /**
+     * updates the color of the option and back buttons based on the given state of the button
+     * @param {string} state The state of the button. Can be: hover, pressed or no value for default color
+     */
+    updateToggleColor(state) {
+        switch (state) {
+            case 'hover':
+                this.optionButton.getButton().setTint(0xF9A000);
+                this.backButton.getButton().setTint(0xF9A000);
+                break;
+            case 'pressed':
+                this.optionButton.getButton().setTint(0xF47D33);
+                this.backButton.getButton().setTint(0xF47D33);
+                break;
+            default:
+                this.optionButton.getButton().setTint(0xFFFFFF);
+                this.backButton.getButton().setTint(0xFFFFFF);
+        }
+    }
+
+        /**
      * updates the color of the pause and play buttons based on the given state of the button
      * @param {string} state The state of the button. Can be: hover, pressed or no value for default color
      */
@@ -690,14 +774,17 @@ class Freeplay extends Phaser.Scene {
     updatePauseButton() {
         // if paused and not game over then we can show the pause text and allow the pause/play buttons to update
         if (this.paused && !this.gameOver && !this.gameSuccess) {
-            this.pauseText.setVisible(true)
             this.playButton.setVisible(true)
             this.pauseButton.setVisible(false);
+            if(!this.optionOpen){
             this.pauseMenu.setVisible(true);
+            this.pauseText.setVisible(true);
+            }
         } else {
             this.pauseButton.setVisible(true);
             this.playButton.setVisible(false);
             this.pauseMenu.setVisible(false);
+            this.optionMenu.setVisible(false);
         }
 
         // if game over then show the game over text
