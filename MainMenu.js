@@ -19,7 +19,7 @@ class MainMenu extends Phaser.Scene {
         this.load.image('space', 'img/icons/space.png'); 
         this.load.image('p', 'img/icons/p.png'); 
 
-        this.load.audio('intro_music', 'assets/music/01_Intro.mp3');
+        this.load.audio('intro_music', 'assets/music/01_Psychemission_Menu.wav');
         this.load.audio('load', 'assets/sfx/load.wav');
         this.load.audio('menu', 'assets/sfx/misc_menu_4.wav');
     }
