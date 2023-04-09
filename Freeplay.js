@@ -75,6 +75,9 @@ class Freeplay extends Phaser.Scene {
         this.load.spritesheet('psyche_probe', "img/sprites/probe_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
         this.load.spritesheet('psyche_probe_fx', "img/sprites/fx_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
         this.load.image('psyche_probe_icon', "img/icons/arrow.png");
+        this.load.image('parallax_stars_layer1', "img/sprites/star_background_layer1.png");
+        this.load.image('parallax_stars_layer2', "img/sprites/star_background_layer2.png");
+        this.load.image('parallax_stars_layer3', "img/sprites/star_background_layer3.png");
 
         // load the photo of psyche
         this.load.image('psychePhoto1', "img/photos/psyche1.png");
@@ -119,8 +122,7 @@ class Freeplay extends Phaser.Scene {
         CameraManager.initializeMainCamera(this);
         CameraManager.initializeUICamera(this);
         CameraManager.initializeMiniCamera(this);
-
-        //this.map_border = this.add.image(880,110,'minimap_border').setScale(0.35);
+        this.createParallaxBackground();
 
         //creating Body objects
         this.json = this.cache.json.get('bodies');
@@ -131,17 +133,39 @@ class Freeplay extends Phaser.Scene {
                 let diameter = body['diameter']['value'];
                 let orbit_distance = body['orbit_distance']['value'];
 
-                let collisionGroup1 = this.matter.world.nextGroup(true);
-                let collisionGroup2 = this.matter.world.nextGroup();
-
                 if (type != "probes") {
                     let parent = this.bodies[body['orbits']];
                     let angle = body['angle'];
                     let day_length = body['day_length']['value'];
 
-                    this.bodies[id] = new Satellite(this, id, mass, diameter, parent, angle, orbit_distance, day_length);
+                    this.bodies[id] = new Satellite(this, id, mass, diameter, parent, angle, orbit_distance, day_length).setDepth(50);
+
+                    for (const dir of this.dirs) {
+                        const offset = 16 * this.dirs.indexOf(dir)
+                        this.anims.create({
+                            key: id + "-" + dir,
+                            frames: this.anims.generateFrameNumbers(id, {
+                                frames: [offset + 0,
+                                offset + 1,
+                                offset + 2,
+                                offset + 3,
+                                offset + 4,
+                                offset + 5,
+                                offset + 6,
+                                offset + 7,
+                                offset + 8,
+                                offset + 9]
+                            }),
+                            frameRate: 12,
+                            repeat: -1
+                        });
+                    }
+
+                    this.bodies[id].play(id + "-f");
+                    //this.bodies[id] = new Satellite(this, id, mass, diameter, parent, angle, orbit_distance, day_length);
+
                 } else {
-                    this.bodies[id] = new Probe(this, id, mass, diameter);
+                    this.bodies[id] = new Probe(this, id, mass, diameter).setDepth(49);
                 }
 
                 for (const dir of this.dirs) {
@@ -226,6 +250,7 @@ class Freeplay extends Phaser.Scene {
     update() {
         MenuManager.updatePauseMenu(this);
         this.updateTakePhoto();
+        this.updateParallaxBackground();
 
         // don't update bodies if paused, game over, or is taking photo
         if (this.paused || this.gameOver || this.gameSuccess || this.takingPhoto) {
@@ -489,6 +514,27 @@ class Freeplay extends Phaser.Scene {
         let endAngle = Phaser.Math.DegToRad(180 + angle + size);
         this.graphics.arc(x, y, r, startAngle, endAngle, false);
         this.graphics.strokePath();
+    }
+
+    createParallaxBackground() {
+        this.backgroundLayer1 = this.add.image(0, 0, 'parallax_stars_layer1')
+            .setOrigin(0.5);
+        this.backgroundLayer2 = this.add.image(0, 0, 'parallax_stars_layer2')
+            .setOrigin(0.5);
+        this.backgroundLayer3 = this.add.image(0, 0, 'parallax_stars_layer3')
+            .setOrigin(0.5);
+        this.backgroundLayer1.setVisible(true);
+        this.backgroundLayer2.setVisible(true);
+        this.backgroundLayer3.setVisible(true);
+    }
+
+    updateParallaxBackground() {
+        this.backgroundLayer1.x -= this.bodies["psyche_probe"].vel.x * 0.0625;
+        this.backgroundLayer1.y -= this.bodies["psyche_probe"].vel.y * 0.0625;
+        this.backgroundLayer2.x -= this.bodies["psyche_probe"].vel.x * 0.125;
+        this.backgroundLayer2.y -= this.bodies["psyche_probe"].vel.y * 0.125;
+        this.backgroundLayer3.x -= this.bodies["psyche_probe"].vel.x * 0.25;
+        this.backgroundLayer3.y -= this.bodies["psyche_probe"].vel.y * 0.25;
     }
 
     /**
