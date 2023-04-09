@@ -567,7 +567,7 @@ class Freeplay extends Phaser.Scene {
         this.graphics.arc(x, y, r, startAngle, endAngle, false);
         this.graphics.strokePath();
     }
-
+    
     createParallaxBackground() {
         this.backgroundLayer1 = this.add.image(0, 0, 'parallax_stars_layer1')
             .setOrigin(0.5);
