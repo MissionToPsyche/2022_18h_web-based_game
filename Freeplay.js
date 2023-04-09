@@ -19,6 +19,8 @@ class Freeplay extends Phaser.Scene {
         this.gameOver = false;
         this.gameSuccess = false;
         this.pauseText;
+        this.map_border;
+        this.isMapVisible;
 
         this.takingPhoto = false;
         this.foundPsycheText; 
@@ -31,6 +33,9 @@ class Freeplay extends Phaser.Scene {
         this.photoBorder;
         this.nearestBodyText;
 
+        this.restart;
+        this.msgDone;
+        this.earthDone;
         this.testMenu;
         this.testButton;
 
@@ -78,6 +83,11 @@ class Freeplay extends Phaser.Scene {
         this.load.image('parallax_stars_layer1', "img/sprites/star_background_layer1.png");
         this.load.image('parallax_stars_layer2', "img/sprites/star_background_layer2.png");
         this.load.image('parallax_stars_layer3', "img/sprites/star_background_layer3.png");
+        this.restart = false;
+        this.earthDone = false;
+
+        // Make the indicator show up again.
+        this.direction = undefined;
 
         // load the photo of psyche
         this.load.image('psychePhoto1', "img/photos/psyche1.png");
@@ -233,6 +243,17 @@ class Freeplay extends Phaser.Scene {
             this.ingame_music.play({ loop: true });
         }
 
+        // Create a shaded dialog box
+        const color1 = new Phaser.Display.Color(0, 0, 0);
+        TutorialManager.setUp(this, color1.color);
+        if(TutorialManager.tutorialActivated()){
+            TutorialManager.loadMsg(0);
+
+        } else{
+            TutorialManager.msgVisibility(false);
+        }
+        this.takePhoto();
+
         //creating controller
         this.controller = new Controller(this, this.bodies["psyche_probe"]);
         this.bodies["psyche_probe"].setController(this.controller);
@@ -240,6 +261,8 @@ class Freeplay extends Phaser.Scene {
         MenuManager.createPauseMenu(this);
         this.takePhoto();
         MenuManager.createHeadsUpDisplay(this);
+        //Make map appear.
+        this.changeMap();
     }
 
     /** The scene's main update loop
@@ -249,6 +272,8 @@ class Freeplay extends Phaser.Scene {
      */
     update() {
         MenuManager.updatePauseMenu(this);
+        const moveUnit = 0.01;
+
         this.updateTakePhoto();
         this.updateParallaxBackground();
 
@@ -314,6 +339,10 @@ class Freeplay extends Phaser.Scene {
                 this.graphics.fillStyle(0x00ff00, 1);
             }
         } else if (this.bodies["psyche_probe"].inOrbit){
+            if(this.mapBorder.visible == true){
+                this.isMapVisible = true;
+                this.updateMap();
+            }
             //draw the orbit boundries if probe is locked in an orbit
             this.graphics.lineStyle(1, 0xff0000, 0.5);
             this.bodies["psyche_probe"].getOrbitPath('new').draw(this.graphics, 64);
@@ -322,6 +351,29 @@ class Freeplay extends Phaser.Scene {
             this.graphics.lineStyle(1, 0x0000ff, 0.5);
             this.bodies["psyche_probe"].getOrbitPath('cur').draw(this.graphics, 64);
             this.graphics.fillStyle(0x00ff00, 1);
+            if(TutorialManager.tutorialActivated() && this.bodies["psyche_probe"].orbitTarget.id =="psyche"){
+                if(!this.msgDone){
+                    TutorialManager.loadMsg(3);
+                    // Make sure the dialog doesn't keep on updating.
+                    this.msgDone = true;
+                }
+            } else if(TutorialManager.tutorialActivated() && 
+            (this.bodies["psyche_probe"].orbitTarget.id !="psyche" && 
+            this.bodies["psyche_probe"].orbitTarget.id !="earth")){
+                if(!this.msgDone){
+                   TutorialManager.loadMsg(6);
+                    // Make sure the dialog doesn't keep on updating.
+                    this.msgDone = true;
+                }
+            } else if(TutorialManager.tutorialActivated() && 
+            (this.bodies["psyche_probe"].orbitTarget.id !="psyche" && 
+            this.bodies["psyche_probe"].orbitTarget.id =="earth")){
+                if(!this.msgDone && this.earthDone){
+                   TutorialManager.loadMsg(7);
+                    // Make sure the dialog doesn't keep on updating.
+                    this.msgDone = true;
+                }
+            }
         }
 
         for (const body in this.bodies) {
@@ -545,18 +597,102 @@ class Freeplay extends Phaser.Scene {
         this.controller.toggleMovementKeys();
     }
 
+    resumeMap(){
+        // Check if map was visible before pause.
+        if(this.isMapVisible && !this.bodies["psyche_probe"].inOrbit){
+            this.updateMap();
+            this.isMapVisible = false;
+        }
+    }
+
+    updateMap(){
+        if(!this.bodies["psyche_probe"].inOrbit){
+            this.changeMap();
+        } else if(this.bodies["psyche_probe"].inOrbit && this.mapBorder.visible == true){
+            this.changeMap();
+        }
+    }
+
+    changeMap(){
+        var visible = CameraManager.popMap();
+        if(visible){
+            this.mapBorder.setVisible(true);
+        }else{
+            this.mapBorder.setVisible(false);
+        }
+    }
+
     updateTakePhoto() {
         if (!this.takingPhoto) {
             this.foundPsycheText.setVisible(false);  
             this.quitPhotoPageButton.setVisible(false);
             this.hidePsychePhotos();
             this.nearestBodyText.setVisible(false);
-        }  else if (this.gameSuccess) {
+        } else if (this.gameSuccess) {
             this.foundPsycheText.setVisible(true);  
             this.quitPhotoPageButton.setVisible(false);
             this.nearestBodyText.setVisible(false);
-        } else {
+        } else if(!TutorialManager.tutorialActivated()){
             this.quitPhotoPageButton.setVisible(true);
+        } else if(TutorialManager.tutorialActivated()){
+            this.takingPhoto = !this.takingPhoto;
+        }
+    }
+    
+    /** Creates the button, key, and associated events
+     *  For the orbit lock functionality.
+     */
+    createOrbitToggle() {
+        this.orbitButton = this.add.image(56, 708, 'orbit').setScale(0.5);
+        this.orbitButton.setTint(0xF47D33);
+        CameraManager.addUISprite(this.orbitButton);
+
+        /*
+        this.input.keyboard
+            .on('keyup-SHIFT', () => {
+                this.bodies["psyche_probe"].orbitToggle = !this.bodies["psyche_probe"].orbitToggle;
+                this.orbitButton.setTint(this.bodies["psyche_probe"].orbitToggle ? 0xF47D33 : 0xFFFFFF);
+                if (!this.bodies["psyche_probe"].inOrbit) { 
+                    this.bodies["psyche_probe"].startOrbitLock(this);
+                } else {
+                    this.bodies["psyche_probe"].stopOrbitLock();
+                }
+            });
+        */
+
+        this.orbitButton.setInteractive()
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
+                this.updateOrbitColor('hover');
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OUT, () => {
+                this.updateOrbitColor(this.bodies["psyche_probe"].orbitToggle ? 'on' : null);
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
+                this.updateOrbitColor('on');
+                var menu_audio = this.sound.add('menu');
+                menu_audio.play();
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
+                this.updateOrbitColor(this.bodies["psyche_probe"].orbitToggle ? 'on' : null);
+                if(!this.gameOver && !this.gameSuccess) {
+                    this.toggleOrbit();
+                }
+            });
+    }
+    /**
+     * updates the color of the orbit button based on the given state of the button
+     * @param {string} state The state of the button. Can be: 'hover', 'on', or no value for default
+     */
+    updateOrbitColor(state) {
+        switch (state) {
+            case 'hover':
+                this.orbitButton.setTint(0xF9A000);
+                break;
+            case 'on':
+                this.orbitButton.setTint(0xF47D33);
+                break;
+            default:
+                this.orbitButton.setTint(0xFFFFFF);
         }
     }
 
@@ -569,6 +705,17 @@ class Freeplay extends Phaser.Scene {
             this.bodies["psyche_probe"].orbitToggle = true;
         } else {
             this.bodies["psyche_probe"].stopOrbitLock();
+            if(TutorialManager.tutorialActivated()){
+                if(this.earthDone == false){
+                    this.earthDone = true;
+                    TutorialManager.loadMsg(1);
+                } else{
+                    TutorialManager.loadMsg(4);
+                }
+            }
+            // Makes sure dialog for when orbiting can reappear.
+            this.msgDone = false;
+            this.resumeMap();
             this.bodies["psyche_probe"].orbitToggle = false;
         }
     }
@@ -596,7 +743,7 @@ class Freeplay extends Phaser.Scene {
         
         this.hidePsychePhotos();
 
-        this.foundPsycheText = this.add.text(Constants.FOUND_PSYCHE_TEXT_X, Constants.FOUND_PSYCHE_TEXT_Y, 'You found Psyche!');
+        this.foundPsycheText = this.add.text(Constants.FOUND_PSYCHE_TEXT_X, Constants.FOUND_PSYCHE_TEXT_Y, '');
         this.foundPsycheText.setFontSize(Constants.THIRD_FONT_SIZE);
         this.foundPsycheText.depth = 1000; // larger than 100
         this.nearestBodyText = this.add.text(Constants.NEAREST_BODY_TEXT_X, Constants.NEAREST_BODY_TEXT_Y, ' ');
@@ -619,7 +766,9 @@ class Freeplay extends Phaser.Scene {
             .on('pointerdown', () => {
                 this.takingPhoto = !this.takingPhoto;
                 this.quitPhotoPageButton.setVisible(false);
-                
+                if(TutorialManager.tutorialActivated()){
+                    TutorialManager.loadMsg(5);
+                }
             })
             .setVisible(false);
         CameraManager.addUISprite(this.quitPhotoPageButton);
@@ -698,7 +847,7 @@ class Freeplay extends Phaser.Scene {
                     this.quitPhotoPageButton.setVisible(false);
                 }
                         
-            } else {
+            } else if(!TutorialManager.tutorialActivated()){
                 // check which body is in the view and choose the nearest one
                 let currentDistance = 1000; // random big number
                 let nearestBody = null;
@@ -758,3 +907,7 @@ class Freeplay extends Phaser.Scene {
         }
     }
 }
+
+
+
+

@@ -9,9 +9,19 @@ class MainMenu extends Phaser.Scene {
         this.load.image('title_journey', 'img/journey.png');
         this.load.image('title_to', 'img/to.png');
         this.load.image('title_psyche', 'img/psyche.png');
+        this.load.image('control', 'img/icons/control.png'); 
+        this.load.image('exit', 'img/icons/exit.png'); // an exit button
+        // Key icons for control menu
+        this.load.image('down', 'img/icons/downkey.png'); 
+        this.load.image('right', 'img/icons/rightkey.png'); 
+        this.load.image('left', 'img/icons/leftkey.png'); 
+        this.load.image('up', 'img/icons/upkey.png'); 
+        this.load.image('space', 'img/icons/space.png'); 
+        this.load.image('p', 'img/icons/p.png'); 
 
         this.load.audio('intro_music', 'assets/music/01_Intro.mp3');
         this.load.audio('load', 'assets/sfx/load.wav');
+        this.load.audio('menu', 'assets/sfx/misc_menu_4.wav');
     }
 
     create() {
@@ -32,10 +42,10 @@ class MainMenu extends Phaser.Scene {
 
         this.createTitle();
         this.createPlayButton();
+        this.createControlButton();
     }
 
     update() {
-        // nothing happens here :)
     }
 
     createTitle() {
@@ -93,8 +103,100 @@ class MainMenu extends Phaser.Scene {
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
                 this.playButton.setTint(0xFFFFFF);
+                this.scene.start('Intro');
                 this.intro_music.stop()
-                this.scene.start('Freeplay');
             })
+    }
+
+    createControlButton() {
+        this.controlButton = this.add.image(520,618, 'control').setScale(0.5);
+        CameraManager.addUISprite(this.controlButton);
+
+        // To darken screen
+        const color1 = new Phaser.Display.Color(0, 0, 0);
+        this.shadow = this.add.rectangle(0, 0,2048, 2048, color1.color);
+        this.shadow.setAlpha(0.85);
+        this.shadow.setVisible(false);
+
+        this.controlButton.setInteractive()
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
+                this.controlButton.setTint(0xF9A000);
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OUT, () => {
+                this.controlButton.setTint(0xFFFFFF);
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
+                this.controlButton.setTint(0xF47D33);
+                var menu_audio = this.sound.add('menu');
+                menu_audio.play();
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
+                this.controlButton.setTint(0xFFFFFF);
+                this.shadow.setVisible(true);
+                this.createControlMenu();
+            })
+    }
+
+    createControlMenu() {
+        //Control menu
+        this.controlText = this.add.text(525, 100, 'CONTROLS').setOrigin(0.5).setFontSize(120);
+        this.exitButton = this.add.image(520, 618, 'exit').setScale(0.5);
+        // Storage for title of control.
+        const controls = ['Move Forward', 'Move Backward', 'Rotate Left', 'Rotate Right', 'Pause Game', 'Take Picture'];
+        // Storage for icon images. 
+        const icons = ['up', 'down', 'left', 'right', 'p', 'space'];
+        // Storage of all the titles and object created. 
+        const objects = [];
+
+        let row = 200;
+        let col = 220;
+
+        //Go through the list of icons and controls and make them appear. 
+        for(let i = 0; i < controls.length; i++){
+            this.icon = this.add.image(col, row, icons[i]).setOrigin(0,0.5).setScale(0.2);
+            objects.push(this.icon);
+            this.title = this.add.text(col - 150 , row, controls[i]).setFontSize(15);
+            objects.push(this.title);
+            row = row + 100;
+            CameraManager.addUISprite(this.icon);
+            CameraManager.addUISprite(this.title);
+            // Keep 4 rows in each columns. 
+            if(row == 600){
+                row = 200;
+                col = col + 300;
+            }
+        }
+
+        // Disable button interactions. 
+        this.playButton.disableInteractive();
+        this.controlButton.disableInteractive();
+
+        CameraManager.addUISprite(this.controlText);
+        this.exitButton.setInteractive()
+        .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
+            this.exitButton.setTint(0xF9A000);
+        })
+        .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OUT, () => {
+            this.exitButton.setTint(0xFFFFFF);
+        })
+        .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
+            this.exitButton.setTint(0xF47D33);
+            var menu_audio = this.sound.add('menu');
+            menu_audio.play();
+        })
+        .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
+            this.exitButton.setTint(0xFFFFFF);
+            this.shadow.setVisible(false);
+            this.exitButton.setVisible(false);
+            this.controlText.setVisible(false);
+
+            //Make all the objects that were created invisible. 
+            while(objects.length > 0){
+                objects.pop().setVisible(false);
+            }
+
+            this.createPlayButton();
+            this.createControlButton();
+        });
     }
 }
