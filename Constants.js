@@ -51,4 +51,7 @@ const Constants = {
     HINT_ALPHA_AFTER: 0.8,
     HINT_WIDTH_BEFORE: 2,
     HINT_WIDTH_AFTER: 2,
+
+    //standard offsets
+    ROTATION_OFFSET: (3/4)*Math.PI
 }
