@@ -85,5 +85,10 @@ const Constants = {
     HINT_WIDTH_AFTER: 2,
 
     //standard offsets
-    ROTATION_OFFSET: (3/4)*Math.PI
+    ROTATION_OFFSET: (3/4)*Math.PI,
+
+    // mute button size
+    MUTE_X: 964,
+    MUTE_Y: 620,
+    MUTE_SCALE: 0.5,
 }
