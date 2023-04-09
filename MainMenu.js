@@ -94,7 +94,7 @@ class MainMenu extends Phaser.Scene {
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
                 this.playButton.setTint(0xFFFFFF);
                 this.intro_music.stop()
-                this.scene.start('PsycheMission');
+                this.scene.start('Freeplay');
             })
     }
 }
