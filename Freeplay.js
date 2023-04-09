@@ -604,7 +604,7 @@ class Freeplay extends Phaser.Scene {
                 // disable pause when in the taking photo page
                 if (!this.takingPhoto) {
                     this.updatePauseColor();
-                    this.paused = !this.paused;
+                    this.togglePaused();
                 }
             });
 
@@ -853,7 +853,7 @@ class Freeplay extends Phaser.Scene {
             this.takingPhoto = !this.takingPhoto;
 
             let viewR = Constants.VIEW_R;
-            let endRotation = this.bodies["psyche_probe"].rotation + Math.PI;
+            let endRotation = this.bodies["psyche_probe"].rotation + (Constants.ROTATION_OFFSET);
             if (endRotation > 2 * Math.PI) {
                 endRotation -= (2 * Math.PI);
             }
