@@ -219,7 +219,7 @@ class Freeplay extends Phaser.Scene {
         this.takePhoto();
 
         // create mute button
-        this.muteButton = new MuteButton(this, Constants.MUTE);
+        this.muteButton = new MuteButton(this, this.ingame_music, Constants.MUTE_FREEPLAY);
 
         //creating controller
         this.controller = new Controller(this, this.bodies["psyche_probe"]);

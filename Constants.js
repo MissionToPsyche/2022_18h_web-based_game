@@ -56,7 +56,14 @@ const Constants = {
     MUTE_X: 964,
     MUTE_Y: 620,
     MUTE_SCALE: 0.5,
+    // mute button size on main menu
+    MUTE_X2: 612,
+    MUTE_Y2: 464,
 
     //standard offsets
-    ROTATION_OFFSET: (3/4)*Math.PI
+    ROTATION_OFFSET: (3/4)*Math.PI, 
+
+    // parameter for creating mute button
+    MUTE_FREEPLAY: 0,
+    MUTE_MAINMENU: 1
 }

@@ -9,6 +9,8 @@ class MainMenu extends Phaser.Scene {
         this.load.image('title_journey', 'img/journey.png');
         this.load.image('title_to', 'img/to.png');
         this.load.image('title_psyche', 'img/psyche.png');
+        this.load.image('muted', 'img/icons/muted.png');
+        this.load.image('notmuted', 'img/icons/notmuted.png');
 
         this.load.audio('intro_music', 'assets/music/01_Intro.mp3');
         this.load.audio('load', 'assets/sfx/load.wav');
@@ -32,6 +34,7 @@ class MainMenu extends Phaser.Scene {
 
         this.createTitle();
         this.createPlayButton();
+        new MuteButton(this, this.intro_music, Constants.MUTE_MAINMENU);
     }
 
     update() {
@@ -76,23 +79,25 @@ class MainMenu extends Phaser.Scene {
     }
 
     createPlayButton() {
-        this.playButton = this.add.image(512, 464, 'play');
+        this.playButton = this.add.image(412, 464, 'play');
         CameraManager.addUISprite(this.playButton);
 
         this.playButton.setInteractive()
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
-                this.playButton.setTint(0xF9A000);
+                this.playButton.setTint(Constants.ORANGE);
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OUT, () => {
-                this.playButton.setTint(0xFFFFFF);
+                this.playButton.setTint(Constants.WHITE);
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
-                this.playButton.setTint(0xF47D33);
-                var load_audio = this.sound.add('load');
-                load_audio.play();
+                this.playButton.setTint(Constants.ORANGE);
+                if (!MuteButton.isMuted) {
+                    var load_audio = this.sound.add('load');
+                    load_audio.play();
+                }
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
-                this.playButton.setTint(0xFFFFFF);
+                this.playButton.setTint(Constants.WHITE);
                 this.intro_music.stop()
                 this.scene.start('Freeplay');
             })

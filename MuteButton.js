@@ -1,12 +1,21 @@
 class MuteButton {
-	constructor(_scene, _type) {
+	constructor(_scene, _music, _type) {
 		this.scene = _scene;
-		this.type = _type;
-		this.mutedButton = this.scene.add.image(Constants.MUTE_X, 
-			Constants.MUTE_Y, 'muted').setScale(Constants.MUTE_SCALE);
-		this.notmutedButton = this.scene.add.image(Constants.MUTE_X, 
-        	Constants.MUTE_Y, 'notmuted').setScale(Constants.MUTE_SCALE);
+		this.music = _music;
+		if (_type == Constants.MUTE_FREEPLAY) {
+			this.mutedButton = this.scene.add.image(Constants.MUTE_X, 
+				Constants.MUTE_Y, 'muted').setScale(Constants.MUTE_SCALE);
+			this.notmutedButton = this.scene.add.image(Constants.MUTE_X, 
+	        	Constants.MUTE_Y, 'notmuted').setScale(Constants.MUTE_SCALE);
+		} else {
+			this.mutedButton = this.scene.add.image(Constants.MUTE_X2, 
+				Constants.MUTE_Y2, 'muted');
+			this.notmutedButton = this.scene.add.image(Constants.MUTE_X2, 
+	        	Constants.MUTE_Y2, 'notmuted');
+		}
 		this.createMuteButton();
+
+			
 	}
 
 	static isMuted = false;
@@ -17,7 +26,14 @@ class MuteButton {
 	createMuteButton() {
         this.mutedButton.depth = 100;
         this.notmutedButton.depth = 100;
-        this.mutedButton.setVisible(false);
+        if (MuteButton.isMuted) {
+        	this.mutedButton.setVisible(true);
+        	this.notmutedButton.setVisible(false);
+        	this.music.pause();
+        } else {
+        	this.mutedButton.setVisible(false);
+        	this.notmutedButton.setVisible(true);
+        }
 
         CameraManager.addUISprite(this.mutedButton);
         CameraManager.addUISprite(this.notmutedButton);
@@ -38,7 +54,7 @@ class MuteButton {
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
                 // pause background music
-                this.scene.ingame_music.pause();
+                this.music.pause();
                 MuteButton.isMuted = true;
                 // switch button
                 this.notmutedButton.setVisible(false);
@@ -58,12 +74,10 @@ class MuteButton {
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
                 // set color to orange and play sound
                 this.mutedButton.setTint(Constants.ORANGE);
-                let buttonSound = this.scene.sound.add('menu');
-                buttonSound.play();
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
                 // play background music
-                this.scene.ingame_music.resume();
+                this.music.resume();
                 MuteButton.isMuted = false;
                 // switch button
                 this.mutedButton.setVisible(false);
