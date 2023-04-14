@@ -28,6 +28,10 @@ class Freeplay extends Phaser.Scene {
         this.photoBorder;
         this.nearestBodyText;
 
+        this.placeTileX = -2048;
+        this.placeTileY = -1536;
+        this.backgroundTiles = [];
+
         this.testMenu;
         this.testButton;
 
@@ -119,8 +123,6 @@ class Freeplay extends Phaser.Scene {
         CameraManager.initializeMainCamera(this);
         CameraManager.initializeUICamera(this);
         CameraManager.initializeMiniCamera(this);
-
-        this.createParallaxBackground();
 
         var map_border = this.add.image(880,110,'minimap_border').setScale(0.35);
 
@@ -233,6 +235,7 @@ class Freeplay extends Phaser.Scene {
             this.ingame_music.play({ loop: true });
         }
 
+        this.createParallaxBackground();
         this.createPauseButton();
         this.createOrbitToggle();
         this.takePhoto();
@@ -614,24 +617,62 @@ class Freeplay extends Phaser.Scene {
     }
 
     createParallaxBackground() {
-        this.backgroundLayer1 = this.add.image(0, 0, 'parallax_stars_layer1')
-            .setOrigin(0.5);
-        this.backgroundLayer2 = this.add.image(0, 0, 'parallax_stars_layer2')
-            .setOrigin(0.5);
-        this.backgroundLayer3 = this.add.image(0, 0, 'parallax_stars_layer3')
-            .setOrigin(0.5);
-        this.backgroundLayer1.setVisible(true);
-        this.backgroundLayer2.setVisible(true);
-        this.backgroundLayer3.setVisible(true);
+
+        for (let i = 0; i < 22; i++) {
+
+            this.placeBackgroundTile(this.placeTileX, this.placeTileY);
+            this.placeTileX += 1024;
+
+            for (let j = 0; j < 22; j++) {
+
+                this.placeTileY += 768
+                this.placeBackgroundTile(this.placeTileX, this.placeTileY);
+            }
+
+            this.placeTileY = 0;
+        }
+        this.placeTileX = 0;
+
+        for (let k = 0; k < this.backgroundTiles.length; k++) {
+            CameraManager.addGameSprite(this.backgroundTiles[k]);
+        }
+
+        CameraManager.addUISprite(this.add.text(0, 0, this.backgroundTiles.length));
     }
 
     updateParallaxBackground() {
-        this.backgroundLayer1.x -= this.bodies["psyche_probe"].vel.x * 0.0625;
-        this.backgroundLayer1.y -= this.bodies["psyche_probe"].vel.y * 0.0625;
-        this.backgroundLayer2.x -= this.bodies["psyche_probe"].vel.x * 0.125;
-        this.backgroundLayer2.y -= this.bodies["psyche_probe"].vel.y * 0.125;
-        this.backgroundLayer3.x -= this.bodies["psyche_probe"].vel.x * 0.25;
-        this.backgroundLayer3.y -= this.bodies["psyche_probe"].vel.y * 0.25;
+
+        for ( let i = 0; i < this.backgroundTiles.length - 2; i += 2) {
+            var layer1 = i;
+            var layer2 = i + 1;
+            var layer3 = i + 2;
+
+            this.backgroundTiles[layer1].x -= this.bodies["psyche_probe"].vel.x * 0.0625;
+            this.backgroundTiles[layer1].y -= this.bodies["psyche_probe"].vel.y * 0.0625;
+            this.backgroundTiles[layer2].x -= this.bodies["psyche_probe"].vel.x * 0.125;
+            this.backgroundTiles[layer2].y -= this.bodies["psyche_probe"].vel.y * 0.125;
+            this.backgroundTiles[layer3].x -= this.bodies["psyche_probe"].vel.x * 0.25;
+            this.backgroundTiles[layer3].y -= this.bodies["psyche_probe"].vel.y * 0.25;
+        }
+    }
+
+    placeBackgroundTile(_placeX, _placeY) {
+
+        this.backgroundTiles.push(this.add.image(_placeX, _placeY, 'parallax_stars_layer1')
+            .setDepth(2)
+            .setOrigin(0)
+            .setScale(0.5)
+            .setVisible(true));
+        this.backgroundTiles.push(this.add.image(_placeX, _placeY, 'parallax_stars_layer2')
+            .setDepth(1)
+            .setOrigin(0)
+            .setScale(0.5)
+            .setVisible(true));
+        this.backgroundTiles.push(this.add.image(_placeX, _placeY, 'parallax_stars_layer3')
+            .setDepth(0)
+            .setOrigin(0)
+            .setScale(0.5)
+            .setVisible(true));
     }
 
     /**
