@@ -28,8 +28,8 @@ class Freeplay extends Phaser.Scene {
         this.photoBorder;
         this.nearestBodyText;
 
-        this.placeTileX = -2048;
-        this.placeTileY = -1536;
+        this.placeTileX = -512;
+        this.placeTileY = -384;
         this.backgroundTiles = [];
 
         this.testMenu;
@@ -636,15 +636,15 @@ class Freeplay extends Phaser.Scene {
         }
         this.placeTileX = 0;
 
-        // Assign every background tile as a game sprite once the background is fully assembled
+        // Assign every background tile as a game sprite
         for (let k = 0; k < this.backgroundTiles.length; k++) {
             CameraManager.addGameSprite(this.backgroundTiles[k]);
         }
     }
 
     /**
-     * Each background tile consists of three layers of stars. This method allows us to scroll
-     * each layer at a different rate, creating the parallax effect
+     * Each background tile consists of three layers of stars. This method allows us to
+     * scroll each layer at a different rate, creating the parallax effect
      */
     updateParallaxBackground() {
 
@@ -680,17 +680,17 @@ class Freeplay extends Phaser.Scene {
         this.backgroundTiles.push(this.add.image(_placeX, _placeY, 'parallax_stars_layer1')
             .setDepth(2)
             .setOrigin(0)
-            .setScale(0.5)
+            .setScale(0.25)
             .setVisible(true));
         this.backgroundTiles.push(this.add.image(_placeX, _placeY, 'parallax_stars_layer2')
             .setDepth(1)
             .setOrigin(0)
-            .setScale(0.5)
+            .setScale(0.25)
             .setVisible(true));
         this.backgroundTiles.push(this.add.image(_placeX, _placeY, 'parallax_stars_layer3')
             .setDepth(0)
             .setOrigin(0)
-            .setScale(0.5)
+            .setScale(0.25)
             .setVisible(true));
     }
 
