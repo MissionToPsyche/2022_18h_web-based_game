@@ -636,8 +636,6 @@ class Freeplay extends Phaser.Scene {
         for (let k = 0; k < this.backgroundTiles.length; k++) {
             CameraManager.addGameSprite(this.backgroundTiles[k]);
         }
-
-        CameraManager.addUISprite(this.add.text(0, 0, this.backgroundTiles.length));
     }
 
     updateParallaxBackground() {
@@ -647,12 +645,14 @@ class Freeplay extends Phaser.Scene {
             var layer2 = i + 1;
             var layer3 = i + 2;
 
-            this.backgroundTiles[layer1].x -= this.bodies["psyche_probe"].vel.x * 0.0625;
-            this.backgroundTiles[layer1].y -= this.bodies["psyche_probe"].vel.y * 0.0625;
-            this.backgroundTiles[layer2].x -= this.bodies["psyche_probe"].vel.x * 0.125;
-            this.backgroundTiles[layer2].y -= this.bodies["psyche_probe"].vel.y * 0.125;
-            this.backgroundTiles[layer3].x -= this.bodies["psyche_probe"].vel.x * 0.25;
-            this.backgroundTiles[layer3].y -= this.bodies["psyche_probe"].vel.y * 0.25;
+            if(this.gameOver != true && this.paused != true) {
+                this.backgroundTiles[layer1].x -= this.bodies["psyche_probe"].vel.x * 0.0625;
+                this.backgroundTiles[layer1].y -= this.bodies["psyche_probe"].vel.y * 0.0625;
+                this.backgroundTiles[layer2].x -= this.bodies["psyche_probe"].vel.x * 0.125;
+                this.backgroundTiles[layer2].y -= this.bodies["psyche_probe"].vel.y * 0.125;
+                this.backgroundTiles[layer3].x -= this.bodies["psyche_probe"].vel.x * 0.25;
+                this.backgroundTiles[layer3].y -= this.bodies["psyche_probe"].vel.y * 0.25;
+            }
         }
     }
 
