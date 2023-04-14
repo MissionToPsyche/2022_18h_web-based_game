@@ -616,28 +616,36 @@ class Freeplay extends Phaser.Scene {
         CameraManager.addUISprite(this.pauseButton);
     }
 
+    /**
+     * Assembles the starry parallax background behind the solar system
+     */
     createParallaxBackground() {
-
         for (let i = 0; i < 22; i++) {
 
+            // place background tiles horizontally across the solar system
             this.placeBackgroundTile(this.placeTileX, this.placeTileY);
             this.placeTileX += 1024;
 
             for (let j = 0; j < 22; j++) {
 
+                // place background tiles vertically across the solar system
                 this.placeTileY += 768
                 this.placeBackgroundTile(this.placeTileX, this.placeTileY);
             }
-
             this.placeTileY = 0;
         }
         this.placeTileX = 0;
 
+        // Assign every background tile as a game sprite once the background is fully assembled
         for (let k = 0; k < this.backgroundTiles.length; k++) {
             CameraManager.addGameSprite(this.backgroundTiles[k]);
         }
     }
 
+    /**
+     * Each background tile consists of three layers of stars. This method allows us to scroll
+     * each layer at a different rate, creating the parallax effect
+     */
     updateParallaxBackground() {
 
         for ( let i = 0; i < this.backgroundTiles.length - 2; i += 3) {
@@ -656,6 +664,11 @@ class Freeplay extends Phaser.Scene {
         }
     }
 
+    /**
+     * Places a single background tile at the specified coordinates
+     * @param {number} _placeX - The x coordinate where this tile will be placed
+     * @param {number} _placeY - The y coordinate where this tile will be placed
+     */
     placeBackgroundTile(_placeX, _placeY) {
 
         this.backgroundTiles.push(this.add.image(_placeX, _placeY, 'parallax_stars_layer1')
