@@ -640,7 +640,7 @@ class Freeplay extends Phaser.Scene {
 
     updateParallaxBackground() {
 
-        for ( let i = 0; i < this.backgroundTiles.length - 2; i += 2) {
+        for ( let i = 0; i < this.backgroundTiles.length - 2; i += 3) {
             var layer1 = i;
             var layer2 = i + 1;
             var layer3 = i + 2;
