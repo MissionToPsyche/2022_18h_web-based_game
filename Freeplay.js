@@ -620,16 +620,16 @@ class Freeplay extends Phaser.Scene {
      * Assembles the starry parallax background behind the solar system
      */
     createParallaxBackground() {
-        for (let i = 0; i < 22; i++) {
+        for (let i = 0; i < Constants.PARALLAX_TILE_REPEAT_X; i++) {
 
             // place background tiles horizontally across the solar system
             this.placeBackgroundTile(this.placeTileX, this.placeTileY);
-            this.placeTileX += 1024;
+            this.placeTileX += Constants.PARALLAX_TILE_WIDTH;
 
-            for (let j = 0; j < 22; j++) {
+            for (let j = 0; j < Constants.PARALLAX_TILE_REPEAT_Y; j++) {
 
                 // place background tiles vertically across the solar system
-                this.placeTileY += 768
+                this.placeTileY += Constants.PARALLAX_TILE_HEIGHT;
                 this.placeBackgroundTile(this.placeTileX, this.placeTileY);
             }
             this.placeTileY = 0;
@@ -654,12 +654,18 @@ class Freeplay extends Phaser.Scene {
             var layer3 = i + 2;
 
             if(this.gameOver != true && this.paused != true) {
-                this.backgroundTiles[layer1].x -= this.bodies["psyche_probe"].vel.x * 0.0625;
-                this.backgroundTiles[layer1].y -= this.bodies["psyche_probe"].vel.y * 0.0625;
-                this.backgroundTiles[layer2].x -= this.bodies["psyche_probe"].vel.x * 0.125;
-                this.backgroundTiles[layer2].y -= this.bodies["psyche_probe"].vel.y * 0.125;
-                this.backgroundTiles[layer3].x -= this.bodies["psyche_probe"].vel.x * 0.25;
-                this.backgroundTiles[layer3].y -= this.bodies["psyche_probe"].vel.y * 0.25;
+                this.backgroundTiles[layer1].x -= this.bodies["psyche_probe"].vel.x
+                    * Constants.PARALLAX_TILE_LAYER_ONE_SCROLL_RATE;
+                this.backgroundTiles[layer1].y -= this.bodies["psyche_probe"].vel.y
+                    * Constants.PARALLAX_TILE_LAYER_ONE_SCROLL_RATE;
+                this.backgroundTiles[layer2].x -= this.bodies["psyche_probe"].vel.x
+                    * Constants.PARALLAX_TILE_LAYER_TWO_SCROLL_RATE;
+                this.backgroundTiles[layer2].y -= this.bodies["psyche_probe"].vel.y
+                    * Constants.PARALLAX_TILE_LAYER_TWO_SCROLL_RATE;
+                this.backgroundTiles[layer3].x -= this.bodies["psyche_probe"].vel.x
+                    * Constants.PARALLAX_TILE_LAYER_THREE_SCROLL_RATE;
+                this.backgroundTiles[layer3].y -= this.bodies["psyche_probe"].vel.y
+                    * Constants.PARALLAX_TILE_LAYER_THREE_SCROLL_RATE;
             }
         }
     }
