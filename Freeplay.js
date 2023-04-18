@@ -248,12 +248,9 @@ class Freeplay extends Phaser.Scene {
             this.ingame_music.play({ loop: true });
         }
 
-<<<<<<< HEAD
         this.createMuteButton();
-=======
         this.createParallaxBackground();
         this.takePhoto();
->>>>>>> develop
 
         //creating controller
         this.controller = new Controller(this, this.bodies["psyche_probe"]);
