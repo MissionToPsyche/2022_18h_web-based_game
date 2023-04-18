@@ -29,6 +29,7 @@ class MenuManager {
                 _scene.scene.restart();
                 _scene.paused = false
                 _scene.gameOver = false;
+                _scene.backgroundTiles = [];
                 // Make the direction icon show up again.
                 _scene.direction = undefined;
             });
@@ -57,6 +58,7 @@ class MenuManager {
                 _scene.scene.start('MainMenu');
                 _scene.paused = false;
                 _scene.gameOver = false;
+                _scene.backgroundTiles = [];
             });
 	}
 

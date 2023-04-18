@@ -31,6 +31,10 @@ class Freeplay extends Phaser.Scene {
         this.photoBorder;
         this.nearestBodyText;
 
+        this.placeTileX = -512;
+        this.placeTileY = -384;
+        this.backgroundTiles = [];
+
         this.testMenu;
         this.testButton;
 
@@ -86,6 +90,9 @@ class Freeplay extends Phaser.Scene {
         this.load.spritesheet('psyche_probe', "img/sprites/probe_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
         this.load.spritesheet('psyche_probe_fx', "img/sprites/fx_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
         this.load.image('psyche_probe_icon', "img/icons/arrow.png");
+        this.load.image('parallax_stars_layer1', "img/sprites/star_background_layer1.png");
+        this.load.image('parallax_stars_layer2', "img/sprites/star_background_layer2.png");
+        this.load.image('parallax_stars_layer3', "img/sprites/star_background_layer3.png");
 
         // load the photo of psyche
         for (let i = 0; i < Constants.MAX_PSYCHE_PHOTO_NUM; i++) {
@@ -141,17 +148,39 @@ class Freeplay extends Phaser.Scene {
                 let diameter = body['diameter']['value'];
                 let orbit_distance = body['orbit_distance']['value'];
 
-                let collisionGroup1 = this.matter.world.nextGroup(true);
-                let collisionGroup2 = this.matter.world.nextGroup();
-
                 if (type != "probes") {
                     let parent = this.bodies[body['orbits']];
                     let angle = body['angle'];
                     let day_length = body['day_length']['value'];
 
-                    this.bodies[id] = new Satellite(this, id, mass, diameter, parent, angle, orbit_distance, day_length);
+                    this.bodies[id] = new Satellite(this, id, mass, diameter, parent, angle, orbit_distance, day_length).setDepth(50);
+
+                    for (const dir of this.dirs) {
+                        const offset = 16 * this.dirs.indexOf(dir)
+                        this.anims.create({
+                            key: id + "-" + dir,
+                            frames: this.anims.generateFrameNumbers(id, {
+                                frames: [offset + 0,
+                                offset + 1,
+                                offset + 2,
+                                offset + 3,
+                                offset + 4,
+                                offset + 5,
+                                offset + 6,
+                                offset + 7,
+                                offset + 8,
+                                offset + 9]
+                            }),
+                            frameRate: 12,
+                            repeat: -1
+                        });
+                    }
+
+                    this.bodies[id].play(id + "-f");
+                    //this.bodies[id] = new Satellite(this, id, mass, diameter, parent, angle, orbit_distance, day_length);
+
                 } else {
-                    this.bodies[id] = new Probe(this, id, mass, diameter);
+                    this.bodies[id] = new Probe(this, id, mass, diameter).setDepth(49);
                 }
 
                 for (const dir of this.dirs) {
@@ -219,7 +248,12 @@ class Freeplay extends Phaser.Scene {
             this.ingame_music.play({ loop: true });
         }
 
+<<<<<<< HEAD
         this.createMuteButton();
+=======
+        this.createParallaxBackground();
+        this.takePhoto();
+>>>>>>> develop
 
         //creating controller
         this.controller = new Controller(this, this.bodies["psyche_probe"]);
@@ -238,6 +272,7 @@ class Freeplay extends Phaser.Scene {
     update() {
         MenuManager.updatePauseMenu(this);
         this.updateTakePhoto();
+        this.updateParallaxBackground();
 
         // don't update bodies if paused, game over, or is taking photo
         if (this.paused || this.gameOver || this.gameSuccess || this.takingPhoto) {
@@ -506,6 +541,84 @@ class Freeplay extends Phaser.Scene {
         this.graphics.arc(x, y, r, startAngle, endAngle, false);
         this.graphics.strokePath();
     }
+    
+    /**
+     * Assembles the starry parallax background behind the solar system
+     */
+    createParallaxBackground() {
+        for (let i = 0; i < Constants.PARALLAX_TILE_REPEAT_X; i++) {
+
+            // place background tiles horizontally across the solar system
+            this.placeBackgroundTile(this.placeTileX, this.placeTileY);
+            this.placeTileX += Constants.PARALLAX_TILE_WIDTH;
+
+            for (let j = 0; j < Constants.PARALLAX_TILE_REPEAT_Y; j++) {
+
+                // place background tiles vertically across the solar system
+                this.placeTileY += Constants.PARALLAX_TILE_HEIGHT;
+                this.placeBackgroundTile(this.placeTileX, this.placeTileY);
+            }
+            this.placeTileY = 0;
+        }
+        this.placeTileX = 0;
+
+        // Assign every background tile as a game sprite
+        for (let k = 0; k < this.backgroundTiles.length; k++) {
+            CameraManager.addGameSprite(this.backgroundTiles[k]);
+        }
+    }
+
+    /**
+     * Each background tile consists of three layers of stars. This method allows us to
+     * scroll each layer at a different rate, creating the parallax effect
+     */
+    updateParallaxBackground() {
+
+        for ( let i = 0; i < this.backgroundTiles.length - 2; i += 3) {
+            var layer1 = i;
+            var layer2 = i + 1;
+            var layer3 = i + 2;
+
+            if(this.gameOver != true && this.paused != true) {
+                this.backgroundTiles[layer1].x -= this.bodies["psyche_probe"].vel.x
+                    * Constants.PARALLAX_TILE_LAYER_ONE_SCROLL_RATE;
+                this.backgroundTiles[layer1].y -= this.bodies["psyche_probe"].vel.y
+                    * Constants.PARALLAX_TILE_LAYER_ONE_SCROLL_RATE;
+                this.backgroundTiles[layer2].x -= this.bodies["psyche_probe"].vel.x
+                    * Constants.PARALLAX_TILE_LAYER_TWO_SCROLL_RATE;
+                this.backgroundTiles[layer2].y -= this.bodies["psyche_probe"].vel.y
+                    * Constants.PARALLAX_TILE_LAYER_TWO_SCROLL_RATE;
+                this.backgroundTiles[layer3].x -= this.bodies["psyche_probe"].vel.x
+                    * Constants.PARALLAX_TILE_LAYER_THREE_SCROLL_RATE;
+                this.backgroundTiles[layer3].y -= this.bodies["psyche_probe"].vel.y
+                    * Constants.PARALLAX_TILE_LAYER_THREE_SCROLL_RATE;
+            }
+        }
+    }
+
+    /**
+     * Places a single background tile at the specified coordinates
+     * @param {number} _placeX - The x coordinate where this tile will be placed
+     * @param {number} _placeY - The y coordinate where this tile will be placed
+     */
+    placeBackgroundTile(_placeX, _placeY) {
+
+        this.backgroundTiles.push(this.add.image(_placeX, _placeY, 'parallax_stars_layer1')
+            .setDepth(2)
+            .setOrigin(0)
+            .setScale(0.25)
+            .setVisible(true));
+        this.backgroundTiles.push(this.add.image(_placeX, _placeY, 'parallax_stars_layer2')
+            .setDepth(1)
+            .setOrigin(0)
+            .setScale(0.25)
+            .setVisible(true));
+        this.backgroundTiles.push(this.add.image(_placeX, _placeY, 'parallax_stars_layer3')
+            .setDepth(0)
+            .setOrigin(0)
+            .setScale(0.25)
+            .setVisible(true));
+    }
 
     /**
      * Toggles the pause state of the scene
@@ -572,6 +685,7 @@ class Freeplay extends Phaser.Scene {
         this.nearestBodyText = this.add.text(Constants.NEAREST_BODY_TEXT_X, Constants.NEAREST_BODY_TEXT_Y, ' ');
         this.nearestBodyText.setFontSize(Constants.SECOND_FONT_SIZE);
         CameraManager.addUISprite(this.foundPsycheText);
+        this.foundPsycheText.setVisible(false);
 
         // TODO: can let the player to choose difficulty
         // here default is to take photo of the psyche from four sides
