@@ -24,6 +24,9 @@ class Freeplay extends Phaser.Scene {
         this.foundPsycheText; 
         this.quitPhotoPageButton;
         this.psychePhotos;
+        this.logo;
+        this.orbitButton;
+        this.mapBorder;
         this.photoBackground;
         this.photoBorder;
         this.nearestBodyText;
@@ -82,7 +85,7 @@ class Freeplay extends Phaser.Scene {
         }
 
         // load ingame music
-        this.load.audio('ingame_music', 'assets/music/02_Ingame.mp3');
+        this.load.audio('ingame_music', 'assets/music/02_Psychemission_Ingame.wav');
 
         // button sfx
         this.load.audio('menu', 'assets/sfx/misc_menu_4.wav');
@@ -117,7 +120,7 @@ class Freeplay extends Phaser.Scene {
         CameraManager.initializeUICamera(this);
         CameraManager.initializeMiniCamera(this);
 
-        var map_border = this.add.image(880,110,'minimap_border').setScale(0.35);
+        //this.map_border = this.add.image(880,110,'minimap_border').setScale(0.35);
 
         //creating Body objects
         this.json = this.cache.json.get('bodies');
@@ -195,24 +198,24 @@ class Freeplay extends Phaser.Scene {
         CameraManager.setFollowSprite(this.bodies["earth"]);
 
         //creating UISprites
-        var logo = this.add.image(50,50,'logo').setScale(0.5);
+        //this.logo = this.add.image(50,50,'logo').setScale(0.5);
 
         //adding to UIsprites so main camera ignores them
-        CameraManager.addUISprite(logo);
-        CameraManager.addUISprite(map_border);
+        //CameraManager.addUISprite(logo);
+        //CameraManager.addUISprite(map_border);
 
         this.ingame_music = this.sound.add('ingame_music');
         if (!this.ingame_music.isPlaying) {
             this.ingame_music.play({ loop: true });
         }
 
-        this.createPauseButton();
-        this.createOrbitToggle();
-        this.takePhoto();
-
         //creating controller
         this.controller = new Controller(this, this.bodies["psyche_probe"]);
         this.bodies["psyche_probe"].setController(this.controller);
+
+        MenuManager.createPauseMenu(this);
+        this.takePhoto();
+        MenuManager.createHeadsUpDisplay(this);
     }
 
     /** The scene's main update loop
@@ -221,7 +224,7 @@ class Freeplay extends Phaser.Scene {
      * - Enforces the pause feature, only allowing bodies to move if the game is not paused
      */
     update() {
-        this.updatePauseButton();
+        MenuManager.updatePauseMenu(this);
         this.updateTakePhoto();
 
         // don't update bodies if paused, game over, or is taking photo
@@ -488,175 +491,12 @@ class Freeplay extends Phaser.Scene {
         this.graphics.strokePath();
     }
     
-
-    /** Creates the image objects and associated events for the 
-     *  game's pause button 
-     */
-    createPauseButton() {
-        this.pauseMenu = new Menu(this);
-
-        this.pauseText = this.add.text(525, 300, 'Pause', { fontFamily: 'CustomFont' }).setOrigin(0.5).setFontSize(100)
-        .setStroke('#e6851e', 16).setShadow(2, 2, "#333333", 2, true, true);
-
-        this.restartButtonPosition = new Phaser.Geom.Point(520, 428);
-        this.restartButton = new Button(this, this.restartButtonPosition, 'button', 'Restart');
-        MenuManager.restartButtonListener(this, this.restartButton);
-
-        this.exitButtonPosition = new Phaser.Geom.Point(520, 528);
-        this.exitButton = new Button(this, this.exitButtonPosition, 'button', 'Exit');
-        MenuManager.exitButtonListener(this, this.exitButton);
-
-        this.playButton = this.add.image(964, 708, 'play').setScale(0.5)
-        this.pauseButton = this.add.image(964, 708, 'pause').setScale(0.5)
-
-        this.playButton.depth = 100;
-        this.pauseButton.depth = 100;
-        this.pauseText.depth = 100;
-
-        // To darken screen
-        const color1 = new Phaser.Display.Color(0, 0, 0);
-        this.shadow = this.add.rectangle(0, 0,2048, 2048, color1.color);
-        this.shadow.setAlpha(0.5);
-
-        this.pauseMenu.addElement(this.pauseText);
-        this.pauseMenu.addButton(this.restartButton.getElements());
-        this.pauseMenu.addButton(this.exitButton.getElements());
-        this.pauseMenu.addElement(this.shadow);
-
-
-        //create keyboard events. Mostly just sets the tint of the button.
-        /*
-        this.input.keyboard
-            .on('keydown-P', () => {
-                this.playButton.setTint(0xF47D33);
-                this.pauseButton.setTint(0xF47D33);
-            }).on('keyup-P', () => {
-                // disable pause when in the taking photo page
-                if (!this.takingPhoto) {
-                    this.playButton.setTint(0xFFFFFF);
-                    this.pauseButton.setTint(0xFFFFFF);
-                    this.paused = !this.paused;
-                }
-            });
-        */
-
-        //create events for the play button
-        this.playButton.setInteractive()
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
-                this.updatePauseColor('hover');
-            })
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OUT, () => {
-                this.updatePauseColor();
-            })
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
-                this.updatePauseColor('pressed');
-                var menu_audio = this.sound.add('menu');
-                menu_audio.play();
-            })
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
-                // disable pause when in the taking photo page
-                if (!this.takingPhoto) {
-                    this.updatePauseColor();
-                    this.togglePaused();
-                }
-            })
-
-        //create events for the pause button
-        this.pauseButton.setInteractive()
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
-                this.updatePauseColor('hover');
-            })
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OUT, () => {
-                this.updatePauseColor();
-            })
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
-                this.updatePauseColor('pressed');
-                var menu_audio = this.sound.add('menu');
-                menu_audio.play();
-            })
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
-                // disable pause when in the taking photo page
-                if (!this.takingPhoto) {
-                    this.updatePauseColor();
-                    this.togglePaused();
-                }
-            });
-
-        //add all the images to the UI camera.
-        CameraManager.addUISprite(this.playButton);
-        CameraManager.addUISprite(this.pauseButton);
-    }
-
-    /**
-     * updates the color of the pause and play buttons based on the given state of the button
-     * @param {string} state The state of the button. Can be: hover, pressed or no value for default color
-     */
-    updatePauseColor(state) {
-        switch (state) {
-            case 'hover':
-                this.pauseButton.setTint(0xF9A000);
-                this.playButton.setTint(0xF9A000);
-                break;
-            case 'pressed':
-                this.pauseButton.setTint(0xF47D33);
-                this.playButton.setTint(0xF47D33);
-                break;
-            default:
-                this.pauseButton.setTint(0xFFFFFF);
-                this.playButton.setTint(0xFFFFFF);
-        }
-    }
-
     /**
      * Toggles the pause state of the scene
      */
     togglePaused() {
         this.paused = !this.paused;
         this.controller.toggleMovementKeys();
-    }
-
-    /** Updates the state of the on-screen pause button
-     *  based on the current state of Freeplay.paused.
-     */
-    updatePauseButton() {
-        // if paused and not game over then we can show the pause text and allow the pause/play buttons to update
-        if (this.paused && !this.gameOver && !this.gameSuccess) {
-            this.pauseText.setVisible(true)
-            this.playButton.setVisible(true)
-            this.pauseButton.setVisible(false);
-            this.pauseMenu.setVisible(true);
-        } else {
-            this.pauseButton.setVisible(true);
-            this.playButton.setVisible(false);
-            this.pauseMenu.setVisible(false);
-        }
-
-        // if game over then show the game over text
-        if (this.gameOver) {
-            //this.failText.setVisible(true)
-            this.pauseText.setText("Game Over!");
-            this.pauseMenu.setVisible(true);
-
-            this.pauseButton.setTint(0x7f7f7f);
-            this.playButton.setTint(0x7f7f7f);
-            this.orbitButton.setTint(0x7f7f7f);
-        } else if (this.gameSuccess) {
-            this.pauseButton.setTint(0x7f7f7f);
-            this.playButton.setTint(0x7f7f7f);
-            this.orbitButton.setTint(0x7f7f7f);
-        }
-
-        // if paused or game over then we can show the restart and exit buttons
-        if (this.paused || this.gameOver || this.gameSuccess) {
-            this.restartButton.setVisible(true)
-            this.exitButton.setVisible(true)
-            this.shadow.setVisible(false)
-        } else {
-            this.restartButton.setVisible(false)
-            this.exitButton.setVisible(false)
-            this.shadow.setVisible(false)
-        }
-        
     }
 
     updateTakePhoto() {
@@ -671,64 +511,6 @@ class Freeplay extends Phaser.Scene {
             this.nearestBodyText.setVisible(false);
         } else {
             this.quitPhotoPageButton.setVisible(true);
-        }
-    }
-    
-    /** Creates the button, key, and associated events
-     *  For the orbit lock functionality.
-     */
-    createOrbitToggle() {
-        this.orbitButton = this.add.image(56, 708, 'orbit').setScale(0.5);
-        this.orbitButton.setTint(0xF47D33);
-        CameraManager.addUISprite(this.orbitButton);
-
-        /*
-        this.input.keyboard
-            .on('keyup-SHIFT', () => {
-                this.bodies["psyche_probe"].orbitToggle = !this.bodies["psyche_probe"].orbitToggle;
-                this.orbitButton.setTint(this.bodies["psyche_probe"].orbitToggle ? 0xF47D33 : 0xFFFFFF);
-                if (!this.bodies["psyche_probe"].inOrbit) { 
-                    this.bodies["psyche_probe"].startOrbitLock(this);
-                } else {
-                    this.bodies["psyche_probe"].stopOrbitLock();
-                }
-            });
-        */
-
-        this.orbitButton.setInteractive()
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
-                this.updateOrbitColor('hover');
-            })
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OUT, () => {
-                this.updateOrbitColor(this.bodies["psyche_probe"].orbitToggle ? 'on' : null);
-            })
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
-                this.updateOrbitColor('on');
-                var menu_audio = this.sound.add('menu');
-                menu_audio.play();
-            })
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
-                this.updateOrbitColor(this.bodies["psyche_probe"].orbitToggle ? 'on' : null);
-                if(!this.gameOver && !this.gameSuccess) {
-                    this.toggleOrbit();
-                }
-            });
-    }
-
-    /**
-     * updates the color of the orbit button based on the given state of the button
-     * @param {string} state The state of the button. Can be: 'hover', 'on', or no value for default
-     */
-    updateOrbitColor(state) {
-        switch (state) {
-            case 'hover':
-                this.orbitButton.setTint(0xF9A000);
-                break;
-            case 'on':
-                this.orbitButton.setTint(0xF47D33);
-                break;
-            default:
-                this.orbitButton.setTint(0xFFFFFF);
         }
     }
 
