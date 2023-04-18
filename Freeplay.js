@@ -490,7 +490,7 @@ class Freeplay extends Phaser.Scene {
         this.graphics.arc(x, y, r, startAngle, endAngle, false);
         this.graphics.strokePath();
     }
-
+    
     /**
      * Toggles the pause state of the scene
      */
