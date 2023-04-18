@@ -167,6 +167,11 @@ class Freeplay extends Phaser.Scene {
                 }
 
                 this.bodies[id].setTexture(id, 0);
+                if (id == "psyche_probe") {
+                    this.bodies[id].setDepth(49);
+                } else {
+                    this.bodies[id].setDepth(50);
+                }
             }
         }
 
@@ -205,6 +210,7 @@ class Freeplay extends Phaser.Scene {
             }
 
             this.bodies[id].setTexture(img_id, 0);
+            this.bodies[id].setDepth(50);
             this.bodies[id].changeMiniIconSize(6);
         }
 
