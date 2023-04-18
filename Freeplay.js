@@ -85,7 +85,7 @@ class Freeplay extends Phaser.Scene {
         }
 
         // load ingame music
-        this.load.audio('ingame_music', 'assets/music/02_Ingame.mp3');
+        this.load.audio('ingame_music', 'assets/music/02_Psychemission_Ingame.wav');
 
         // button sfx
         this.load.audio('menu', 'assets/sfx/misc_menu_4.wav');
