@@ -21,6 +21,7 @@ class Freeplay extends Phaser.Scene {
         this.pauseText;
 
         this.optionOpen = false;
+        this.vol = 0.5;
 
         this.takingPhoto = false;
         this.foundPsycheText; 
@@ -205,7 +206,9 @@ class Freeplay extends Phaser.Scene {
 
         this.ingame_music = this.sound.add('ingame_music');
         if (!this.ingame_music.isPlaying) {
+            // this.ingame_music.on('volume', listener);
             this.ingame_music.play({ loop: true });
+            this.ingame_music.setVolume(this.vol);
         }
 
         this.createPauseButton();
@@ -494,9 +497,54 @@ class Freeplay extends Phaser.Scene {
      *  game's more option menu 
      */
     createOptionMenu(){
+
         this.optionMenu = new Menu(this);
         this.controlText = this.add.text(525, 458, 'Movement Controls:').setOrigin(0.5).setFontSize(50);
+        this.volumeText = this.add.text(525, 258, 'Volume:').setOrigin(0.5).setFontSize(50);
 
+        // Create event and the actual increase volume button. 
+        this.volIncButtonPosition = new Phaser.Geom.Point(650, 341);
+        this.incVolButton = new Button(this, this.volIncButtonPosition, 'button', 'Increase');
+        this.incVolButton.getButton().setInteractive()
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
+                this.incVolButton.getButton().setTint(0xF9A000);
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OUT, () => {
+                this.incVolButton.getButton().setTint(0xFFFFFF);
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
+                this.incVolButton.getButton().setTint(0xF47D33);
+                var menu_audio = this.sound.add('menu');
+                menu_audio.play();
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
+                if(this.vol < 5){
+                    this.vol = this.vol + 0.5;
+                    this.ingame_music.setVolume(this.vol);
+                }
+            })
+
+        // Create event and the actual decrease volume button.
+        this.volDecButtonPosition = new Phaser.Geom.Point(400, 341);
+        this.decVolButton = new Button(this, this.volDecButtonPosition, 'button', 'Decrease');
+        this.decVolButton.getButton().setInteractive()
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
+                this.decVolButton.getButton().setTint(0xF9A000);
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OUT, () => {
+                this.decVolButton.getButton().setTint(0xFFFFFF);
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
+                this.decVolButton.getButton().setTint(0xF47D33);
+                var menu_audio = this.sound.add('menu');
+                menu_audio.play();
+            })
+            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
+                if(this.vol > 0){
+                    this.vol = this.vol - 0.5;
+                    this.ingame_music.setVolume(this.vol);
+                }
+            })
         this.backButtonPosition = new Phaser.Geom.Point(520, 668);
         this.backButton = new Button(this, this.backButtonPosition, 'button', 'Back');
 
@@ -567,10 +615,13 @@ class Freeplay extends Phaser.Scene {
         this.shadow = this.add.rectangle(0, 0,2048, 2048, color1.color);
         this.shadow.setAlpha(0.5);
 
+        this.optionMenu.addButton(this.incVolButton.getElements());
+        this.optionMenu.addButton(this.decVolButton.getElements());
         this.optionMenu.addButton(this.fourWayButton.getElements());
         this.optionMenu.addButton(this.tankButton.getElements());
         this.optionMenu.addButton(this.backButton.getElements());
         this.optionMenu.addElement(this.controlText);
+        this.optionMenu.addElement(this.volumeText);
         this.optionMenu.addElement(this.shadow);
 
     }
