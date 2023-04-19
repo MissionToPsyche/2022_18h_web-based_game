@@ -84,6 +84,11 @@ const Constants = {
     HINT_WIDTH_BEFORE: 2,
     HINT_WIDTH_AFTER: 2,
 
+    // mute button size
+    MUTE_X: 964,
+    MUTE_Y: 620,
+    MUTE_SCALE: 0.5,
+
     // parallax background
     PARALLAX_TILE_WIDTH: 512,
     PARALLAX_TILE_HEIGHT: 384,
