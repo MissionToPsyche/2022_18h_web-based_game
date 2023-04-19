@@ -19,7 +19,7 @@ class MainMenu extends Phaser.Scene {
         this.load.image('space', 'img/icons/space.png'); 
         this.load.image('p', 'img/icons/p.png'); 
 
-        this.load.audio('intro_music', 'assets/music/01_Intro.mp3');
+        this.load.audio('intro_music', 'assets/music/01_Psychemission_Menu.wav');
         this.load.audio('load', 'assets/sfx/load.wav');
         this.load.audio('menu', 'assets/sfx/misc_menu_4.wav');
     }
@@ -32,7 +32,7 @@ class MainMenu extends Phaser.Scene {
         CameraManager.initializeMiniCamera(this);
         CameraManager.toggleCamera('mini');
 
-        var logo = this.add.image(50, 50, 'logo').setScale(0.5);
+        var logo = this.add.image(Constants.LOGO_X, Constants.LOGO_Y, 'logo').setScale(Constants.LOGO_SCALE);
         CameraManager.addUISprite(logo);
 
         this.intro_music = this.sound.add('intro_music');
@@ -49,61 +49,70 @@ class MainMenu extends Phaser.Scene {
     }
 
     createTitle() {
-        var journey = this.add.image(512, 24, 'title_journey').setScale(0.0);
-        var to = this.add.image(512, 24, 'title_to').setScale(0.0);
-        var psyche = this.add.image(515, 24, 'title_psyche').setScale(0.0);
-        CameraManager.addUISprite(journey);
-        CameraManager.addUISprite(to);
-        CameraManager.addUISprite(psyche);
+        var title1 = this.add.text(Constants.TITLE_BEFORE_X, Constants.TITLE_BEFORE_Y, 'Tour', { fontFamily: 'CustomFont' })
+            .setScale(Constants.TITLE_BEFORE_SCALE).setOrigin(Constants.TITLE_BEFORE_ORIGIN)
+            .setFontSize(Constants.FIFTH_FONT_SIZE).setStroke(Constants.STR_ORANGE, Constants.TITLE_STROKE_WIDTH)
+            .setShadow(Constants.TITLE_SHADOW_OFFSET, Constants.TITLE_SHADOW_OFFSET, Constants.STR_DARKGRAY, Constants.TITLE_SHADOW_BLUR, true, true);
+        var title2 = this.add.text(Constants.TITLE_BEFORE_X, Constants.TITLE_BEFORE_Y, 'de', { fontFamily: 'CustomFont' })
+            .setScale(Constants.TITLE_BEFORE_SCALE).setOrigin(Constants.TITLE_BEFORE_ORIGIN)
+            .setFontSize(Constants.FIFTH_FONT_SIZE).setStroke(Constants.STR_ORANGE, Constants.TITLE_STROKE_WIDTH)
+            .setShadow(Constants.TITLE_SHADOW_OFFSET, Constants.TITLE_SHADOW_OFFSET, Constants.STR_DARKGRAY, Constants.TITLE_SHADOW_BLUR, true, true);
+        var title3 = this.add.text(Constants.TITLE_BEFORE_X, Constants.TITLE_BEFORE_Y, 'Space', { fontFamily: 'CustomFont' })
+            .setScale(Constants.TITLE_BEFORE_SCALE).setOrigin(Constants.TITLE_BEFORE_ORIGIN)
+            .setFontSize(Constants.FIFTH_FONT_SIZE).setStroke(Constants.STR_ORANGE, Constants.TITLE_STROKE_WIDTH)
+            .setShadow(Constants.TITLE_SHADOW_OFFSET, Constants.TITLE_SHADOW_OFFSET, Constants.STR_DARKGRAY, Constants.TITLE_SHADOW_BLUR, true, true);
+        CameraManager.addUISprite(title1);
+        CameraManager.addUISprite(title2);
+        CameraManager.addUISprite(title3);
 
-        const delay = 500;
         this.tweens.add({
-            targets: journey,
-            scale: 1,
-            y: 82,
-            delay: delay,
-            duration: 350,
+            targets: title1,
+            scale: Constants.TITLE_AFTER_SCALE,
+            y: Constants.TITLE1_Y,
+            delay: Constants.TITLE1_DELAY,
+            duration: Constants.TITLE1_DURATION,
             ease: "Sine.easeIn"
         });
 
         this.tweens.add({
-            targets: to,
-            scale: 1,
-            y: 168,
-            delay: delay + 350,
-            duration: 400,
+            targets: title2,
+            scale: Constants.TITLE_AFTER_SCALE,
+            y: Constants.TITLE2_Y,
+            delay: Constants.TITLE2_DELAY,
+            duration: Constants.TITLE2_DURATION,
             ease: "Sine.easeIn"
         });
 
         this.tweens.add({
-            targets: psyche,
-            scale: 1,
-            y: 272,
-            delay: delay + 750,
-            duration: 450,
+            targets: title3,
+            scale: Constants.TITLE_AFTER_SCALE,
+            y: Constants.TITLE3_Y,
+            delay: Constants.TITLE3_DELAY,
+            duration: Constants.TITLE3_DURATION,
             ease: "Sine.easeIn"
         });
     }
 
     createPlayButton() {
-        this.playButton = this.add.image(512, 464, 'play');
+        this.playButton = this.add.image(Constants.PLAY_BUTTON_X, Constants.PLAY_BUTTON_Y, 'play');
         CameraManager.addUISprite(this.playButton);
 
         this.playButton.setInteractive()
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
-                this.playButton.setTint(0xF9A000);
+                this.playButton.setTint(Constants.ORANGE);
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OUT, () => {
-                this.playButton.setTint(0xFFFFFF);
+                this.playButton.setTint(Constants.WHITE);
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
-                this.playButton.setTint(0xF47D33);
+                this.playButton.setTint(Constants.ORANGE);
                 var load_audio = this.sound.add('load');
                 load_audio.play();
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
                 this.playButton.setTint(0xFFFFFF);
                 this.scene.start('Intro');
+                this.playButton.setTint(Constants.WHITE);
                 this.intro_music.stop()
             })
     }

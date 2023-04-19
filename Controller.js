@@ -96,7 +96,7 @@ class Controller {
             .on('up', () => {
                 this.player.findingTarget = false;
                 this.scene.toggleOrbit();
-                this.scene.updateOrbitColor(this.player.orbitToggle ? 'on' : null);
+                MenuManager.updateOrbitColor(this.scene, this.player.orbitToggle ? 'on' : null);
             });
         this.pictureKey
             .on('up', () => {
