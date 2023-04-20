@@ -199,12 +199,15 @@ class MenuManager {
      */
     static updatePauseMenu(_scene) {
         // if paused and not game over then we can show the pause text and allow the pause/play buttons to update
-        if (_scene.paused && !_scene.gameOver && !_scene.gameSuccess) {
+        if (_scene.paused && !_scene.gameOver && !_scene.gameSuccess && !TutorialManager.getEndTutorial()) {
             _scene.pauseText.setVisible(true)
             _scene.playButton.setVisible(true)
             _scene.pauseButton.setVisible(false);
             _scene.pauseMenu.setVisible(true);
             _scene.HUD.setVisible(false);
+        } else if(TutorialManager.getEndTutorial()) {
+            _scene.pauseButton.setVisible(false);
+            _scene.playButton.setVisible(false);
         } else {
             _scene.pauseButton.setVisible(true);
             _scene.playButton.setVisible(false);
@@ -220,14 +223,14 @@ class MenuManager {
             _scene.time.addEvent({
                 delay: 1500,
                 callback: ()=>{
-                    _scene.restart();
+                    _scene.scene.restart();
                     _scene.paused = false
                     _scene.gameOver = false;
                     _scene.ingame_music.stop();
                 },
                 loop: false
             })
-            this.restart = true;
+            _scene.restart = true;
         }
 
         // if game over then show the game over text
@@ -249,7 +252,7 @@ class MenuManager {
         }
 
         // if paused or game over then we can show the restart and exit buttons
-        if (!_scene.restart && (_scene.paused || _scene.gameOver || _scene.gameSuccess)) {
+        if (!_scene.restart && !TutorialManager.getEndTutorial() && (_scene.paused || _scene.gameOver || _scene.gameSuccess)) {
             _scene.restartButton.setVisible(true)
             _scene.exitButton.setVisible(true)
             _scene.shadow.setVisible(true)

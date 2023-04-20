@@ -245,6 +245,11 @@ class TutorialManager {
             this.scene.sound.add(soundKeys[rand]).play();
         }
     }
+
+    static getRandomInt(max) {
+        return Math.floor(Math.random() * max);
+    }
+
     static createEndMenu(){
         this.endMenu = new Menu(this.scene);
 
@@ -254,7 +259,24 @@ class TutorialManager {
         this.startButtonPosition = new Phaser.Geom.Point(520, 408);
         this.startButton = new Button(this.scene, this.startButtonPosition, 'button', 'Start Mission');
         //create events for the start mission button
-        MenuManager.restartButtonListener(this.scene, this.startButton);
+        this.startButton.getButton().setInteractive()
+        .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
+            this.startButton.getButton().setTint(0xF9A000);
+        })
+        .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OUT, () => {
+            this.startButton.getButton().setTint(0xFFFFFF);
+        })
+        .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
+            this.startButton.getButton().setTint(0xF47D33);
+            var load_audio = this.scene.sound.add('load');
+            load_audio.play();
+        })
+        .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
+            this.startButton.getButton().setTint(0xFFFFFF);
+            TutorialManager.deactivateTutorial();
+            this.scene.scene.restart();
+        });
+
 
         this.exitButtonPosition = new Phaser.Geom.Point(520, 508);
         this.exitButton = new Button(this.scene, this.exitButtonPosition, 'button', 'Exit');
