@@ -48,6 +48,10 @@ class TutorialManager {
     static activateTutorial(){
         this.mode = true;
     }
+
+    static deactivateTutorial(){
+        this.mode = false;
+    }
     static tutorialActivated(){
         return this.mode;
     }

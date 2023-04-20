@@ -151,7 +151,7 @@ class MainMenu extends Phaser.Scene {
         this.controlText = this.add.text(525, 100, 'CONTROLS').setOrigin(0.5).setFontSize(120);
         this.exitButton = this.add.image(520, 618, 'exit').setScale(0.5);
         // Storage for title of control.
-        const controls = ['Move Forward', 'Move Backward', 'Rotate Left', 'Rotate Right', 'Pause Game', 'Take Picture'];
+        const controls = ['Move Forward', 'Move Backward', 'Move Left', 'Move Right', 'Pause Game', 'Take Picture'];
         // Storage for icon images. 
         const icons = ['up', 'down', 'left', 'right', 'p', 'space'];
         // Storage of all the titles and object created. 

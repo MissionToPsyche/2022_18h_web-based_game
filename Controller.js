@@ -72,14 +72,14 @@ class Controller {
 
         this.pauseKey
             .on('down', () => {
-                this.scene.updatePauseColor('pressed');
+                MenuManager.updatePauseColor(this.scene,'pressed');
             }).on('up', () => {
                 // disable pause when in the taking photo page
                 if (!this.scene.takingPhoto) {
                     this.scene.togglePaused();
                     this.scene.resumeMap();
                 }
-                this.scene.updatePauseColor();
+                MenuManager.updatePauseColor(this.scene);
             });
         this.mapKey
             .on('up', () => {
