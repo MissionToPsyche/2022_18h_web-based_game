@@ -19,34 +19,32 @@ class TutorialManager {
         this.movementTutNum = 1;
         this.movementNotDone = true;
         this.msgNum = 0;
-        this.key1 = _scene.load.audio('key1', 'assets/sfx/key1.wav');
-        this.key2 = _scene.load.audio('key2', 'assets/sfx/key2.wav');
-        this.key3 = _scene.load.audio('key3', 'assets/sfx/key3.wav');
-        this.key4 = _scene.load.audio('key4', 'assets/sfx/key4.wav');
-        this.key5 = _scene.load.audio('key5', 'assets/sfx/key5.wav');
+        this.createEndMenu();
+        this.end = false;
     }
 
     static mode;
+    static end;
 
     static tutorialLog = [
-        "Welcome to the Tutorial!\n",
+        "Welcome to the Tutorial!",
         "Press the shift button to get out of Orbit.",
-        "Now that you know how to fly, find Psyche without crashing.",
-        "You have found Psyche!\n",
+        "Now that you know how to fly, find Psyche     without crashing.",
+        "You have found Psyche!",
         "Press the space key in order to take pictures of Psyche.",
         "Good job! You have finished the tutorial!",
-        "You are orbiting the wrong planet.\n",
-        "You are orbiting Earth again.\n",
+        "You are orbiting the wrong planet.",
+        "You are orbiting Earth again.",
         "Press and hold the up arrow key to go up.",
         "Press and hold the down arrow key to go down.",
         "Press and hold the left arrow key to go left.",
         "Press and hold the right arrow key to go right.",
         "The longer you press and hold on to the arrow keys the faster you fly.",
-        "Follow the orange arrow to find Psyche."
+        "Follow the orange arrow to find Psyche.  When near press shift to enter orbit."
     ]
 
-    static activateTutorial(){
-        this.mode = true;
+    static activateTutorial(activate){
+        this.mode = activate;
     }
 
     static deactivateTutorial(){
@@ -54,6 +52,14 @@ class TutorialManager {
     }
     static tutorialActivated(){
         return this.mode;
+    }
+
+    static setEndTutorial(){
+        this.end = true;
+    }
+
+    static getEndTutorial(){
+        return this.end;
     }
 
     static loadMsg(num){
@@ -124,12 +130,6 @@ class TutorialManager {
                 this.msgNum = 4;
                 this.eraseDialogText();
                     this.typewriteText(this.dialogText,this.tutorialLog[13]);
-                break;
-            // When player take a picture of Psyche.
-            case 5:
-                this.msgNum = 5;
-                this.eraseDialogText();
-                this.typewriteText(this.dialogText,this.tutorialLog[5]);
                 break;
             // When player orbit a different planet. 
             case 6:
@@ -245,9 +245,29 @@ class TutorialManager {
             this.scene.sound.add(soundKeys[rand]).play();
         }
     }
+    static createEndMenu(){
+        this.endMenu = new Menu(this.scene);
 
-    static getRandomInt(max) {
-        return Math.floor(Math.random() * max);
+        this.endText = this.scene.add.text(525, 300, 'Tutorial Completed').setOrigin(0.5).setFontSize(80);
+        this.endText.depth = 100;
+
+        this.startButtonPosition = new Phaser.Geom.Point(520, 408);
+        this.startButton = new Button(this.scene, this.startButtonPosition, 'button', 'Start Mission');
+        //create events for the start mission button
+        MenuManager.restartButtonListener(this.scene, this.startButton);
+
+        this.exitButtonPosition = new Phaser.Geom.Point(520, 508);
+        this.exitButton = new Button(this.scene, this.exitButtonPosition, 'button', 'Exit');
+        MenuManager.exitButtonListener(this.scene, this.exitButton);
+
+        // To darken screen
+        const color1 = new Phaser.Display.Color(0, 0, 0);
+        this.shadow = this.scene.add.rectangle(0, 0,2048, 2048, color1.color).setAlpha(0.5);
+
+        this.endMenu.addElement(this.endText);
+        this.endMenu.addButton(this.startButton.getElements());
+        this.endMenu.addButton(this.exitButton.getElements());
+        this.endMenu.addElement(this.shadow);
     }
 
     

@@ -309,7 +309,7 @@ class Freeplay extends Phaser.Scene {
         const moveUnit = 0.01;
 
         // don't update bodies if paused, game over, or is taking photo
-        if (this.paused || this.gameOver || this.gameSuccess || this.takingPhoto) {
+        if (this.paused || this.gameOver || this.gameSuccess || this.takingPhoto || TutorialManager.getEndTutorial()) {
             for (const body in this.bodies) {
                 this.bodies[body].stop()
             }
@@ -811,7 +811,7 @@ class Freeplay extends Phaser.Scene {
      */
     photoKeyEvent() {
         // disable spacebar take photo when paused
-        if ((!this.paused) && (!this.gameOver) && (!this.gameSuccess)) {
+        if ((!this.paused) && (!this.gameOver) && (!this.gameSuccess) && (!TutorialManager.getEndTutorial())) {
             this.takingPhoto = !this.takingPhoto;
 
             let viewR = Constants.VIEW_R;
@@ -880,6 +880,13 @@ class Freeplay extends Phaser.Scene {
                     this.gameSuccess = true;
                     this.foundPsycheText.setText("Good job! You successfully\ncovered all Psyche sides!");
                     this.quitPhotoPageButton.setVisible(false);
+                } else if(TutorialManager.tutorialActivated()){
+                    // Once the player take one picture of Psyche, show the ending of tutorial.
+                    TutorialManager.setEndTutorial();
+                    TutorialManager.activateTutorial(false);
+                    TutorialManager.msgVisibility(false);
+                    TutorialManager.endMenu.setVisible(true);
+                    this.takingPhoto = !this.takingPhoto;
                 }
                         
             } else if(!TutorialManager.tutorialActivated()){
