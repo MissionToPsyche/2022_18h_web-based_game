@@ -272,6 +272,7 @@ class TutorialManager {
             load_audio.play();
         })
         .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
+            this.scene.ingame_music.stop();
             this.startButton.getButton().setTint(0xFFFFFF);
             TutorialManager.deactivateTutorial();
             this.scene.scene.restart();
