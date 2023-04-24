@@ -23,6 +23,7 @@ class Controller {
         this.d_left_setting = 'LEFT';
         this.d_right_setting = 'RIGHT';
         this.controlToggleKey_setting = 'C';
+        this.mapKey_setting = 'm';
 
         this.keyboard = this.scene.input.keyboard;
 
@@ -62,6 +63,7 @@ class Controller {
         this.pauseKey = this.keyboard.addKey(this.pauseKey_setting);
         this.orbitKey = this.keyboard.addKey(this.orbitKey_setting);
         this.pictureKey = this.keyboard.addKey(this.pictureKey_setting);
+        this.mapKey = this.keyboard.addKey(this.mapKey_setting);
 
         this.d_up = this.keyboard.addKey(this.d_up_setting, true, true);
         this.d_down = this.keyboard.addKey(this.d_down_setting, true, true);
@@ -70,14 +72,20 @@ class Controller {
 
         this.pauseKey
             .on('down', () => {
-                this.scene.updatePauseColor('pressed');
+                MenuManager.updatePauseColor(this.scene,'pressed');
             }).on('up', () => {
                 // disable pause when in the taking photo page
                 if (!this.scene.takingPhoto) {
                     this.scene.togglePaused();
+                    this.scene.resumeMap();
                 }
-                this.scene.updatePauseColor();
+                MenuManager.updatePauseColor(this.scene);
             });
+        this.mapKey
+            .on('up', () => {
+                this.scene.updateMap();
+            });
+
         this.orbitKey
             .on('down', () => {
                 console.log("finding closest body...");
@@ -113,6 +121,9 @@ class Controller {
                     this.yAcc = -this.APT;
                     this.totalAcc = -this.APT;
                 }
+                if(TutorialManager.tutorialActivated() && this.scene.earthDone == true){
+                    TutorialManager.movementTutor(1);
+                }
             }).on('up', () => {
                 this.yAcc = 0;
                 this.totalAcc = 0;
@@ -124,6 +135,9 @@ class Controller {
                 } else {
                     this.yAcc = this.APT;
                     this.totalAcc = this.APT;
+                }
+                if(TutorialManager.tutorialActivated()){
+                    TutorialManager.movementTutor(2);
                 }
             }).on('up', () => {
                 this.yAcc = 0;
@@ -138,6 +152,9 @@ class Controller {
                 } else {
                     this.xAcc = -this.APT;
                 }
+                if(TutorialManager.tutorialActivated()){
+                    TutorialManager.movementTutor(3);
+                }
             }).on('up', () => {
                 this.xAcc = 0;
                 this.rotation = 0;
@@ -150,6 +167,9 @@ class Controller {
                     this.rotation = 0.04;
                 } else {
                     this.xAcc = this.APT;
+                }
+                if(TutorialManager.tutorialActivated()){
+                    TutorialManager.loadMsg(2);
                 }
             }).on('up', () => {
                 this.xAcc = 0;

@@ -19,6 +19,7 @@ class Freeplay extends Phaser.Scene {
         this.gameOver = false;
         this.gameSuccess = false;
         this.pauseText;
+        this.isMapVisible;
 
         this.takingPhoto = false;
         this.foundPsycheText; 
@@ -30,6 +31,9 @@ class Freeplay extends Phaser.Scene {
         this.photoBackground;
         this.photoBorder;
         this.nearestBodyText;
+        this.restart;
+        this.msgDone;
+        this.earthDone;
 
         this.placeTileX = -512;
         this.placeTileY = -384;
@@ -90,6 +94,13 @@ class Freeplay extends Phaser.Scene {
         this.load.spritesheet('psyche_probe', "img/sprites/probe_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
         this.load.spritesheet('psyche_probe_fx', "img/sprites/fx_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
         this.load.image('psyche_probe_icon', "img/icons/arrow.png");
+        
+        this.restart = false;
+        this.earthDone = false;
+
+        // Make the indicator show up again.
+        this.direction = undefined;
+
         this.load.image('parallax_stars_layer1', "img/sprites/star_background_layer1.png");
         this.load.image('parallax_stars_layer2', "img/sprites/star_background_layer2.png");
         this.load.image('parallax_stars_layer3', "img/sprites/star_background_layer3.png");
@@ -137,6 +148,9 @@ class Freeplay extends Phaser.Scene {
         CameraManager.initializeUICamera(this);
         CameraManager.initializeMiniCamera(this);
 
+        //Make map appear.
+        //this.map_border = this.add.image(880,110,'minimap_border').setScale(0.35);
+        //this.map_border.setVisible(true);
         //this.map_border = this.add.image(880,110,'minimap_border').setScale(0.35);
 
         //creating Body objects
@@ -241,6 +255,8 @@ class Freeplay extends Phaser.Scene {
 
         //adding to UIsprites so main camera ignores them
         //CameraManager.addUISprite(logo);
+        //CameraManager.addUISprite(this.map_border);
+        //CameraManager.addUISprite(logo);
         //CameraManager.addUISprite(map_border);
 
         this.ingame_music = this.sound.add('ingame_music');
@@ -248,9 +264,21 @@ class Freeplay extends Phaser.Scene {
             this.ingame_music.play({ loop: true });
         }
 
-        this.createMuteButton();
+        //this.createPauseButton();
+        //this.createOrbitToggle();
+
+        // Create a shaded dialog box
+        const color1 = new Phaser.Display.Color(0, 0, 0);
+        TutorialManager.setUp(this, color1.color);
+        if(TutorialManager.tutorialActivated()){
+            TutorialManager.loadMsg(0);
+
+        } else{
+            TutorialManager.msgVisibility(false);
+        }
+
+        //this.createMuteButton();
         this.createParallaxBackground();
-        this.takePhoto();
 
         //creating controller
         this.controller = new Controller(this, this.bodies["psyche_probe"]);
@@ -259,6 +287,7 @@ class Freeplay extends Phaser.Scene {
         MenuManager.createPauseMenu(this);
         this.takePhoto();
         MenuManager.createHeadsUpDisplay(this);
+        this.changeMap();
     }
 
     /** The scene's main update loop
@@ -266,13 +295,21 @@ class Freeplay extends Phaser.Scene {
      * - Applies dynamic gravity
      * - Enforces the pause feature, only allowing bodies to move if the game is not paused
      */
-    update() {
-        MenuManager.updatePauseMenu(this);
+    update () {
+        //Probe controls
+        //**TO DO: Wrap in a custom controler later.
+        // Stops the Pause button from updating before delayed restart from tutorial.
+        if(!this.restart){
+            MenuManager.updatePauseMenu(this);
+        }
+
         this.updateTakePhoto();
         this.updateParallaxBackground();
 
+        const moveUnit = 0.01;
+
         // don't update bodies if paused, game over, or is taking photo
-        if (this.paused || this.gameOver || this.gameSuccess || this.takingPhoto) {
+        if (this.paused || this.gameOver || this.gameSuccess || this.takingPhoto || TutorialManager.getEndTutorial()) {
             for (const body in this.bodies) {
                 this.bodies[body].stop()
             }
@@ -335,6 +372,10 @@ class Freeplay extends Phaser.Scene {
                 this.graphics.fillStyle(0x00ff00, 1);
             }
         } else if (this.bodies["psyche_probe"].inOrbit){
+            if(this.mapBorder.visible == true){
+                this.isMapVisible = true;
+                this.updateMap();
+            }
             //draw the orbit boundries if probe is locked in an orbit
             this.graphics.lineStyle(1, 0xff0000, 0.5);
             this.bodies["psyche_probe"].getOrbitPath('new').draw(this.graphics, 64);
@@ -343,6 +384,29 @@ class Freeplay extends Phaser.Scene {
             this.graphics.lineStyle(1, 0x0000ff, 0.5);
             this.bodies["psyche_probe"].getOrbitPath('cur').draw(this.graphics, 64);
             this.graphics.fillStyle(0x00ff00, 1);
+            if(TutorialManager.tutorialActivated() && this.bodies["psyche_probe"].orbitTarget.id =="psyche"){
+                if(!this.msgDone){
+                    TutorialManager.loadMsg(3);
+                    // Make sure the dialog doesn't keep on updating.
+                    this.msgDone = true;
+                }
+            } else if(TutorialManager.tutorialActivated() && 
+            (this.bodies["psyche_probe"].orbitTarget.id !="psyche" && 
+            this.bodies["psyche_probe"].orbitTarget.id !="earth")){
+                if(!this.msgDone){
+                   TutorialManager.loadMsg(6);
+                    // Make sure the dialog doesn't keep on updating.
+                    this.msgDone = true;
+                }
+            } else if(TutorialManager.tutorialActivated() && 
+            (this.bodies["psyche_probe"].orbitTarget.id !="psyche" && 
+            this.bodies["psyche_probe"].orbitTarget.id =="earth")){
+                if(!this.msgDone && this.earthDone){
+                   TutorialManager.loadMsg(7);
+                    // Make sure the dialog doesn't keep on updating.
+                    this.msgDone = true;
+                }
+            }
         }
 
         for (const body in this.bodies) {
@@ -570,7 +634,6 @@ class Freeplay extends Phaser.Scene {
      * scroll each layer at a different rate, creating the parallax effect
      */
     updateParallaxBackground() {
-
         for ( let i = 0; i < this.backgroundTiles.length - 2; i += 3) {
             var layer1 = i;
             var layer2 = i + 1;
@@ -625,18 +688,45 @@ class Freeplay extends Phaser.Scene {
         this.controller.toggleMovementKeys();
     }
 
+    resumeMap(){
+        // Check if map was visible before pause.
+        if(this.isMapVisible && !this.bodies["psyche_probe"].inOrbit){
+            this.updateMap();
+            this.isMapVisible = false;
+        }
+    }
+
+    updateMap(){
+        if(!this.bodies["psyche_probe"].inOrbit){
+            this.changeMap();
+        } else if(this.bodies["psyche_probe"].inOrbit && this.mapBorder.visible == true){
+            this.changeMap();
+        }
+    }
+
+    changeMap(){
+        var visible = CameraManager.popMap();
+        if(visible){
+            this.mapBorder.setVisible(true);
+        }else{
+            this.mapBorder.setVisible(false);
+        }
+    }
+
     updateTakePhoto() {
         if (!this.takingPhoto) {
             this.foundPsycheText.setVisible(false);  
             this.quitPhotoPageButton.setVisible(false);
             this.hidePsychePhotos();
             this.nearestBodyText.setVisible(false);
-        }  else if (this.gameSuccess) {
+        } else if (this.gameSuccess) {
             this.foundPsycheText.setVisible(true);  
             this.quitPhotoPageButton.setVisible(false);
             this.nearestBodyText.setVisible(false);
-        } else {
+        } else if(!TutorialManager.tutorialActivated()){
             this.quitPhotoPageButton.setVisible(true);
+        } else if(TutorialManager.tutorialActivated()){
+            this.takingPhoto = !this.takingPhoto;
         }
     }
 
@@ -649,6 +739,17 @@ class Freeplay extends Phaser.Scene {
             this.bodies["psyche_probe"].orbitToggle = true;
         } else {
             this.bodies["psyche_probe"].stopOrbitLock();
+            if(TutorialManager.tutorialActivated()){
+                if(this.earthDone == false){
+                    this.earthDone = true;
+                    TutorialManager.loadMsg(1);
+                } else{
+                    TutorialManager.loadMsg(4);
+                }
+            }
+            // Makes sure dialog for when orbiting can reappear.
+            this.msgDone = false;
+            this.resumeMap();
             this.bodies["psyche_probe"].orbitToggle = false;
         }
     }
@@ -700,7 +801,6 @@ class Freeplay extends Phaser.Scene {
             .on('pointerdown', () => {
                 this.takingPhoto = !this.takingPhoto;
                 this.quitPhotoPageButton.setVisible(false);
-                
             })
             .setVisible(false);
         CameraManager.addUISprite(this.quitPhotoPageButton);
@@ -711,7 +811,7 @@ class Freeplay extends Phaser.Scene {
      */
     photoKeyEvent() {
         // disable spacebar take photo when paused
-        if ((!this.paused) && (!this.gameOver) && (!this.gameSuccess)) {
+        if ((!this.paused) && (!this.gameOver) && (!this.gameSuccess) && (!TutorialManager.getEndTutorial())) {
             this.takingPhoto = !this.takingPhoto;
 
             let viewR = Constants.VIEW_R;
@@ -780,9 +880,16 @@ class Freeplay extends Phaser.Scene {
                     this.gameSuccess = true;
                     this.foundPsycheText.setText("Good job! You successfully\ncovered all Psyche sides!");
                     this.quitPhotoPageButton.setVisible(false);
+                } else if(TutorialManager.tutorialActivated()){
+                    // Once the player take one picture of Psyche, show the ending of tutorial.
+                    TutorialManager.setEndTutorial();
+                    TutorialManager.activateTutorial(false);
+                    TutorialManager.msgVisibility(false);
+                    TutorialManager.endMenu.setVisible(true);
+                    this.takingPhoto = !this.takingPhoto;
                 }
                         
-            } else {
+            } else if(!TutorialManager.tutorialActivated()){
                 // check which body is in the view and choose the nearest one
                 let currentDistance = 1000; // random big number
                 let nearestBody = null;
@@ -906,3 +1013,7 @@ class Freeplay extends Phaser.Scene {
             });
     }
 }
+
+
+
+

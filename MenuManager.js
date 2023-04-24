@@ -32,6 +32,7 @@ class MenuManager {
                 _scene.backgroundTiles = [];
                 // Make the direction icon show up again.
                 _scene.direction = undefined;
+                _scene.isMapVisible = false;
             });
 	}
 
@@ -58,6 +59,7 @@ class MenuManager {
                 _scene.scene.start('MainMenu');
                 _scene.paused = false;
                 _scene.gameOver = false;
+                _scene.isMapVisible = false;
                 _scene.backgroundTiles = [];
             });
 	}
@@ -155,13 +157,14 @@ class MenuManager {
     static createPauseMenu(_scene) {
         _scene.pauseMenu = new Menu(_scene);
 
-        _scene.pauseText = _scene.add.text(525, 300, 'Pause').setOrigin(0.5).setFontSize(120);
+        _scene.pauseText = _scene.add.text(525, 300, 'Pause', { fontFamily: 'CustomFont' }).setOrigin(0.5).setFontSize(100)
+        .setStroke('#e6851e', 16).setShadow(2, 2, "#333333", 2, true, true);
 
-        _scene.restartButtonPosition = new Phaser.Geom.Point(520, 408);
+        _scene.restartButtonPosition = new Phaser.Geom.Point(520, 428);
         _scene.restartButton = new Button(_scene, _scene.restartButtonPosition, 'button', 'Restart');
         this.restartButtonListener(_scene, _scene.restartButton);
 
-        _scene.exitButtonPosition = new Phaser.Geom.Point(520, 508);
+        _scene.exitButtonPosition = new Phaser.Geom.Point(520, 528);
         _scene.exitButton = new Button(_scene, _scene.exitButtonPosition, 'button', 'Exit');
         this.exitButtonListener(_scene, _scene.exitButton);
 
@@ -196,12 +199,15 @@ class MenuManager {
      */
     static updatePauseMenu(_scene) {
         // if paused and not game over then we can show the pause text and allow the pause/play buttons to update
-        if (_scene.paused && !_scene.gameOver && !_scene.gameSuccess) {
+        if (_scene.paused && !_scene.gameOver && !_scene.gameSuccess && !TutorialManager.getEndTutorial()) {
             _scene.pauseText.setVisible(true)
             _scene.playButton.setVisible(true)
             _scene.pauseButton.setVisible(false);
             _scene.pauseMenu.setVisible(true);
             _scene.HUD.setVisible(false);
+        } else if(TutorialManager.getEndTutorial()) {
+            _scene.pauseButton.setVisible(false);
+            _scene.playButton.setVisible(false);
         } else {
             _scene.pauseButton.setVisible(true);
             _scene.playButton.setVisible(false);
@@ -209,8 +215,26 @@ class MenuManager {
             _scene.HUD.setVisible(true);
         }
 
+        // If in tutorial mode and is game over. 
+        if(TutorialManager.tutorialActivated() && _scene.gameOver){
+            _scene.pauseText.setText("Game Over!");
+            _scene.pauseText.setVisible(true);
+            TutorialManager.msgVisibility(false);
+            _scene.time.addEvent({
+                delay: 1500,
+                callback: ()=>{
+                    _scene.scene.restart();
+                    _scene.paused = false
+                    _scene.gameOver = false;
+                    _scene.ingame_music.stop();
+                },
+                loop: false
+            })
+            _scene.restart = true;
+        }
+
         // if game over then show the game over text
-        if (_scene.gameOver) {
+        if (!TutorialManager.tutorialActivated() && _scene.gameOver) {
             //this.failText.setVisible(true)
             _scene.pauseText.setText("Game Over!");
             _scene.playButton.setVisible(true);
@@ -221,21 +245,29 @@ class MenuManager {
             _scene.pauseButton.setTint(0x7f7f7f);
             _scene.playButton.setTint(0x7f7f7f);
             _scene.orbitButton.setTint(0x7f7f7f);
-        } else if (_scene.gameSuccess) {
+        } else if (!TutorialManager.tutorialActivated() && _scene.gameSuccess) {
             _scene.pauseButton.setTint(0x7f7f7f);
             _scene.playButton.setTint(0x7f7f7f);
             _scene.orbitButton.setTint(0x7f7f7f);
         }
 
         // if paused or game over then we can show the restart and exit buttons
-        if (_scene.paused || _scene.gameOver || _scene.gameSuccess) {
+        if (!_scene.restart && !TutorialManager.getEndTutorial() && (_scene.paused || _scene.gameOver || _scene.gameSuccess)) {
             _scene.restartButton.setVisible(true)
             _scene.exitButton.setVisible(true)
             _scene.shadow.setVisible(true)
+            TutorialManager.msgVisibility(false);
+            if(_scene.mapBorder.visible == true){
+                _scene.isMapVisible = true;
+                _scene.updateMap();
+            }
         } else {
             _scene.restartButton.setVisible(false)
             _scene.exitButton.setVisible(false)
             _scene.shadow.setVisible(false)
+            if(TutorialManager.tutorialActivated() && !_scene.restart){
+                TutorialManager.msgVisibility(true);
+                }
         }
     }
 
