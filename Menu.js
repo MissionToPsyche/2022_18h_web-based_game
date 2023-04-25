@@ -4,6 +4,7 @@
  */
 class Menu {
 	constructor(_scene) {
+		this.isVisible = false;
 		this.scene = _scene;
 		this.elements = [];
 	}
@@ -47,6 +48,7 @@ class Menu {
 	 * @param {boolean} _bool - Decides the visibility of this menu
 	 */
 	setVisible(_bool) {
+		this.isVisible = _bool;
 		this.elements.forEach(function (element) {
 				element.setVisible(_bool);
 		});
