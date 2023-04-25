@@ -680,17 +680,17 @@ class Freeplay extends Phaser.Scene {
         this.backgroundTiles.push(this.add.image(_placeX, _placeY, 'parallax_stars_layer1')
             .setDepth(2)
             .setOrigin(0)
-            .setScale(0.25)
+            .setScale(0.5)
             .setVisible(true));
         this.backgroundTiles.push(this.add.image(_placeX, _placeY, 'parallax_stars_layer2')
             .setDepth(1)
             .setOrigin(0)
-            .setScale(0.25)
+            .setScale(0.5)
             .setVisible(true));
         this.backgroundTiles.push(this.add.image(_placeX, _placeY, 'parallax_stars_layer3')
             .setDepth(0)
             .setOrigin(0)
-            .setScale(0.25)
+            .setScale(0.5)
             .setVisible(true));
     }
 
