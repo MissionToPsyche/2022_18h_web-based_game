@@ -91,6 +91,11 @@ class Freeplay extends Phaser.Scene {
         this.load.spritesheet('neptune', "img/sprites/neptune_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
         this.load.spritesheet('pluto', "img/sprites/pluto_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
         this.load.spritesheet('psyche', "img/sprites/psyche_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
+        this.load.spritesheet('asteroid0', "img/sprites/asteroid_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
+        this.load.spritesheet('asteroid1', "img/sprites/asteroid_1_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
+        this.load.spritesheet('asteroid2', "img/sprites/asteroid_1-2_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
+        this.load.spritesheet('asteroid3', "img/sprites/asteroid_3_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
+        this.load.spritesheet('asteroid4', "img/sprites/asteroid_3-1_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
         this.load.spritesheet('psyche_probe', "img/sprites/probe_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
         this.load.spritesheet('psyche_probe_fx', "img/sprites/fx_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
         this.load.image('psyche_probe_icon', "img/icons/arrow.png");
@@ -167,34 +172,9 @@ class Freeplay extends Phaser.Scene {
                     let angle = body['angle'];
                     let day_length = body['day_length']['value'];
 
-                    this.bodies[id] = new Satellite(this, id, mass, diameter, parent, angle, orbit_distance, day_length).setDepth(50);
-
-                    for (const dir of this.dirs) {
-                        const offset = 16 * this.dirs.indexOf(dir)
-                        this.anims.create({
-                            key: id + "-" + dir,
-                            frames: this.anims.generateFrameNumbers(id, {
-                                frames: [offset + 0,
-                                offset + 1,
-                                offset + 2,
-                                offset + 3,
-                                offset + 4,
-                                offset + 5,
-                                offset + 6,
-                                offset + 7,
-                                offset + 8,
-                                offset + 9]
-                            }),
-                            frameRate: 12,
-                            repeat: -1
-                        });
-                    }
-
-                    this.bodies[id].play(id + "-f");
-                    //this.bodies[id] = new Satellite(this, id, mass, diameter, parent, angle, orbit_distance, day_length);
-
+                    this.bodies[id] = new Satellite(this, id, id, mass, diameter, parent, angle, orbit_distance, day_length);
                 } else {
-                    this.bodies[id] = new Probe(this, id, mass, diameter).setDepth(49);
+                    this.bodies[id] = new Probe(this, id, id, mass, diameter);
                 }
 
                 for (const dir of this.dirs) {
@@ -211,7 +191,51 @@ class Freeplay extends Phaser.Scene {
                 }
 
                 this.bodies[id].setTexture(id, 0);
+                if (id == "psyche_probe") {
+                    this.bodies[id].setDepth(49);
+                } else {
+                    this.bodies[id].setDepth(50);
+                }
             }
+        }
+
+        //now to create the asteroid field
+        const astNum = 100;
+        for(var i = 0; i < astNum; i++){
+            let id = "asteroid" + i;
+            let img_id = "asteroid" + Math.floor(Math.random() * 5);
+            let mass = (Math.random() * 15);
+            let diameter = (Math.random() * (40 - 10)) + 10;
+            let orbit_distance = Math.floor(Math.random() * (3000 - 2500)) + 2500;
+            
+
+            let collisionGroup1 = this.matter.world.nextGroup(true);
+            let collisionGroup2 = this.matter.world.nextGroup();
+
+            let parent = this.bodies["sun"];
+            let angle = (Math.random() * (Math.PI * 2));
+            let day_length = (Math.random() * 10 + 1);
+
+            this.bodies[id] = new Satellite(this, id, img_id, mass, diameter, parent, angle, orbit_distance, day_length);
+            console.log(this.bodies[id].id);
+            console.log(orbit_distance);
+
+            for (const dir of this.dirs) {
+                const offset = (id == "psyche_probe" ? 14 : 16) * this.dirs.indexOf(dir)
+                this.anims.create({
+                    key: img_id + "-" + dir,
+                    frames: this.anims.generateFrameNumbers(img_id, {
+                        start: offset,
+                        end: offset + (id == "psyche_probe" ? 7 : 9)
+                    }),
+                    frameRate: 12,
+                    repeat: -1
+                });
+            }
+
+            this.bodies[id].setTexture(img_id, 0);
+            this.bodies[id].setDepth(50);
+            this.bodies[id].changeMiniIconSize(6);
         }
 
         const fx = ["thrust", "brake"]
