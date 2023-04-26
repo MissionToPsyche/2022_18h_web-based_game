@@ -146,12 +146,12 @@ createPTwo(){
         + "2. Take pictures of Psyche.\n3. Get back to Earth.";
 
         var content2 = "Do not crash into other planets!";
-        this.introText = this.add.text(325, 100, 'Mission Task:').setFontSize(50);
+        this.introText = this.add.text(300, 100, 'Mission Task:', { fontFamily: 'CustomFont2'}).setFontSize(50);
         CameraManager.addUISprite(this.introText);
-        this.contentText = this.add.text(325,200, '');
+        this.contentText = this.add.text(325,200, '', { fontFamily: 'CustomFont2'});
         this.typewriteText(this.contentText, content);
         CameraManager.addUISprite(this.contentText);
-        this.introText = this.add.text(325, 400, '').setFontSize(50);
+        this.introText = this.add.text(300, 400, '', { fontFamily: 'CustomFont2'}).setFontSize(50);
         // Time delay for typewriter affect.
         this.time.addEvent({
             delay: 9000,
@@ -162,7 +162,7 @@ createPTwo(){
         })
         // Make the text red.
         this.introText.setFill('#F10A0A');
-        this.contentText = this.add.text(325,450, '');
+        this.contentText = this.add.text(325,500, '', { fontFamily: 'CustomFont2'});
 
         this.time.addEvent({
             delay: 10500,

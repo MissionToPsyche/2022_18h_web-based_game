@@ -293,10 +293,6 @@ class Freeplay extends Phaser.Scene {
             this.ingame_music.setVolume(this.vol);
         }
 
-        this.createOptionMenu();
-        //this.createPauseButton();
-        //this.createOrbitToggle();
-
         // Create a shaded dialog box
         const color1 = new Phaser.Display.Color(0, 0, 0);
         TutorialManager.setUp(this, color1.color);
@@ -307,13 +303,13 @@ class Freeplay extends Phaser.Scene {
             TutorialManager.msgVisibility(false);
         }
 
-        //this.createMuteButton();
         this.createParallaxBackground();
 
         //creating controller
         this.controller = new Controller(this, this.bodies["psyche_probe"]);
         this.bodies["psyche_probe"].setController(this.controller);
 
+        MenuManager.createOptionMenu(this);
         MenuManager.createPauseMenu(this);
         this.takePhoto();
         MenuManager.createHeadsUpDisplay(this);
@@ -632,138 +628,6 @@ class Freeplay extends Phaser.Scene {
         this.graphics.arc(x, y, r, startAngle, endAngle, false);
         this.graphics.strokePath();
     }
-    /** Creates the image objects and associated events for the 
-     *  game's more option menu 
-     */
-    createOptionMenu(){
-
-        this.optionMenu = new Menu(this);
-        this.controlText = this.add.text(525, 458, 'Movement Controls:').setOrigin(0.5).setFontSize(50);
-        this.volumeText = this.add.text(525, 258, 'Volume:').setOrigin(0.5).setFontSize(50);
-
-        // Create event and the actual increase volume button. 
-        this.volIncButtonPosition = new Phaser.Geom.Point(650, 341);
-        this.incVolButton = new Button(this, this.volIncButtonPosition, 'button', 'Increase');
-        this.incVolButton.getButton().setInteractive()
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
-                this.incVolButton.getButton().setTint(0xF9A000);
-            })
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OUT, () => {
-                this.incVolButton.getButton().setTint(0xFFFFFF);
-            })
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
-                this.incVolButton.getButton().setTint(0xF47D33);
-                var menu_audio = this.sound.add('menu');
-                menu_audio.play();
-            })
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
-                if(this.vol < 5){
-                    this.vol = this.vol + 0.5;
-                    this.ingame_music.setVolume(this.vol);
-                }
-            })
-
-        // Create event and the actual decrease volume button.
-        this.volDecButtonPosition = new Phaser.Geom.Point(400, 341);
-        this.decVolButton = new Button(this, this.volDecButtonPosition, 'button', 'Decrease');
-        this.decVolButton.getButton().setInteractive()
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
-                this.decVolButton.getButton().setTint(0xF9A000);
-            })
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OUT, () => {
-                this.decVolButton.getButton().setTint(0xFFFFFF);
-            })
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
-                this.decVolButton.getButton().setTint(0xF47D33);
-                var menu_audio = this.sound.add('menu');
-                menu_audio.play();
-            })
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
-                if(this.vol > 0){
-                    this.vol = this.vol - 0.5;
-                    this.ingame_music.setVolume(this.vol);
-                }
-            })
-        this.backButtonPosition = new Phaser.Geom.Point(520, 668);
-        this.backButton = new Button(this, this.backButtonPosition, 'button', 'Back');
-
-        //create events for the back button
-        this.backButton.getButton().setInteractive()
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
-                this.updateToggleColor('hover');
-            })
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OUT, () => {
-                this.updateToggleColor();
-            })
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
-                this.updateToggleColor('pressed');
-                var menu_audio = this.sound.add('menu');
-                menu_audio.play();
-            })
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
-                this.pauseMenu.setVisible(true);
-                this.optionMenu.setVisible(false);
-            })
-
-        this.fourWayButtonPosition = new Phaser.Geom.Point(400, 541);
-        this.fourWayButton = new Button(this, this.fourWayButtonPosition, 'button', '4-Way');
-
-        this.fourWayButton.getButton().setTint(0xF47D33);
-
-        //create events for the 4-way control button
-        this.fourWayButton.getButton().setInteractive()
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
-                this.updateControlColor(this.fourWayButton.getButton(), 'fourway', 'hover');
-            })
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OUT, () => {
-                this.updateControlColor(this.fourWayButton.getButton(), 'fourway');
-            })
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
-                this.updateControlColor(this.fourWayButton.getButton(), 'fourway', 'pressed');
-                var menu_audio = this.sound.add('menu');
-                menu_audio.play();
-                this.controller.setControlMethod('fourway');
-            })
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
-                this.tankButton.getButton().setTint(0xFFFFFF);
-            });
-
-        this.tankButtonPosition = new Phaser.Geom.Point(650, 541);
-        this.tankButton = new Button(this, this.tankButtonPosition, 'button', 'tank');
-
-        //create events for the tank control button
-        this.tankButton.getButton().setInteractive()
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
-                this.updateControlColor(this.tankButton.getButton(), 'tank', 'hover');
-            })
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OUT, () => {
-                this.updateControlColor(this.tankButton.getButton(), 'tank');
-            })
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
-                this.updateControlColor(this.tankButton.getButton(), 'tank', 'pressed');
-                var menu_audio = this.sound.add('menu');
-                menu_audio.play();
-                this.controller.setControlMethod('tank');
-            })
-            .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
-                this.fourWayButton.getButton().setTint(0xFFFFFF);
-            });
-
-        // To darken screen
-        const color1 = new Phaser.Display.Color(0, 0, 0);
-        this.shadow = this.add.rectangle(0, 0,2048, 2048, color1.color);
-        this.shadow.setAlpha(0.5);
-
-        this.optionMenu.addButton(this.incVolButton.getElements());
-        this.optionMenu.addButton(this.decVolButton.getElements());
-        this.optionMenu.addButton(this.fourWayButton.getElements());
-        this.optionMenu.addButton(this.tankButton.getElements());
-        this.optionMenu.addButton(this.backButton.getElements());
-        this.optionMenu.addElement(this.controlText);
-        this.optionMenu.addElement(this.volumeText);
-        this.optionMenu.addElement(this.shadow);
-
-    }
 
     /** Creates the image objects and associated events for the 
      *  game's pause button 
@@ -818,28 +682,6 @@ class Freeplay extends Phaser.Scene {
         }
     }
 
-    /**
-     * updates the color of the control setting buttons based on the given state of the button
-     * @param {string} state The state of the button. Can be: hover, pressed or no value for default color
-     * @param {object} btn the button to be modified.
-     * @param {string} mode the movement method that relates to the button.
-     */
-    updateControlColor(btn,mode,state) {
-        switch (state) {
-            case 'hover':
-                btn.setTint(0xF9A000);
-                break;
-            case 'pressed':
-                btn.setTint(0xF47D33);
-                break;
-            default:
-                if(this.controller.getControlMethodStr() != mode){
-                    btn.setTint(0xFFFFFF);
-                } else{
-                    btn.setTint(0xF47D33);
-                }
-        }
-    }
     /** 
      * Places a single background tile at the specified coordinates
      * @param {number} _placeX - The x coordinate where this tile will be placed
