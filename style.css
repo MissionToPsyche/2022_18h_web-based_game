@@ -6,3 +6,19 @@ html, body {
 canvas {
   display: block;
 }
+
+@font-face {
+  font-family: CustomFont;
+  src: url('./assets/font/KenPixel-Square.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: CustomFont2;
+  src: url('./assets/font/KenPixel.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}

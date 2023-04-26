@@ -71,13 +71,24 @@ class CameraManager {
      * @param {Scene} scene - The scene to add this camera to
      */
     static initializeMiniCamera(scene) {
-        this.miniCamera = scene.cameras.add(745, 10, 300, 205)
+        this.miniCamera = scene.cameras.add(745, 10, 270, 205)
             .setZoom(0.018)
             .setName('mini')
             .setBackgroundColor("Black")
             .setBounds(0, 0, this.cameraWidth, this.cameraHeight, true)
             .ignore(this.uiSprites)
             .ignore(this.gameSprites);
+
+        this.miniCamera.setVisible(false);
+    }
+
+    static popMap(){
+        if(this.miniCamera.visible == true){
+            this.miniCamera.setVisible(false);
+        } else{
+            this.miniCamera.setVisible(true);
+        }
+        return this.miniCamera.visible;
     }
 
     /**
