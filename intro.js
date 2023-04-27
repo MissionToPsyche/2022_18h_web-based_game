@@ -73,9 +73,11 @@ class Intro extends Phaser.Scene {
         // Button to flip the page.
         this.nextButton = this.add.triangle(700, 650, 0, 128, 64, 0, 128, 128, 0x6666ff).setScale(0.35);
         this.nextButton.angle = 90
-        this.introText = this.add.text(325, 100, 'Page 1').setOrigin(0.5).setFontSize(50);
+        this.introText = this.add.text(250, 100, 'Disclaimer').setFontSize(50);
+        this.contentText = this.add.text(250, 200, 'This game is an entertaining simulation\ninspired by NASA and ASU\'s joint mission\nto observe the (16) Psyche asteroid but\nis not intended to be a realistic\nrepresentation of the actual mission,\nevents, technology, or scientific findings.\nIt is a work of fiction designed for fun\nand engagement, and players should not\nrely on it for factual information. For\naccurate and up-to-date details about\n(16) Psyche and the real-life mission,\nplease visit the official ASU Psyche\nMission website at https://psyche.asu.edu/.\n\nEnjoy the game and let your imagination\nsoar through space!').setFontSize(20);
         CameraManager.addUISprite(this.nextButton);
         CameraManager.addUISprite(this.introText);
+        CameraManager.addUISprite(this.contentText);
 
         this.nextButton.setInteractive()
         .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
