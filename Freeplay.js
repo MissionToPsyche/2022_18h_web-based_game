@@ -21,6 +21,9 @@ class Freeplay extends Phaser.Scene {
         this.pauseText;
         this.isMapVisible;
 
+        this.optionOpen = false;
+        this.vol = 0.5;
+
         this.takingPhoto = false;
         this.foundPsycheText; 
         this.quitPhotoPageButton;
@@ -285,16 +288,15 @@ class Freeplay extends Phaser.Scene {
 
         this.ingame_music = this.sound.add('ingame_music');
         if (!this.ingame_music.isPlaying) {
+            // this.ingame_music.on('volume', listener);
             this.ingame_music.play({ loop: true });
+            this.ingame_music.setVolume(this.vol);
         }
 
         // pause if the status should be isMuted
         if (this.isMuted) {
             this.ingame_music.pause()
         }
-
-        //this.createPauseButton();
-        //this.createOrbitToggle();
 
         // Create a shaded dialog box
         const color1 = new Phaser.Display.Color(0, 0, 0);
@@ -313,6 +315,7 @@ class Freeplay extends Phaser.Scene {
         this.controller = new Controller(this, this.bodies["psyche_probe"]);
         this.bodies["psyche_probe"].setController(this.controller);
 
+        MenuManager.createOptionMenu(this);
         MenuManager.createPauseMenu(this);
         this.takePhoto();
         MenuManager.createHeadsUpDisplay(this);
@@ -631,9 +634,9 @@ class Freeplay extends Phaser.Scene {
         this.graphics.arc(x, y, r, startAngle, endAngle, false);
         this.graphics.strokePath();
     }
-    
-    /**
-     * Assembles the starry parallax background behind the solar system
+
+    /** Creates the image objects and associated events for the 
+     *  game's pause button 
      */
     createParallaxBackground() {
         for (let i = 0; i < Constants.PARALLAX_TILE_REPEAT_X; i++) {
@@ -685,7 +688,7 @@ class Freeplay extends Phaser.Scene {
         }
     }
 
-    /**
+    /** 
      * Places a single background tile at the specified coordinates
      * @param {number} _placeX - The x coordinate where this tile will be placed
      * @param {number} _placeY - The y coordinate where this tile will be placed

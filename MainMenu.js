@@ -18,6 +18,7 @@ class MainMenu extends Phaser.Scene {
         this.load.image('up', 'img/icons/upkey.png'); 
         this.load.image('space', 'img/icons/space.png'); 
         this.load.image('p', 'img/icons/p.png'); 
+        this.load.image('shift', 'img/icons/shift.png'); 
 
         this.load.audio('intro_music', 'assets/music/01_Psychemission_Menu.wav');
         this.load.audio('load', 'assets/sfx/load.wav');
@@ -148,12 +149,12 @@ class MainMenu extends Phaser.Scene {
 
     createControlMenu() {
         //Control menu
-        this.controlText = this.add.text(525, 100, 'CONTROLS').setOrigin(0.5).setFontSize(120);
+        this.controlText = this.add.text(525, 100, 'CONTROLS',{ fontFamily: 'CustomFont'}).setOrigin(0.5).setFontSize(100);
         this.exitButton = this.add.image(520, 618, 'exit').setScale(0.5);
         // Storage for title of control.
-        const controls = ['Move Forward', 'Move Backward', 'Move Left', 'Move Right', 'Pause Game', 'Take Picture'];
+        const controls = ['Move Forward', 'Move Backward', 'Move Left', 'Move Right', 'Pause Game', 'Take Picture', 'Toggle Orbit'];
         // Storage for icon images. 
-        const icons = ['up', 'down', 'left', 'right', 'p', 'space'];
+        const icons = ['up', 'down', 'left', 'right', 'p', 'space', 'shift'];
         // Storage of all the titles and object created. 
         const objects = [];
 
@@ -162,9 +163,9 @@ class MainMenu extends Phaser.Scene {
 
         //Go through the list of icons and controls and make them appear. 
         for(let i = 0; i < controls.length; i++){
-            this.icon = this.add.image(col, row, icons[i]).setOrigin(0,0.5).setScale(0.2);
+            this.icon = this.add.image(col, row + 10, icons[i]).setOrigin(0,0.5).setScale(0.2);
             objects.push(this.icon);
-            this.title = this.add.text(col - 150 , row, controls[i]).setFontSize(15);
+            this.title = this.add.text(col - 150 , row, controls[i], { fontFamily: 'CustomFont2'}).setFontSize(15);
             objects.push(this.title);
             row = row + 100;
             CameraManager.addUISprite(this.icon);
