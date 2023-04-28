@@ -71,10 +71,24 @@ class Intro extends Phaser.Scene {
 
     createPage() {
         // Button to flip the page.
+        var content = 'This game is an entertaining simulation\n'
+        + 'inspired by NASA and ASU\'s joint mission\n'
+        + 'to observe the (16) Psyche asteroid but\n'
+        + 'is not intended to be a realistic\n'
+        + 'representation of the actual mission,\n'
+        + 'events, technology, or scientific findings.\n'
+        + 'It is a work of fiction designed for fun\n'
+        + 'and engagement, and players should not\n'
+        + 'rely on it for factual information. For\n'
+        + 'accurate and up-to-date details about\n'
+        + '(16) Psyche and the real-life mission,\n'
+        + 'please visit the official ASU Psyche\n'
+        + 'Mission website at https://psyche.asu.edu/.\n'
+        + '\nEnjoy the game and let your imagination\nsoar through space!'
         this.nextButton = this.add.triangle(700, 650, 0, 128, 64, 0, 128, 128, 0x6666ff).setScale(0.35);
         this.nextButton.angle = 90
         this.introText = this.add.text(250, 100, 'Disclaimer').setFontSize(50);
-        this.contentText = this.add.text(250, 200, 'This game is an entertaining simulation\ninspired by NASA and ASU\'s joint mission\nto observe the (16) Psyche asteroid but\nis not intended to be a realistic\nrepresentation of the actual mission,\nevents, technology, or scientific findings.\nIt is a work of fiction designed for fun\nand engagement, and players should not\nrely on it for factual information. For\naccurate and up-to-date details about\n(16) Psyche and the real-life mission,\nplease visit the official ASU Psyche\nMission website at https://psyche.asu.edu/.\n\nEnjoy the game and let your imagination\nsoar through space!').setFontSize(20);
+        this.contentText = this.add.text(250, 200, content).setFontSize(20);
         CameraManager.addUISprite(this.nextButton);
         CameraManager.addUISprite(this.introText);
         CameraManager.addUISprite(this.contentText);
@@ -143,6 +157,7 @@ class Intro extends Phaser.Scene {
 
 createPTwo(){
         this.introText.setVisible(false);
+        this.contentText.setVisible(false);
         // Texts for last page of the intro.
         var content = "1. Find Psyche in the solar system.\n"
         + "2. Take pictures of Psyche.\n3. Get back to Earth.";
