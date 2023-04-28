@@ -70,7 +70,6 @@ class Intro extends Phaser.Scene {
     }
 
     createPage() {
-        // Button to flip the page.
         var content = 'This game is an entertaining simulation\n'
         + 'inspired by NASA and ASU\'s joint mission\n'
         + 'to observe the (16) Psyche asteroid but\n'
@@ -85,10 +84,14 @@ class Intro extends Phaser.Scene {
         + 'please visit the official ASU Psyche\n'
         + 'Mission website at https://psyche.asu.edu/.\n'
         + '\nEnjoy the game and let your imagination\nsoar through space!'
+
+        // Button to flip the page.
         this.nextButton = this.add.triangle(700, 650, 0, 128, 64, 0, 128, 128, 0x6666ff).setScale(0.35);
         this.nextButton.angle = 90
-        this.introText = this.add.text(250, 100, 'Disclaimer').setFontSize(50);
-        this.contentText = this.add.text(250, 200, content).setFontSize(20);
+
+        this.introText = this.add.text(250, 100, 'Disclaimer',{ fontFamily: 'CustomFont'}).setFontSize(50);
+        this.contentText = this.add.text(250, 200, content, { fontFamily: 'CustomFont2'}).setFontSize(17);
+        
         CameraManager.addUISprite(this.nextButton);
         CameraManager.addUISprite(this.introText);
         CameraManager.addUISprite(this.contentText);
@@ -163,12 +166,12 @@ createPTwo(){
         + "2. Take pictures of Psyche.\n3. Get back to Earth.";
 
         var content2 = "Do not crash into other planets!";
-        this.introText = this.add.text(325, 100, 'Mission Task:').setFontSize(50);
+        this.introText = this.add.text(300, 100, 'Mission Task:', { fontFamily: 'CustomFont'}).setFontSize(50);
         CameraManager.addUISprite(this.introText);
-        this.contentText = this.add.text(325,200, '');
+        this.contentText = this.add.text(325,200, '', { fontFamily: 'CustomFont2'});
         this.typewriteText(this.contentText, content);
         CameraManager.addUISprite(this.contentText);
-        this.introText = this.add.text(325, 400, '').setFontSize(50);
+        this.introText = this.add.text(300, 400, '', { fontFamily: 'CustomFont'}).setFontSize(50);
         // Time delay for typewriter affect.
         this.time.addEvent({
             delay: 9000,
@@ -179,7 +182,7 @@ createPTwo(){
         })
         // Make the text red.
         this.introText.setFill('#F10A0A');
-        this.contentText = this.add.text(325,450, '');
+        this.contentText = this.add.text(325,500, '', { fontFamily: 'CustomFont2'});
 
         this.time.addEvent({
             delay: 10500,

@@ -241,7 +241,7 @@ class TutorialManager {
         const soundKeys = ['key1', 'key2', 'key3', 'key4', 'key5'];
         var rand = this.getRandomInt(5)
         // When game state is paused ,the sound will also stop.
-        if(this.dialogText.visible == true){
+        if((this.dialogText.visible == true) & !(this.scene.isMuted)){
             this.scene.sound.add(soundKeys[rand]).play();
         }
     }
@@ -268,14 +268,17 @@ class TutorialManager {
         })
         .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
             this.startButton.getButton().setTint(0xF47D33);
-            var load_audio = this.scene.sound.add('load');
-            load_audio.play();
+            if (!this.scene.isMuted) {
+                var load_audio = this.scene.sound.add('load');
+                load_audio.play();
+            }
         })
         .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
             this.scene.ingame_music.stop();
             this.startButton.getButton().setTint(0xFFFFFF);
             TutorialManager.deactivateTutorial();
             this.scene.scene.restart();
+            this.scene.scene.isMuted = this.scene.isMuted;
         });
 
 
