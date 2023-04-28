@@ -241,7 +241,7 @@ class TutorialManager {
         const soundKeys = ['key1', 'key2', 'key3', 'key4', 'key5'];
         var rand = this.getRandomInt(5)
         // When game state is paused ,the sound will also stop.
-        if(this.dialogText.visible == true){
+        if((this.dialogText.visible == true) & !(this.scene.isMuted)){
             this.scene.sound.add(soundKeys[rand]).play();
         }
     }

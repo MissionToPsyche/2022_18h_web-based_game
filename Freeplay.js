@@ -301,7 +301,7 @@ class Freeplay extends Phaser.Scene {
             TutorialManager.msgVisibility(false);
         }
 
-        //this.createMuteButton();
+        this.createMuteButton();
         this.createParallaxBackground();
 
         //creating controller
