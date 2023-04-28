@@ -79,7 +79,7 @@ class MenuManager {
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
                 this.updatePauseColor(_scene, 'pressed');
-                if (!_scene.gameOver) {
+                if ((!_scene.gameOver) & (!_scene.isMuted)) {
                     var menu_audio = _scene.sound.add('menu');
                     menu_audio.play();
                 }
@@ -109,7 +109,7 @@ class MenuManager {
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
                 this.updatePauseColor(_scene, 'pressed');
-                if (!_scene.gameOver) {
+                if ((!_scene.gameOver) & (!_scene.isMuted)) {
                     var menu_audio = _scene.sound.add('menu');
                     menu_audio.play();
                 }
@@ -290,7 +290,7 @@ class MenuManager {
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
                 this.updateOrbitColor(_scene, 'on');
-                if (!_scene.gameOver) {
+                if ((!_scene.gameOver) & (!_scene.isMuted)) {
                     var menu_audio = _scene.sound.add('menu');
                     menu_audio.play();
                 }

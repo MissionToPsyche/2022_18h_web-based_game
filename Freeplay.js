@@ -293,6 +293,11 @@ class Freeplay extends Phaser.Scene {
             this.ingame_music.setVolume(this.vol);
         }
 
+        // pause if the status should be isMuted
+        if (this.isMuted) {
+            this.ingame_music.pause()
+        }
+
         // Create a shaded dialog box
         const color1 = new Phaser.Display.Color(0, 0, 0);
         TutorialManager.setUp(this, color1.color);
@@ -303,6 +308,7 @@ class Freeplay extends Phaser.Scene {
             TutorialManager.msgVisibility(false);
         }
 
+        this.createMuteButton();
         this.createParallaxBackground();
 
         //creating controller
@@ -989,7 +995,14 @@ class Freeplay extends Phaser.Scene {
             Constants.MUTE_Y, 'notmuted').setScale(Constants.MUTE_SCALE);
         this.mutedButton.depth = 100;
         this.notmutedButton.depth = 100;
-        this.mutedButton.setVisible(false);
+
+        if (this.isMuted) {
+            this.notmutedButton.setVisible(false);
+            this.mutedButton.setVisible(true);
+        } else {
+            this.notmutedButton.setVisible(true);
+            this.mutedButton.setVisible(false);
+        }
 
         CameraManager.addUISprite(this.mutedButton);
         CameraManager.addUISprite(this.notmutedButton);
