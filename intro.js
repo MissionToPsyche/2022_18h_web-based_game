@@ -70,12 +70,29 @@ class Intro extends Phaser.Scene {
     }
 
     createPage() {
+        var content = 'This game is an entertaining simulation\n'
+        + 'inspired by NASA and ASU\'s joint mission\n'
+        + 'to observe the (16) Psyche asteroid but\n'
+        + 'is not intended to be a realistic\n'
+        + 'representation of the actual mission,\n'
+        + 'events, technology, or scientific findings.\n'
+        + 'It is a work of fiction designed for fun\n'
+        + 'and engagement, and players should not\n'
+        + 'rely on it for factual information. For\n'
+        + 'accurate and up-to-date details about\n'
+        + '(16) Psyche and the real-life mission,\n'
+        + 'please visit the official ASU Psyche\n'
+        + 'Mission website at https://psyche.asu.edu/.\n'
+        + '\nEnjoy the game and let your imagination\nsoar through space!'
+
         // Button to flip the page.
         this.nextButton = this.add.triangle(700, 650, 0, 128, 64, 0, 128, 128, 0x6666ff).setScale(0.35);
         this.nextButton.angle = 90
-        this.introText = this.add.text(325, 100, 'Page 1').setOrigin(0.5).setFontSize(50);
+        this.introText = this.add.text(250, 100, 'Disclaimer',{ fontFamily: 'CustomFont'}).setFontSize(50);
+        this.contentText = this.add.text(250, 200, content, { fontFamily: 'CustomFont2'}).setFontSize(17);
         CameraManager.addUISprite(this.nextButton);
         CameraManager.addUISprite(this.introText);
+        CameraManager.addUISprite(this.contentText);
 
         this.nextButton.setInteractive()
         .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
@@ -141,17 +158,18 @@ class Intro extends Phaser.Scene {
 
 createPTwo(){
         this.introText.setVisible(false);
+        this.contentText.setVisible(false);
         // Texts for last page of the intro.
         var content = "1. Find Psyche in the solar system.\n"
         + "2. Take pictures of Psyche.\n3. Get back to Earth.";
 
         var content2 = "Do not crash into other planets!";
-        this.introText = this.add.text(300, 100, 'Mission Task:', { fontFamily: 'CustomFont2'}).setFontSize(50);
+        this.introText = this.add.text(300, 100, 'Mission Task:', { fontFamily: 'CustomFont'}).setFontSize(50);
         CameraManager.addUISprite(this.introText);
         this.contentText = this.add.text(325,200, '', { fontFamily: 'CustomFont2'});
         this.typewriteText(this.contentText, content);
         CameraManager.addUISprite(this.contentText);
-        this.introText = this.add.text(300, 400, '', { fontFamily: 'CustomFont2'}).setFontSize(50);
+        this.introText = this.add.text(300, 400, '', { fontFamily: 'CustomFont'}).setFontSize(50);
         // Time delay for typewriter affect.
         this.time.addEvent({
             delay: 9000,
