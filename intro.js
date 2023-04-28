@@ -88,8 +88,10 @@ class Intro extends Phaser.Scene {
         // Button to flip the page.
         this.nextButton = this.add.triangle(700, 650, 0, 128, 64, 0, 128, 128, 0x6666ff).setScale(0.35);
         this.nextButton.angle = 90
+
         this.introText = this.add.text(250, 100, 'Disclaimer',{ fontFamily: 'CustomFont'}).setFontSize(50);
         this.contentText = this.add.text(250, 200, content, { fontFamily: 'CustomFont2'}).setFontSize(17);
+        
         CameraManager.addUISprite(this.nextButton);
         CameraManager.addUISprite(this.introText);
         CameraManager.addUISprite(this.contentText);
